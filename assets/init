@@ -31,6 +31,11 @@ SMTP_PASS=${SMTP_PASS:-}
 SMTP_STARTTLS=${SMTP_STARTTLS:-true}
 
 GITLAB_URL=${GITLAB_URL:-}
+
+# use docker link feature to figure out gitlab url
+[[ -z "${GITLAB_URL}" && -n "${GITLAB_PORT_80_TCP_ADDR}" ]] && \
+	GITLAB_URL="http://${GITLAB_PORT_80_TCP_ADDR}"
+
 GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
 
 case "${DB_TYPE}" in
