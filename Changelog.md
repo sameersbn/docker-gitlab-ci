@@ -1,4 +1,5 @@
 # Changelog
 
-**latest a.k.a HEAD**
-
+4.3.0
+- added README
+- initial creation, adapted from https://github.com/sameersbn/docker-gitlab
