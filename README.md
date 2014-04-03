@@ -39,7 +39,7 @@ Current Version: 4.3.0
 Pull the latest version of the image from the docker index. This is the recommended method of installation as it is easier to update image in the future. These builds are performed by the **Docker Trusted Build** service.
 
 ```
-docker pull sameersbn/gitlab-ci
+docker pull sameersbn/gitlab-ci:latest
 ```
 
 Starting from GitLab CI version 4.3.0, You can pull a particular version of GitLab CI by specifying the version number. For example,
@@ -64,14 +64,14 @@ You need to provide the URL of the GitLab server while running GitLab CI using t
 ```
 docker run -name gitlab-ci -d \
   -e "GITLAB_URL=http://172.17.0.2" \
-  sameersbn/gitlab-ci
+  sameersbn/gitlab-ci:latest
 GITLAB_CI_IP=$(docker inspect gitlab-ci | grep IPAddres | awk -F'"' '{print $4}')
 ```
 
 Alternately, if the GitLab and GitLab CI servers are running on the same host, you can take advantage of docker links. Lets consider that the GitLab server is running on the same host and has the name **"gitlab"**, then using docker links:
 
 ```
-docker run -name gitlab-ci -d -link gitlab:gitlab sameersbn/gitlab-ci
+docker run -name gitlab-ci -d -link gitlab:gitlab sameersbn/gitlab-ci:latest
 GITLAB_CI_IP=$(docker inspect gitlab-ci | grep IPAddres | awk -F'"' '{print $4}')
 ```
 
@@ -101,7 +101,7 @@ This docker image is configured to use a MySQL database backend. The database co
 mkdir /opt/gitlab-ci/mysql
 docker run -name gitlab-ci -d \
   -e "GITLAB_URL=http://172.17.0.2" \
-  -v /opt/gitlab-ci/mysql:/var/lib/mysql sameersbn/gitlab-ci
+  -v /opt/gitlab-ci/mysql:/var/lib/mysql sameersbn/gitlab-ci:latest
 ```
 
 This will make sure that the data stored in the database is not lost when the image is stopped and started again.
@@ -129,7 +129,7 @@ docker run -name gitlab-ci -i -t -rm \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_HOST=192.168.1.100" -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
-  sameersbn/gitlab-ci app:rake db:setup
+  sameersbn/gitlab-ci:latest app:rake db:setup
 ```
 
 This will initialize the GitLab CI database. Now that the database is initialized, start the container normally.
@@ -139,7 +139,7 @@ docker run -name gitlab-ci -d \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_HOST=192.168.1.100" -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
-  sameersbn/gitlab-ci
+  sameersbn/gitlab-ci:latest
 ```
 
 ### PostgreSQL
@@ -164,7 +164,7 @@ docker run -name gitlab-ci -i -t -rm \
   -e "DB_TYPE=postgres" -e "DB_HOST=192.168.1.100" \
   -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
-  sameersbn/gitlab-ci app:rake db:setup
+  sameersbn/gitlab-ci:latest app:rake db:setup
 ```
 
 This will initialize the GitLab CI database. Now that the database is initialized, start the container normally.
@@ -175,7 +175,7 @@ docker run -name gitlab-ci -d \
   -e "DB_TYPE=postgres" -e "DB_HOST=192.168.1.100" \
   -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
-  sameersbn/gitlab-ci
+  sameersbn/gitlab-ci:latest
 ```
 
 ### Mail
@@ -193,7 +193,7 @@ The following environment variables need to be specified to get mail support to 
 ```
 docker run -name gitlab-ci -d \
   -e "SMTP_USER=USER@gmail.com" -e "SMTP_PASS=PASSWORD" \
-  sameersbn/gitlab-ci
+  sameersbn/gitlab-ci:latest
 ```
 
 If you are not using google mail, then please configure the  SMTP host and port using the SMTP_HOST and SMTP_PORT configuration parameters.
@@ -212,7 +212,7 @@ docker run -name gitlab-ci -d -h gitlab-ci.local.host \
   -e "GITLAB_CI_EMAIL=gitlab@local.host" \
   -e "GITLAB_CI_SUPPORT=support@local.host" \
   -e "SMTP_USER=USER@gmail.com" -e "SMTP_PASS=PASSWORD" \
-  sameersbn/gitlab-ci
+  sameersbn/gitlab-ci:latest
 ```
 
 If you are using an external mysql database
@@ -226,7 +226,7 @@ docker run -name gitlab-ci -d -h gitlab-ci.local.host \
   -e "GITLAB_CI_EMAIL=gitlab@local.host" \
   -e "GITLAB_CI_SUPPORT=support@local.host" \
   -e "SMTP_USER=USER@gmail.com" -e "SMTP_PASS=PASSWORD" \
-  sameersbn/gitlab-ci
+  sameersbn/gitlab-ci:latest
 ```
 
 ### Available Configuration Parameters
@@ -282,20 +282,20 @@ docker stop gitlab-ci
 - **Step 2**: Update the docker image.
 
 ```
-docker pull sameersbn/gitlab-ci
+docker pull sameersbn/gitlab-ci:latest
 ```
 
 - **Step 3**: Migrate the database.
 
 ```
 docker run -name gitlab-ci -i -t -rm [OPTIONS] \
-  sameersbn/gitlab-ci app:rake db:migrate
+  sameersbn/gitlab-ci:latest app:rake db:migrate
 ```
 
 - **Step 4**: Start the image
 
 ```
-docker run -name gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci
+docker run -name gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:latest
 ```
 
 
