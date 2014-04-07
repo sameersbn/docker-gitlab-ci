@@ -29,6 +29,7 @@ SMTP_PORT=${SMTP_PORT:-587}
 SMTP_USER=${SMTP_USER:-}
 SMTP_PASS=${SMTP_PASS:-}
 SMTP_STARTTLS=${SMTP_STARTTLS:-true}
+SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-:login}
 
 GITLAB_URL=${GITLAB_URL:-}
 
@@ -153,6 +154,7 @@ sed 's/{{SMTP_USER}}/'${SMTP_USER}'/' -i /home/gitlab_ci/gitlab-ci/config/initia
 sed 's/{{SMTP_PASS}}/'${SMTP_PASS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 sed 's/{{SMTP_DOMAIN}}/'${SMTP_DOMAIN}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 sed 's/{{SMTP_STARTTLS}}/'${SMTP_STARTTLS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sed 's/{{SMTP_AUTHENTICATION}}/'${SMTP_AUTHENTICATION}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 
 # take ownership of /home/gitlab_ci/data
 chown gitlab_ci:gitlab_ci /home/gitlab_ci/data

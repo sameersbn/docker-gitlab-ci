@@ -189,6 +189,7 @@ The following environment variables need to be specified to get mail support to 
 * SMTP_USER
 * SMTP_PASS
 * SMTP_STARTTLS (defaults to true)
+* SMTP_AUTHENTICATION (defaults to :login)
 
 ```
 docker run -name gitlab-ci -d \
@@ -255,6 +256,7 @@ Below is the complete list of available options that can be used to customize yo
 - **SMTP_USER**: SMTP username.
 - **SMTP_PASS**: SMTP password.
 - **SMTP_STARTTLS**: Enable STARTTLS. Defaults to true.
+- **SMTP_AUTHENTICATION**: SMTP authentication mode. Defaults to :login.
 
 # Maintenance
 

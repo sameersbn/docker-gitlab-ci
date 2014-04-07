@@ -1,6 +1,7 @@
 # Changelog
 
-**latest a.k.a. HEAD**
+**latest**
+- added SMTP_AUTHENTICATION config option, defaults to :login
 - install ruby2.0 from ppa
 
 **4.3.0**
