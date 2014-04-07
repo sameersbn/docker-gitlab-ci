@@ -148,13 +148,13 @@ sudo -u gitlab_ci -H sed 's/{{UNICORN_WORKERS}}/'${UNICORN_WORKERS}'/' -i /home/
 sudo -u gitlab_ci -H sed 's/{{UNICORN_TIMEOUT}}/'${UNICORN_TIMEOUT}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
 
 # configure mail delivery
-sed 's/{{SMTP_HOST}}/'${SMTP_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sed 's/{{SMTP_PORT}}/'${SMTP_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sed 's/{{SMTP_USER}}/'${SMTP_USER}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sed 's/{{SMTP_PASS}}/'${SMTP_PASS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sed 's/{{SMTP_DOMAIN}}/'${SMTP_DOMAIN}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sed 's/{{SMTP_STARTTLS}}/'${SMTP_STARTTLS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sed 's/{{SMTP_AUTHENTICATION}}/'${SMTP_AUTHENTICATION}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_HOST}}/'${SMTP_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_PORT}}/'${SMTP_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'${SMTP_USER}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'${SMTP_PASS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_DOMAIN}}/'${SMTP_DOMAIN}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_STARTTLS}}/'${SMTP_STARTTLS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'${SMTP_AUTHENTICATION}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 
 # take ownership of /home/gitlab_ci/data
 chown gitlab_ci:gitlab_ci /home/gitlab_ci/data
