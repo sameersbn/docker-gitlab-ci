@@ -142,10 +142,10 @@ sudo -u gitlab_ci -H sed 's/{{REDIS_HOST}}/'${REDIS_HOST}'/' -i /home/gitlab_ci/
 sudo -u gitlab_ci -H sed 's/{{REDIS_PORT}}/'${REDIS_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
 
 # configure unicorn workers
-sed 's/{{UNICORN_WORKERS}}/'${UNICORN_WORKERS}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
+sudo -u gitlab_ci -H sed 's/{{UNICORN_WORKERS}}/'${UNICORN_WORKERS}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
 
 # configure unicorn timeout
-sed 's/{{UNICORN_TIMEOUT}}/'${UNICORN_TIMEOUT}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
+sudo -u gitlab_ci -H sed 's/{{UNICORN_TIMEOUT}}/'${UNICORN_TIMEOUT}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
 
 # configure mail delivery
 sed 's/{{SMTP_HOST}}/'${SMTP_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
