@@ -197,11 +197,7 @@ docker run -name gitlab-ci -d \
   sameersbn/gitlab-ci:latest
 ```
 
-If you are not using google mail, then please configure the  SMTP host and port using the SMTP_HOST and SMTP_PORT configuration parameters.
-
-__NOTE:__
-
-I have only tested standard gmail and google apps login. I expect that the currently provided configuration parameters should be sufficient for most users. Please look up the [Available Configuration Parameters](#available-configuration-parameters) section for all available SMTP configuration options.
+Please look up the [Available Configuration Parameters](#available-configuration-parameters) section for all available SMTP configuration options.
 
 ### Putting it all together
 
