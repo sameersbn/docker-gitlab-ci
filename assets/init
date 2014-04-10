@@ -110,12 +110,12 @@ if [ "${REDIS_HOST}" == "localhost" ]; then
 fi
 
 # configure server url
-sudo -u gitlab_ci -H sed 's/{{GITLAB_URL}}/'${GITLAB_URL}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
-sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HOST}}/'${GITLAB_CI_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
-sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_PORT}}/'${GITLAB_CI_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
-sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HTTPS}}/'${GITLAB_CI_HTTPS}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
-sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_EMAIL}}/'${GITLAB_CI_EMAIL}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
-sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_SUPPORT}}/'${GITLAB_CI_SUPPORT}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_URL}}/'"${GITLAB_URL}"'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HOST}}/'"${GITLAB_CI_HOST}"'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HTTPS}}/'"${GITLAB_CI_HTTPS}"'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_EMAIL}}/'"${GITLAB_CI_EMAIL}"'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_SUPPORT}}/'"${GITLAB_CI_SUPPORT}"'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
 
 # configure database
 if [ "${DB_TYPE}" == "postgres" ]; then
@@ -130,31 +130,31 @@ else
 	echo "Invalid database type: '$DB_TYPE'. Supported choices: [mysql, postgres]."
 fi
 
-sudo -u gitlab_ci -H sed 's/{{DB_HOST}}/'${DB_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-sudo -u gitlab_ci -H sed 's/{{DB_PORT}}/'${DB_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-sudo -u gitlab_ci -H sed 's/{{DB_NAME}}/'${DB_NAME}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-sudo -u gitlab_ci -H sed 's/{{DB_USER}}/'${DB_USER}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-sudo -u gitlab_ci -H sed 's/{{DB_PASS}}/'${DB_PASS}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-sudo -u gitlab_ci -H sed 's/{{DB_POOL}}/'${DB_POOL}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_HOST}}/'"${DB_HOST}"'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_PORT}}/'"${DB_PORT}"'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_NAME}}/'"${DB_NAME}"'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_USER}}/'"${DB_USER}"'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_PASS}}/'"${DB_PASS}"'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_POOL}}/'"${DB_POOL}"'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
 
 # configure redis
-sudo -u gitlab_ci -H sed 's/{{REDIS_HOST}}/'${REDIS_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
-sudo -u gitlab_ci -H sed 's/{{REDIS_PORT}}/'${REDIS_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
+sudo -u gitlab_ci -H sed 's/{{REDIS_HOST}}/'"${REDIS_HOST}"'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
+sudo -u gitlab_ci -H sed 's/{{REDIS_PORT}}/'"${REDIS_PORT}"'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
 
 # configure unicorn workers
-sudo -u gitlab_ci -H sed 's/{{UNICORN_WORKERS}}/'${UNICORN_WORKERS}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
+sudo -u gitlab_ci -H sed 's/{{UNICORN_WORKERS}}/'"${UNICORN_WORKERS}"'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
 
 # configure unicorn timeout
-sudo -u gitlab_ci -H sed 's/{{UNICORN_TIMEOUT}}/'${UNICORN_TIMEOUT}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
+sudo -u gitlab_ci -H sed 's/{{UNICORN_TIMEOUT}}/'"${UNICORN_TIMEOUT}"'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
 
 # configure mail delivery
-sudo -u gitlab_ci -H sed 's/{{SMTP_HOST}}/'${SMTP_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_PORT}}/'${SMTP_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'${SMTP_USER}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'${SMTP_PASS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_DOMAIN}}/'${SMTP_DOMAIN}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_STARTTLS}}/'${SMTP_STARTTLS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'${SMTP_AUTHENTICATION}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_HOST}}/'"${SMTP_HOST}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_PORT}}/'"${SMTP_PORT}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'"${SMTP_PASS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_DOMAIN}}/'"${SMTP_DOMAIN}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_STARTTLS}}/'"${SMTP_STARTTLS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 
 # take ownership of /home/gitlab_ci/data
 chown gitlab_ci:gitlab_ci /home/gitlab_ci/data
