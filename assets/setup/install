@@ -1,0 +1,145 @@
+#!/bin/bash
+
+set -e
+
+GITLAB_CI_VERSION=4.3.0
+
+# add git user
+adduser --disabled-login --gecos 'GitLab CI' gitlab_ci
+
+# create the data store
+sudo -u gitlab_ci -H mkdir -p /home/gitlab_ci/data
+
+# install gitlab-ci
+sudo -u gitlab_ci -H mkdir -p /home/gitlab_ci/gitlab-ci
+if [ -f /app/setup/gitlab-ci-${GITLAB_CI_VERSION}.tar.gz ]; then
+  sudo -u gitlab_ci -H tar -zvxf /app/setup/gitlab-ci-${GITLAB_CI_VERSION}.tar.gz --strip=1 -C /home/gitlab_ci/gitlab-ci/
+else
+  wget "https://gitlab.com/gitlab-org/gitlab-ci/repository/archive.tar.gz?ref=v${GITLAB_CI_VERSION}" -O - | tar -zxf - --strip=1 -C /home/gitlab_ci/gitlab-ci/
+  chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/gitlab-ci/
+fi
+cd /home/gitlab_ci/gitlab-ci
+
+# copy default configurations
+cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/application.yml config/application.yml
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/resque.yml config/resque.yml
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/database.yml config/database.yml
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/unicorn.rb config/unicorn.rb
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
+
+# create required tmp and log directories
+sudo -u gitlab_ci -H mkdir -p tmp/pids/ tmp/sockets/ log/
+chmod -R u+rwX log tmp
+
+# create production log
+sudo -u gitlab_ci -H touch log/production.log
+
+# install gems required by gitlab
+if [ -d "/app/setup/cache" ]; then
+  # offline gem installation
+  mv /app/setup/cache vendor/
+  chown -R gitlab_ci:gitlab_ci vendor/cache
+  sudo -u gitlab_ci -H bundle install --local --deployment --without development test
+else
+  # online gem installation
+  sudo -u gitlab_ci -H bundle install --deployment --without development test
+fi
+
+# install cronjob
+sudo -u gitlab_ci -H bundle exec whenever -w RAILS_ENV=production
+
+# make sure everything in /home/gitlab_ci is owned by the gitlab_ci user
+chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/
+
+# install gitlab bootscript
+cp lib/support/init.d/gitlab_ci /etc/init.d/gitlab_ci
+
+# install logrotate configuration
+# cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
+
+# copy nginx configuration
+ln -s /etc/nginx/sites-available/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci
+
+# create the /var/run/sshd directory (required for sshd to start)
+mkdir -p /var/run/sshd
+
+# setup log rotation for supervisord
+cat > /etc/logrotate.d/supervisord <<EOF
+/var/log/supervisor/*.log {
+    weekly
+    missingok
+    rotate 52
+    compress
+    delaycompress
+    notifempty
+    copytruncate
+}
+EOF
+
+# configure supervisord to start nginx
+echo "daemon off;" >> /etc/nginx/nginx.conf
+cat > /etc/supervisor/conf.d/nginx.conf <<EOF
+[program:nginx]
+priority=20
+directory=/tmp
+command=/usr/sbin/nginx
+user=root
+autostart=false
+autorestart=true
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+EOF
+
+# configure supervisord to start openssh server
+cat > /etc/supervisor/conf.d/openssh-server.conf <<EOF
+[program:openssh-server]
+priority=20
+directory=/tmp
+command=/usr/sbin/sshd -D
+user=root
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+EOF
+
+# configure supervisord to start cron
+cat > /etc/supervisor/conf.d/cron.conf <<EOF
+[program:cron]
+priority=20
+directory=/tmp
+command=/usr/sbin/cron -f
+user=root
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+EOF
+
+# configure supervisord to start mysql (manual)
+cat > /etc/supervisor/conf.d/mysqld.conf <<EOF
+[program:mysqld]
+priority=20
+directory=/tmp
+command=/usr/bin/mysqld_safe
+user=root
+autostart=false
+autorestart=true
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+EOF
+
+# configure supervisord to start redis (manual)
+sed 's/daemonize yes/daemonize no/' -i /etc/redis/redis.conf
+cat > /etc/supervisor/conf.d/redis-server.conf <<EOF
+[program:redis-server]
+priority=20
+directory=/tmp
+command=/usr/bin/redis-server /etc/redis/redis.conf
+user=redis
+autostart=false
+autorestart=true
+stdout_logfile=/var/log/supervisor/%(program_name)s.log
+stderr_logfile=/var/log/supervisor/%(program_name)s.log
+EOF

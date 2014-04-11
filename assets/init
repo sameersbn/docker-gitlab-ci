@@ -1,0 +1,217 @@
+#!/bin/bash
+
+set -e
+
+GITLAB_CI_HOST=${GITLAB_CI_HOST:-localhost}
+GITLAB_CI_PORT=${GITLAB_CI_PORT:-80}
+GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}
+GITLAB_CI_EMAIL=${GITLAB_CI_EMAIL:-gitlab@localhost}
+GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
+
+REDIS_HOST=${REDIS_HOST:-localhost}
+REDIS_PORT=${REDIS_PORT:-6379}
+
+UNICORN_WORKERS=${UNICORN_WORKERS:-2}
+UNICORN_TIMEOUT=${UNICORN_TIMEOUT:-60}
+
+DB_TYPE=${DB_TYPE:-mysql}
+DB_HOST=${DB_HOST:-localhost}
+DB_PORT=${DB_PORT:-}
+DB_NAME=${DB_NAME:-gitlab_ci_production}
+DB_USER=${DB_USER:-root}
+DB_PASS=${DB_PASS:-}
+DB_INIT=${DB_INIT:-}
+DB_POOL=${DB_POOL:-10}
+
+SMTP_DOMAIN=${SMTP_DOMAIN:-www.gmail.com}
+SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+SMTP_PORT=${SMTP_PORT:-587}
+SMTP_USER=${SMTP_USER:-}
+SMTP_PASS=${SMTP_PASS:-}
+SMTP_STARTTLS=${SMTP_STARTTLS:-true}
+
+GITLAB_URL=${GITLAB_URL:-}
+GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
+
+case "${DB_TYPE}" in
+	mysql) DB_PORT=${DB_PORT:-3306} ;;
+	postgres) DB_PORT=${DB_PORT:-5432} ;;
+	*) echo "Unsupported database adapter. Available adapters are mysql and postgres." && exit 1 ;;
+esac
+
+# generate a password for root.
+ROOT_PASSWORD=$(pwgen -c -n -1 12)
+echo "root:$ROOT_PASSWORD" | chpasswd
+echo User: root Password: $ROOT_PASSWORD
+
+# start supervisord
+/usr/bin/supervisord
+
+# over write default configuration templates
+if [ -d /home/gitlab_ci/data/config ]; then
+	chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/data/config
+	cd /home/gitlab_ci/data/config
+	[ -f nginx/gitlab ]								&& cp nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+	[ -f gitlab-ci/application.yml ]	&& sudo -u gitlab_ci -H cp gitlab-ci/application.yml 	/home/gitlab_ci/gitlab-ci/config/application.yml
+	[ -f gitlab-ci/resque.yml ]				&& sudo -u gitlab_ci -H cp gitlab-ci/resque.yml 			/home/gitlab_ci/gitlab-ci/config/resque.yml
+	[ -f gitlab-ci/database.yml ]			&& sudo -u gitlab_ci -H cp gitlab-ci/database.yml 		/home/gitlab_ci/gitlab-ci/config/database.yml
+	[ -f gitlab-ci/unicorn.rb ]				&& sudo -u gitlab_ci -H cp gitlab-ci/unicorn.rb 			/home/gitlab_ci/gitlab-ci/config/unicorn.rb
+	[ -f gitlab-ci/smtp_settings.rb ]	&& sudo -u gitlab_ci -H cp gitlab-ci/smtp_settings.rb /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+fi
+
+sed 's/{{YOUR_SERVER_FQDN}}/localhost/' -i /etc/nginx/sites-available/gitlab_ci
+supervisorctl start nginx
+
+# start mysql server if ${DB_HOST} is localhost
+if [ "${DB_HOST}" == "localhost" ]; then
+	if [ "${DB_TYPE}" == "postgres" ]; then
+		echo "DB_TYPE 'postgres' is not supported internally. Please provide DB_HOST."
+		exit 1
+	fi
+
+	# fix permissions and ownership of /var/lib/mysql
+	chown -R mysql:mysql /var/lib/mysql
+	chmod 700 /var/lib/mysql
+
+	# initialize MySQL data directory
+	if [ ! -d /var/lib/mysql/mysql ]; then
+		mysql_install_db --user=mysql
+	fi
+
+	supervisorctl start mysqld
+
+	# wait for mysql server to start (max 120 seconds)
+	timeout=120
+	while ! mysqladmin -uroot ${DB_PASS:+-p$DB_PASS} status >/dev/null 2>&1
+	do
+		timeout=$(expr $timeout - 1)
+		if [ $timeout -eq 0 ]; then
+			echo "Failed to start mysql server"
+			exit 1
+		fi
+		sleep 1
+	done
+
+	if ! echo "USE ${DB_NAME}" | mysql -uroot ${DB_PASS:+-p$DB_PASS} >/dev/null 2>&1; then
+		DB_INIT="yes"
+		echo "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET \`utf8\` COLLATE \`utf8_unicode_ci\`;" | mysql -uroot ${DB_PASS:+-p$DB_PASS}
+		echo "GRANT SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON \`${DB_NAME}\`.* TO 'root'@'localhost';" | mysql -uroot ${DB_PASS:+-p$DB_PASS}
+	fi
+fi
+
+if [ "${REDIS_HOST}" == "localhost" ]; then
+	supervisorctl start redis-server
+fi
+
+# configure server url
+sudo -u gitlab_ci -H sed 's/{{GITLAB_URL}}/'${GITLAB_URL}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HOST}}/'${GITLAB_CI_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_PORT}}/'${GITLAB_CI_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HTTPS}}/'${GITLAB_CI_HTTPS}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_EMAIL}}/'${GITLAB_CI_EMAIL}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_SUPPORT}}/'${GITLAB_CI_SUPPORT}'/' -i /home/gitlab_ci/gitlab-ci/config/application.yml
+
+# configure database
+if [ "${DB_TYPE}" == "postgres" ]; then
+	sudo -u gitlab_ci -H sed 's/{{DB_ADAPTER}}/postgresql/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+	sudo -u gitlab_ci -H sed 's/{{DB_ENCODING}}/unicode/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+	sudo -u gitlab_ci -H sed 's/reconnect: false/#reconnect: false/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+elif [ "${DB_TYPE}" == "mysql" ]; then
+	sudo -u gitlab_ci -H sed 's/{{DB_ADAPTER}}/mysql2/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+	sudo -u gitlab_ci -H sed 's/{{DB_ENCODING}}/utf8/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+	sudo -u gitlab_ci -H sed 's/#reconnect: false/reconnect: false/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+else
+	echo "Invalid database type: '$DB_TYPE'. Supported choices: [mysql, postgres]."
+fi
+
+sudo -u gitlab_ci -H sed 's/{{DB_HOST}}/'${DB_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_PORT}}/'${DB_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_NAME}}/'${DB_NAME}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_USER}}/'${DB_USER}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_PASS}}/'${DB_PASS}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H sed 's/{{DB_POOL}}/'${DB_POOL}'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+
+# configure redis
+sudo -u gitlab_ci -H sed 's/{{REDIS_HOST}}/'${REDIS_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
+sudo -u gitlab_ci -H sed 's/{{REDIS_PORT}}/'${REDIS_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
+
+# configure unicorn workers
+sed 's/{{UNICORN_WORKERS}}/'${UNICORN_WORKERS}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
+
+# configure unicorn timeout
+sed 's/{{UNICORN_TIMEOUT}}/'${UNICORN_TIMEOUT}'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
+
+# configure mail delivery
+sed 's/{{SMTP_HOST}}/'${SMTP_HOST}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sed 's/{{SMTP_PORT}}/'${SMTP_PORT}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sed 's/{{SMTP_USER}}/'${SMTP_USER}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sed 's/{{SMTP_PASS}}/'${SMTP_PASS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sed 's/{{SMTP_DOMAIN}}/'${SMTP_DOMAIN}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+sed 's/{{SMTP_STARTTLS}}/'${SMTP_STARTTLS}'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+
+# take ownership of /home/gitlab_ci/data
+chown gitlab_ci:gitlab_ci /home/gitlab_ci/data
+
+cd /home/gitlab_ci/gitlab-ci/
+
+appStart () {
+	echo "Starting gitlab-ci server..."
+	# reset the database if the --db-init switch was given.
+	if [ "$DB_INIT" == "yes" ]; then
+		sudo -u gitlab_ci -H bundle exec rake db:setup RAILS_ENV=production
+	fi
+
+	# start the gitlab application
+	/etc/init.d/gitlab_ci start
+
+	# kickstart the rails application
+	curl -s --retry 5 "http://localhost" -o /dev/null
+
+	# watch the access logs
+	tail -F /var/log/nginx/gitlab_ci_access.log
+}
+
+appRake () {
+	if [ -z ${1} ]; then
+		echo "Please specify the rake task to execute."
+		return 1
+	fi
+	echo "Running gitlab rake task..."
+	sudo -u gitlab_ci -H bundle exec rake $@ RAILS_ENV=production
+}
+
+appHelp () {
+	echo "Available options:"
+	echo " app:start          - Starts the gitlab-ci server (default)"
+	echo " app:rake <task>    - Execute a rake task."
+	echo " app:help           - Displays the help"
+	echo " [command]          - Execute the specified linux command eg. bash."
+}
+
+case "$1" in
+	app:start)
+		appStart
+		;;
+	app:rake)
+		shift 1
+		appRake $@
+		;;
+	app:help)
+		appHelp
+		;;
+	*)
+		if [ -x $1 ]; then
+			$1
+		else
+			prog=$(which $1)
+			if [ -n "${prog}" ] ; then
+				shift 1
+				$prog $@
+			else
+				appHelp
+			fi
+		fi
+		;;
+esac
+
+exit 0
