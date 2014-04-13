@@ -21,12 +21,12 @@ fi
 cd /home/gitlab_ci/gitlab-ci
 
 # copy default configurations
-cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
-sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/application.yml config/application.yml
-sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/resque.yml config/resque.yml
-sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/database.yml config/database.yml
-sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/unicorn.rb config/unicorn.rb
-sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
+cp lib/support/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+sudo -u gitlab_ci -H cp config/application.yml.example config/application.yml
+sudo -u gitlab_ci -H cp config/resque.yml.example config/resque.yml
+sudo -u gitlab_ci -H cp config/database.yml.mysql config/database.yml
+sudo -u gitlab_ci -H cp config/unicorn.rb.example config/unicorn.rb
+sudo -u gitlab_ci -H cp config/initializers/smtp_settings.rb.sample config/initializers/smtp_settings.rb
 
 # create required tmp and log directories
 sudo -u gitlab_ci -H mkdir -p tmp/pids/ tmp/sockets/ log/

@@ -53,7 +53,15 @@ echo User: root Password: $ROOT_PASSWORD
 # start supervisord
 /usr/bin/supervisord
 
-# over write default configuration templates
+# copy default configurations
+cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/application.yml /home/gitlab_ci/gitlab-ci/config/application.yml
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/resque.yml /home/gitlab_ci/gitlab-ci/config/resque.yml
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/database.yml /home/gitlab_ci/gitlab-ci/config/database.yml
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/unicorn.rb /home/gitlab_ci/gitlab-ci/config/unicorn.rb
+sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/smtp_settings.rb /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+
+# override default configuration templates with user templates
 if [ -d /home/gitlab_ci/data/config ]; then
 	chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/data/config
 	cd /home/gitlab_ci/data/config
