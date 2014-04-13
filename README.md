@@ -146,9 +146,10 @@ docker run -name gitlab-ci -d \
 #### External PostgreSQL Server
 The image also supports using an external PostgreSQL Server. This is also controlled via environment variables.
 
-```bash
-createuser gitlab_ci
-createdb -O gitlab_ci gitlab_ci_production
+```sql
+CREATE USER gitlab_ci WITH PASSWORD 'password';
+CREATE DATABASE gitlab_ci_production;
+GRANT ALL PRIVILEGES ON DATABASE gitlab_ci_production to gitlab_ci;
 ```
 
 To make sure the database is initialized start the container with **app:rake db:setup** option.
