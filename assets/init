@@ -14,8 +14,8 @@ REDIS_PORT=${REDIS_PORT:-6379}
 UNICORN_WORKERS=${UNICORN_WORKERS:-2}
 UNICORN_TIMEOUT=${UNICORN_TIMEOUT:-60}
 
-DB_TYPE=${DB_TYPE:-mysql}
-DB_HOST=${DB_HOST:-localhost}
+DB_TYPE=${DB_TYPE:-}
+DB_HOST=${DB_HOST:-}
 DB_PORT=${DB_PORT:-}
 DB_NAME=${DB_NAME:-gitlab_ci_production}
 DB_USER=${DB_USER:-root}
@@ -39,6 +39,24 @@ GITLAB_URL=${GITLAB_URL:-}
 
 GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
 
+# is a mysql or postgresql database linked?
+# requires that the mysql or postgresql containers have exposed
+# port 3306 and 5432 respectively.
+if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
+	DB_TYPE=mysql
+	DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
+	DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
+elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
+	DB_TYPE=postgres
+	DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
+	DB_PORT=${DB_PORT:-${POSTGRESQL_PORT_5432_TCP_PORT}}
+fi
+
+# fallback to using the internal mysql server
+DB_TYPE=${DB_TYPE:-mysql}
+DB_HOST=${DB_HOST:-localhost}
+
+# use default port number if it is still not set
 case "${DB_TYPE}" in
 	mysql) DB_PORT=${DB_PORT:-3306} ;;
 	postgres) DB_PORT=${DB_PORT:-5432} ;;

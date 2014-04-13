@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- support linking to mysql and postgresql containers
 - added SMTP_AUTHENTICATION config option, defaults to :login
 - install ruby2.0 from ppa
 
