@@ -13,6 +13,7 @@
             - [Linking to MySQL Container](#linking-to-mysql-container)
         - [PostgreSQL](#postgresql)
             - [External PostgreSQL Server](#external-postgresql-server)
+            - [Linking to PostgreSQL Container](#linking-to-postgresql-container)
     - [Mail](#mail)
     - [Putting it all together](#putting-it-all-together)
     - [Available Configuration Parameters](#available-configuration-parameters)
@@ -233,6 +234,67 @@ docker run -name gitlab-ci -d \
   -e "DB_TYPE=postgres" -e "DB_HOST=192.168.1.100" \
   -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
+  sameersbn/gitlab-ci:latest
+```
+
+#### Linking to PostgreSQL Container
+You can link this image with a postgresql container for the database requirements. The alias of the postgresql server container should be set to **postgresql** while linking with the gitlab ci image.
+
+If a postgresql container is linked, only the DB_HOST and DB_PORT settings are automatically retrieved using the linkage. You may still need to set other database connection parameters such as the DB_NAME, DB_USER, DB_PASS and so on.
+
+To illustrate linking with a postgresql container, we will use the [sameersbn/postgresql](https://github.com/sameersbn/docker-postgresql) image. When using postgresql image in production you should mount a volume for the postgresql data store. Please refer the [README](https://github.com/sameersbn/docker-postgresql/blob/master/README.md) of docker-postgresql for details.
+
+First, lets pull the postgresql image from the docker index.
+```bash
+docker pull sameersbn/postgresql:latest
+```
+
+For data persistence lets create a store for the postgresql and start the container.
+```bash
+mkdir -p /opt/postgresql/data
+docker run --name postgresql -d \
+  -v /opt/postgresql/data:/var/lib/postgresql \
+  sameersbn/postgresql:latest
+```
+
+You should now have the postgresql server running. The password for the postgres user can be found in the logs of the postgresql image.
+
+```bash
+docker logs postgresql
+```
+
+Now, lets login to the postgresql server and create a user and database for the GitLab application.
+
+```bash
+POSTGRESQL_IP=$(docker inspect postgresql | grep IPAddres | awk -F'"' '{print $4}')
+psql -U postgres -h ${POSTGRESQL_IP}
+```
+
+```sql
+CREATE USER gitlab_ci WITH PASSWORD 'password';
+CREATE DATABASE gitlab_ci_production;
+GRANT ALL PRIVILEGES ON DATABASE gitlab_ci_production to gitlab_ci;
+```
+
+Now that we have the database created for gitlab ci, lets install the database schema. This is done by starting the gitlab container with the **app:rake db:setup** command.
+
+**NOTE: The above setup is performed only for the first run**.
+
+```bash
+docker run -name gitlab-ci -i -t -rm --link postgresql:postgresql \
+  -e "GITLAB_URL=http://172.17.0.2" \
+  -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
+  -e "DB_NAME=gitlab_ci_production" \
+  sameersbn/gitlab-ci:latest app:rake db:setup
+```
+
+We are now ready to start the GitLab CI application.
+
+```bash
+docker run -name gitlab-ci -d --link postgresql:postgresql \
+  -e "GITLAB_URL=http://172.17.0.2" \
+  -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
+  -e "DB_NAME=gitlab_ci_production" \
   sameersbn/gitlab-ci:latest
 ```
 
