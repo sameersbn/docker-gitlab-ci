@@ -20,6 +20,7 @@
 - [Maintenance](#maintenance)
     - [SSH Login](#ssh-login)
 - [Upgrading](#upgrading)
+- [Issues](#issues)
 - [References](#references)
 
 # Introduction
@@ -428,7 +429,9 @@ docker run -name gitlab-ci -i -t -rm [OPTIONS] \
 docker run -name gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:latest
 ```
 
+# Issues
+Please report issue [here](https://github.com/sameersbn/docker-gitlab-ci/issues)
 
-## References
+# References
   * https://www.gitlab.com/gitlab-ci/
   * https://gitlab.com/gitlab-org/gitlab-ci/blob/master/README.md
