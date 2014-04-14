@@ -144,7 +144,7 @@ docker run --name=gitlab-ci -i -t --rm \
   sameersbn/gitlab-ci:latest app:rake db:setup
 ```
 
-**NOTE: This should be done only for the first run**.
+**NOTE: The above setup is performed only for the first run**.
 
 This will initialize the GitLab CI database. Now that the database is initialized, start the container normally.
 
@@ -237,7 +237,7 @@ docker run --name=gitlab-ci -i -t --rm \
   sameersbn/gitlab-ci:latest app:rake db:setup
 ```
 
-**NOTE: This should be done only for the first run**.
+**NOTE: The above setup is performed only for the first run**.
 
 This will initialize the GitLab CI database. Now that the database is initialized, start the container normally.
 
