@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- added support for linking with redis container.
 - use sameersbn/ubuntu as the base docker image
 - support linking to mysql and postgresql containers
 - added SMTP_AUTHENTICATION config option, defaults to :login

@@ -7,8 +7,8 @@ GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}
 GITLAB_CI_EMAIL=${GITLAB_CI_EMAIL:-gitlab@localhost}
 GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
 
-REDIS_HOST=${REDIS_HOST:-localhost}
-REDIS_PORT=${REDIS_PORT:-6379}
+REDIS_HOST=${REDIS_HOST:-}
+REDIS_PORT=${REDIS_PORT:-}
 
 UNICORN_WORKERS=${UNICORN_WORKERS:-2}
 UNICORN_TIMEOUT=${UNICORN_TIMEOUT:-60}
@@ -37,6 +37,16 @@ GITLAB_URL=${GITLAB_URL:-}
 	GITLAB_URL="http://${GITLAB_PORT_80_TCP_ADDR}"
 
 GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
+
+# is a redis container linked?
+if [ -n "${REDISIO_PORT_6379_TCP_ADDR}" ]; then
+	REDIS_HOST=${REDIS_HOST:-${REDISIO_PORT_6379_TCP_ADDR}}
+	REDIS_PORT=${REDIS_PORT:-${REDISIO_PORT_6379_TCP_PORT}}
+fi
+
+# fallback to using internal redis server
+REDIS_HOST=${REDIS_HOST:-localhost}
+REDIS_PORT=${REDIS_PORT:-6379}
 
 # is a mysql or postgresql database linked?
 # requires that the mysql or postgresql containers have exposed

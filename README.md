@@ -14,6 +14,10 @@
         - [PostgreSQL](#postgresql)
             - [External PostgreSQL Server](#external-postgresql-server)
             - [Linking to PostgreSQL Container](#linking-to-postgresql-container)
+    - [Redis](#redis)
+      - [Internal Redis Server](#internal-redis-server)
+      - [External Redis Server](#external-redis-server)
+      - [Linking to Redis Container](#linking-to-redis-container)
     - [Mail](#mail)
     - [Putting it all together](#putting-it-all-together)
     - [Available Configuration Parameters](#available-configuration-parameters)
@@ -309,6 +313,54 @@ docker run --name=gitlab-ci -d --link postgresql:postgresql \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
   -e "DB_NAME=gitlab_ci_production" \
   sameersbn/gitlab-ci:latest
+```
+
+## Redis
+
+### Internal Redis Server
+
+> **Warning**
+>
+> The internal redis server will soon be removed from the image.
+
+> Please use a linked [redis](#linking-to-redis-container) container
+> or a external [redis](#external-redis-server) server
+
+> You've been warned.
+
+GitLab CI uses the redis server for its key-value data store. The redis server connection details can be specified using environment variables. If not specified, the  starts a redis server internally, no additional configuration is required.
+
+### External Redis Server
+The image can be configured to use an external redis server instead of starting a redis server internally. The configuration should be specified using environment variables while starting the GitLab CI image.
+
+*Assuming that the redis server host is 192.168.1.100*
+
+```bash
+docker run --name=gitlab-ci -i -t --rm \
+  -e "REDIS_HOST=192.168.1.100" -e "REDIS_PORT=6379" \
+  sameersbn/gitlab-ci:latest
+```
+
+### Linking to Redis Container
+You can link this image with a redis container to satisfy GitLab CI's redis requirement. The alias of the redis server container should be set to **redisio** while linking with the GitLab image.
+
+To illustrate linking with a redis container, we will use the [sameersbn/redis](https://github.com/sameersbn/docker-redis) image. Please refer the [README](https://github.com/sameersbn/docker-redis/blob/master/README.md) of docker-redis for details.
+
+First, lets pull the redis image from the docker index.
+```bash
+docker pull sameersbn/redis:latest
+```
+
+Lets start the redis container
+```bash
+docker run --name=redis -d sameersbn/redis:latest
+```
+
+We are now ready to start the GitLab CI application.
+
+```bash
+docker run --name=gitlab-ci -d --link redis:redisio \
+  sameersbn/gitlab:latest
 ```
 
 ### Mail
