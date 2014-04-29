@@ -52,7 +52,7 @@ server {
 
   ## Strong SSL Security
   ## https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html
-  ssl_dhparam /home/gitlab_ci/data/certs/dhparam.pem;
+  ssl_dhparam {{SSL_DHPARAM_PATH}};
 
   access_log  /var/log/nginx/gitlab_ci_access.log;
   error_log   /var/log/nginx/gitlab_ci_error.log;

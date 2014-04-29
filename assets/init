@@ -10,6 +10,7 @@ GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
 
 SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-/home/gitlab_ci/data/certs/gitlab_ci.crt}
 SSL_KEY_PATH=${SSL_KEY_PATH:-/home/gitlab_ci/data/certs/gitlab_ci.key}
+SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-/home/gitlab_ci/data/certs/dhparam.pem}
 
 REDIS_HOST=${REDIS_HOST:-}
 REDIS_PORT=${REDIS_PORT:-}
@@ -132,6 +133,7 @@ sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/g' -i /etc/nginx/sites-availab
 sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /etc/nginx/sites-available/gitlab_ci
 sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
+sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 supervisorctl start nginx
 
 # start mysql server if ${DB_HOST} is localhost

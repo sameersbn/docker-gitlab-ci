@@ -425,6 +425,7 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_HTTPS_ONLY**: Configure access over plain http when GITLAB_CI_HTTPS is enabled. Should be set to false when using a load balancer. Defaults to true.
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to /home/gitlab_ci/data/certs/gitlab.crt
 - **SSL_KEY_PATH**: Location of the ssl private key. Defaults to /home/gitlab_ci/data/certs/gitlab.key
+- **SSL_DHPARAM_PATH**: Location of the dhparam file. Defaults to /home/gitlab_ci/data/certs/dhparam.pem
 - **REDIS_HOST**: The hostname of the redis server. Defaults to localhost
 - **REDIS_PORT**: The connection port of the redis server. Defaults to 6379.
 - **UNICORN_WORKERS**: The number of unicorn workers to start. Defaults to 2.
