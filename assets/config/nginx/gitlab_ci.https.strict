@@ -19,7 +19,7 @@ server {
   root /home/gitlab_ci/gitlab-ci/public;
 
   ssl on;
-  ssl_certificate /home/gitlab_ci/data/certs/gitlab_ci.crt;
+  ssl_certificate {{SSL_CERTIFICATE_PATH}};
   ssl_certificate_key /home/gitlab_ci/data/certs/gitlab_ci.key;
   ssl_protocols SSLv3 TLSv1 TLSv1.2;
 

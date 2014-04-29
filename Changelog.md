@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- added SSL_CERTIFICATE_PATH configuration option to specify path of ssl certificate
 - added GITLAB_CI_HTTPS_ONLY configuration option
 - added support for linking with redis container.
 - use sameersbn/ubuntu as the base docker image
