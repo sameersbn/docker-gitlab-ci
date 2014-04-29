@@ -26,5 +26,7 @@ ADD authorized_keys /root/.ssh/
 
 EXPOSE 80
 
+VOLUME ["/home/gitlab_ci/data"]
+
 ENTRYPOINT ["/app/init"]
 CMD ["app:start"]
