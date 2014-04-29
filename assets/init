@@ -106,7 +106,7 @@ if [ -d /home/gitlab_ci/data/config ]; then
 	[ -f gitlab-ci/smtp_settings.rb ]	&& sudo -u gitlab_ci -H cp gitlab-ci/smtp_settings.rb /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 fi
 
-sed 's/{{YOUR_SERVER_FQDN}}/localhost/' -i /etc/nginx/sites-available/gitlab_ci
+sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/' -i /etc/nginx/sites-available/gitlab_ci
 supervisorctl start nginx
 
 # start mysql server if ${DB_HOST} is localhost
