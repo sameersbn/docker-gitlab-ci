@@ -6,6 +6,7 @@
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
+    - [Data Store](#data-store)
     - [Database](#database)
         - [MySQL](#mysql)
             - [Internal MySQL Server](#internal-mysql-server)
@@ -97,6 +98,20 @@ You should now have GitLab CI ready for testing. If you want to use GitLab CI fo
 **PS:** You need to install [GitLab CI Runner](https://gitlab.com/gitlab-org/gitlab-ci-runner/blob/master/README.md) if you want to do anything worth while with the GitLab CI server. Please look up github / docker index service for runner containers.
 
 # Configuration
+
+## Data Store
+For storage of the application data, you should mount a volume at
+
+* /home/gitlab_ci/data
+
+Volumes can be mounted in docker by specifying the **'-v'** option in the docker run command.
+
+```bash
+mkdir -p /opt/gitlab-ci/data
+docker run --name=gitlab-ci -d \
+  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
+  sameersbn/gitlab-ci:latest
+```
 
 ## Database
 GitLab CI uses a database backend to store its data.
@@ -390,6 +405,7 @@ Please look up the [Available Configuration Parameters](#available-configuration
 
 ```bash
 docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
+  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   -v /opt/gitlab-ci/mysql:/var/lib/mysql \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "GITLAB_CI_HOST=gitlab-ci.local.host" \
@@ -403,6 +419,7 @@ If you are using an external mysql database
 
 ```bash
 docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
+  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   -e "DB_HOST=192.168.1.100" -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
   -e "GITLAB_URL=http://172.17.0.2" \
