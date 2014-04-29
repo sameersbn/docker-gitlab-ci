@@ -57,7 +57,8 @@ cp lib/support/init.d/gitlab_ci /etc/init.d/gitlab_ci
 # install logrotate configuration
 # cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
 
-# copy nginx configuration
+# disable default nginx configuration and enable gitlab's nginx configuration
+rm -f /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci
 
 # create the /var/run/sshd directory (required for sshd to start)
