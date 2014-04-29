@@ -2,7 +2,7 @@
 set -e
 
 GITLAB_CI_HOST=${GITLAB_CI_HOST:-localhost}
-GITLAB_CI_PORT=${GITLAB_CI_PORT:-80}
+GITLAB_CI_PORT=${GITLAB_CI_PORT:-}
 GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}
 GITLAB_CI_EMAIL=${GITLAB_CI_EMAIL:-gitlab@localhost}
 GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
@@ -70,6 +70,11 @@ case "${DB_TYPE}" in
 	mysql) DB_PORT=${DB_PORT:-3306} ;;
 	postgres) DB_PORT=${DB_PORT:-5432} ;;
 	*) echo "Unsupported database adapter. Available adapters are mysql and postgres." && exit 1 ;;
+esac
+
+case "${GITLAB_CI_HTTPS}" in
+	true) GITLAB_PORT=${GITLAB_PORT:-443} ;;
+	*) GITLAB_PORT=${GITLAB_PORT:-80} ;;
 esac
 
 # generate a password for root.

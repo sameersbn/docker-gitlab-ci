@@ -419,7 +419,7 @@ Below is the complete list of available options that can be used to customize yo
 
 - **GITLAB_URL**: Url of the GitLab server to allow connections from. No defaults. Automatically configured when a GitLab server is linked using docker links feature.
 - **GITLAB_CI_HOST**: The hostname of the GitLab CI server. Defaults to localhost.
-- **GITLAB_CI_PORT**: The port number of the GitLab CI server. Defaults to 80.
+- **GITLAB_CI_PORT**: The port number of the GitLab CI server. Defaults to 80 for plain http and 443 when https is enabled.
 - **GITLAB_CI_EMAIL**: The email address for the GitLab CI server. Defaults to gitlab@localhost.
 - **GITLAB_CI_SUPPORT**: The support email address for the GitLab CI server. Defaults to support@localhost.
 - **REDIS_HOST**: The hostname of the redis server. Defaults to localhost
