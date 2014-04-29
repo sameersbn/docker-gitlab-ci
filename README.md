@@ -422,6 +422,7 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_PORT**: The port number of the GitLab CI server. Defaults to 80 for plain http and 443 when https is enabled.
 - **GITLAB_CI_EMAIL**: The email address for the GitLab CI server. Defaults to gitlab@localhost.
 - **GITLAB_CI_SUPPORT**: The support email address for the GitLab CI server. Defaults to support@localhost.
+- **GITLAB_CI_HTTPS**: Set to true to enable https support, disabled by default.
 - **GITLAB_CI_HTTPS_ONLY**: Configure access over plain http when GITLAB_CI_HTTPS is enabled. Should be set to false when using a load balancer. Defaults to true.
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to /home/gitlab_ci/data/certs/gitlab.crt
 - **SSL_KEY_PATH**: Location of the ssl private key. Defaults to /home/gitlab_ci/data/certs/gitlab.key
