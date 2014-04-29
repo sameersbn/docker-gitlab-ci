@@ -422,6 +422,7 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_PORT**: The port number of the GitLab CI server. Defaults to 80 for plain http and 443 when https is enabled.
 - **GITLAB_CI_EMAIL**: The email address for the GitLab CI server. Defaults to gitlab@localhost.
 - **GITLAB_CI_SUPPORT**: The support email address for the GitLab CI server. Defaults to support@localhost.
+- **GITLAB_CI_HTTPS_ONLY**: Configure access over plain http when GITLAB_CI_HTTPS is enabled. Should be set to false when using a load balancer. Defaults to true.
 - **REDIS_HOST**: The hostname of the redis server. Defaults to localhost
 - **REDIS_PORT**: The connection port of the redis server. Defaults to 6379.
 - **UNICORN_WORKERS**: The number of unicorn workers to start. Defaults to 2.

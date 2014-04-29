@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- added GITLAB_CI_HTTPS_ONLY configuration option
 - added support for linking with redis container.
 - use sameersbn/ubuntu as the base docker image
 - support linking to mysql and postgresql containers

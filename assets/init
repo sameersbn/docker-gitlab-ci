@@ -4,6 +4,7 @@ set -e
 GITLAB_CI_HOST=${GITLAB_CI_HOST:-localhost}
 GITLAB_CI_PORT=${GITLAB_CI_PORT:-}
 GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}
+GITLAB_CI_HTTPS_ONLY=${GITLAB_CI_HTTPS_ONLY:-true}
 GITLAB_CI_EMAIL=${GITLAB_CI_EMAIL:-gitlab@localhost}
 GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
 
@@ -88,7 +89,12 @@ supervisorctl start sshd
 
 # copy configuration templates
 case "${GITLAB_CI_HTTPS}" in
-	true) cp /app/setup/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
+	true)
+		case "${GITLAB_CI_HTTPS_ONLY}" in
+			true) cp /app/setup/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
+			*) cp /app/setup/config/nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
+		esac
+		;;
 	*) cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
 esac
 
@@ -103,7 +109,12 @@ if [ -d /home/gitlab_ci/data/config ]; then
 	chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/data/config
 	cd /home/gitlab_ci/data/config
 	case "${GITLAB_CI_HTTPS}" in
-		true) [ -f nginx/gitlab_ci.https.strict ] && cp nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
+		true)
+			case "${GITLAB_CI_HTTPS_ONLY}" in
+				true) [ -f nginx/gitlab_ci.https.strict ] && cp nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
+				*) [ -f nginx/gitlab_ci.https.permissive ] && cp nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
+			esac
+			;;
 		*) [ -f nginx/gitlab_ci ] && cp nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
 	esac
 
@@ -114,7 +125,7 @@ if [ -d /home/gitlab_ci/data/config ]; then
 	[ -f gitlab-ci/smtp_settings.rb ]	&& sudo -u gitlab_ci -H cp gitlab-ci/smtp_settings.rb /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 fi
 
-sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/' -i /etc/nginx/sites-available/gitlab_ci
+sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/g' -i /etc/nginx/sites-available/gitlab_ci
 sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /etc/nginx/sites-available/gitlab_ci
 supervisorctl start nginx
 
