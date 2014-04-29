@@ -2,10 +2,15 @@
 set -e
 
 GITLAB_CI_HOST=${GITLAB_CI_HOST:-localhost}
-GITLAB_CI_PORT=${GITLAB_CI_PORT:-80}
+GITLAB_CI_PORT=${GITLAB_CI_PORT:-}
 GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}
+GITLAB_CI_HTTPS_ONLY=${GITLAB_CI_HTTPS_ONLY:-true}
 GITLAB_CI_EMAIL=${GITLAB_CI_EMAIL:-gitlab@localhost}
 GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
+
+SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-/home/gitlab_ci/data/certs/gitlab_ci.crt}
+SSL_KEY_PATH=${SSL_KEY_PATH:-/home/gitlab_ci/data/certs/gitlab_ci.key}
+SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-/home/gitlab_ci/data/certs/dhparam.pem}
 
 REDIS_HOST=${REDIS_HOST:-}
 REDIS_PORT=${REDIS_PORT:-}
@@ -72,6 +77,23 @@ case "${DB_TYPE}" in
 	*) echo "Unsupported database adapter. Available adapters are mysql and postgres." && exit 1 ;;
 esac
 
+if [ "${GITLAB_CI_HTTPS}" == "true" ]; then
+	# make sure the required files exist
+	if [ ! -f "${SSL_CERTIFICATE_PATH}" -o ! -f "${SSL_KEY_PATH}" -o ! -f "${SSL_DHPARAM_PATH}" ]; then
+		echo ""
+		echo "  WARNING: "
+		echo "    Files required for HTTPS support cannot be found"
+		echo "    Disabling https support."
+		echo ""
+		GITLAB_CI_HTTPS="false"
+	fi
+fi
+
+case "${GITLAB_CI_HTTPS}" in
+	true) GITLAB_PORT=${GITLAB_PORT:-443} ;;
+	*) GITLAB_PORT=${GITLAB_PORT:-80} ;;
+esac
+
 # generate a password for root.
 ROOT_PASSWORD=$(pwgen -c -n -1 12)
 echo "root:$ROOT_PASSWORD" | chpasswd
@@ -81,8 +103,17 @@ echo User: root Password: $ROOT_PASSWORD
 /usr/bin/supervisord
 supervisorctl start sshd
 
-# copy default configurations
-cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+# copy configuration templates
+case "${GITLAB_CI_HTTPS}" in
+	true)
+		case "${GITLAB_CI_HTTPS_ONLY}" in
+			true) cp /app/setup/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
+			*) cp /app/setup/config/nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
+		esac
+		;;
+	*) cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
+esac
+
 sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/application.yml /home/gitlab_ci/gitlab-ci/config/application.yml
 sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/resque.yml /home/gitlab_ci/gitlab-ci/config/resque.yml
 sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/database.yml /home/gitlab_ci/gitlab-ci/config/database.yml
@@ -93,7 +124,16 @@ sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/smtp_settings.rb /home/gitla
 if [ -d /home/gitlab_ci/data/config ]; then
 	chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/data/config
 	cd /home/gitlab_ci/data/config
-	[ -f nginx/gitlab ]								&& cp nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+	case "${GITLAB_CI_HTTPS}" in
+		true)
+			case "${GITLAB_CI_HTTPS_ONLY}" in
+				true) [ -f nginx/gitlab_ci.https.strict ] && cp nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
+				*) [ -f nginx/gitlab_ci.https.permissive ] && cp nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
+			esac
+			;;
+		*) [ -f nginx/gitlab_ci ] && cp nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
+	esac
+
 	[ -f gitlab-ci/application.yml ]	&& sudo -u gitlab_ci -H cp gitlab-ci/application.yml 	/home/gitlab_ci/gitlab-ci/config/application.yml
 	[ -f gitlab-ci/resque.yml ]				&& sudo -u gitlab_ci -H cp gitlab-ci/resque.yml 			/home/gitlab_ci/gitlab-ci/config/resque.yml
 	[ -f gitlab-ci/database.yml ]			&& sudo -u gitlab_ci -H cp gitlab-ci/database.yml 		/home/gitlab_ci/gitlab-ci/config/database.yml
@@ -101,7 +141,11 @@ if [ -d /home/gitlab_ci/data/config ]; then
 	[ -f gitlab-ci/smtp_settings.rb ]	&& sudo -u gitlab_ci -H cp gitlab-ci/smtp_settings.rb /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 fi
 
-sed 's/{{YOUR_SERVER_FQDN}}/localhost/' -i /etc/nginx/sites-available/gitlab_ci
+sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/g' -i /etc/nginx/sites-available/gitlab_ci
+sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /etc/nginx/sites-available/gitlab_ci
+sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
+sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
+sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 supervisorctl start nginx
 
 # start mysql server if ${DB_HOST} is localhost

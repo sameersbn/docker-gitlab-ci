@@ -1,6 +1,10 @@
 # Changelog
 
 **latest**
+- added SSL_DHPARAM_PATH configuration option to specify path of dhparam.pem file.
+- added SSL_KEY_PATH configuration option to specify path of ssl private key
+- added SSL_CERTIFICATE_PATH configuration option to specify path of ssl certificate
+- added GITLAB_CI_HTTPS_ONLY configuration option
 - added support for linking with redis container.
 - use sameersbn/ubuntu as the base docker image
 - support linking to mysql and postgresql containers
