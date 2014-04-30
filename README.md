@@ -27,6 +27,7 @@
       - [Enabling HTTPS support](#enabling-https-support)
       - [Using HTTPS with a load balancer](#using-https-with-a-load-balancer)
       - [Establishing trust with your server](#establishing-trust-with-your-server)
+      - [Installing Trusted SSL Server Certificates](#installing-trusted-ssl-server-certificates)
     - [Putting it all together](#putting-it-all-together)
     - [Available Configuration Parameters](#available-configuration-parameters)
 - [Maintenance](#maintenance)
@@ -501,6 +502,15 @@ Again, this is a client side configuration which means that everyone who is goin
 You can do the same at the web browser. Instructions for installing the root certificate for firefox can be found [here](http://portal.threatpulse.com/docs/sol/Content/03Solutions/ManagePolicy/SSL/ssl_firefox_cert_ta.htm). You will find similar options chrome, just make sure you install the certificate under the authorities tab of the certificate manager dialog.
 
 There you have it, thats all there is to it.
+
+#### Installing Trusted SSL Server Certificates
+If your GitLab server is using self-signed SSL certificates then you should make sure the GitLab server certificate is trusted on the GitLab CI server for them to be able to talk to each other.
+
+The default path image is configured to look for the trusted SSL certificates is at /home/gitlab_ci/data/certs/ca.crt, this can however be changed using the CA_CERTIFICATES_PATH configuration option.
+
+Copy the ca.crt file into the certs directory on the [datastore](#data-store). The ca.crt file should contain the root certificates of all the servers you want to trust. With respect to GitLab, this will be the contents of the gitlab.crt file as described in the [README](https://github.com/sameersbn/docker-gitlab/blob/master/README.md#ssl) of the [docker-gitlab](https://github.com/sameersbn/docker-gitlab) container.
+
+By default, our own server certificate [gitlab_ci.crt](#generation-of-self-signed-certificates) is added to the trusted certificates list.
 
 ### Putting it all together
 
