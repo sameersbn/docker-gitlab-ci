@@ -481,6 +481,8 @@ For this to work, you should set the GITLAB_CI_HTTPS_ONLY option to false so tha
 
 Note that when the GITLAB_CI_HTTPS_ONLY is disabled, the application does not perform the automatic http to https redirection and this functionality has to be configured at the load balancer which is also described in the link above. Unfortunately hipache does not come with an option to perform http to https redirection, so the only choice you really have is to switch to using haproxy.
 
+P.S. I have noticed problems in issuing builds from the GitLab interface when automatic http to https redirection is enabled on haproxy.
+
 In summation, the docker command would look something like this:
 ```bash
 docker run --name=gitlab-ci -d \
