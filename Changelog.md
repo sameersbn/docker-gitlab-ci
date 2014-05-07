@@ -1,6 +1,7 @@
 # Changelog
 
-**latest**
+**5.0.0**
+- upgrade to gitlab-ci 5.0.0
 - upgrade sameersbn/ubuntu:14.04.20140508 base image
 - added CA_CERTIFICATES_PATH configuration option to specify trusted root certificates.
 - added SSL_DHPARAM_PATH configuration option to specify path of dhparam.pem file.

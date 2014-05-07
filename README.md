@@ -42,7 +42,7 @@
 Dockerfile to build a GitLab CI container image.
 
 ## Version
-Current Version: 4.3.0
+Current Version: 5.0.0
 
 # Supported Web Browsers
 
@@ -60,10 +60,10 @@ Pull the latest version of the image from the docker index. This is the recommen
 docker pull sameersbn/gitlab-ci:latest
 ```
 
-Starting from GitLab CI version 4.3.0, You can pull a particular version of GitLab CI by specifying the version number. For example,
+Starting from GitLab CI version 5.0.0, You can pull a particular version of GitLab CI by specifying the version number. For example,
 
 ```bash
-docker pull sameersbn/gitlab-ci:4.3.0
+docker pull sameersbn/gitlab-ci:5.0.0
 ```
 
 Alternately you can build the image yourself.
