@@ -272,9 +272,6 @@ appStart () {
 	# start the gitlab application
 	/etc/init.d/gitlab_ci start
 
-	# kickstart the rails application
-	curl -s --retry 5 "http://localhost" -o /dev/null
-
 	# watch the access logs
 	tail -F /var/log/nginx/gitlab_ci_access.log
 }
