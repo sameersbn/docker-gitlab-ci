@@ -574,7 +574,7 @@ Below is the complete list of available options that can be used to customize yo
 - **SMTP_USER**: SMTP username.
 - **SMTP_PASS**: SMTP password.
 - **SMTP_STARTTLS**: Enable STARTTLS. Defaults to true.
-- **SMTP_AUTHENTICATION**: SMTP authentication mode. Defaults to :login.
+- **SMTP_AUTHENTICATION**: Specify the SMTP authentication method. Defaults to :login if SMTP_USER is set.
 
 # Maintenance
 

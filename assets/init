@@ -35,7 +35,8 @@ SMTP_PORT=${SMTP_PORT:-587}
 SMTP_USER=${SMTP_USER:-}
 SMTP_PASS=${SMTP_PASS:-}
 SMTP_STARTTLS=${SMTP_STARTTLS:-true}
-SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-:login}
+[ -n "${SMTP_USER}" ] && \
+	SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-:login}
 
 GITLAB_URL=${GITLAB_URL:-}
 
@@ -250,7 +251,11 @@ esac
 
 sudo -u gitlab_ci -H sed 's/{{SMTP_DOMAIN}}/'"${SMTP_DOMAIN}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 sudo -u gitlab_ci -H sed 's/{{SMTP_STARTTLS}}/'"${SMTP_STARTTLS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+
+case "${SMTP_AUTHENTICATION}" in
+	"") sudo -u gitlab_ci -H sed '/{{SMTP_AUTHENTICATION}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+	*) sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+esac
 
 # take ownership of /home/gitlab_ci/data
 chown gitlab_ci:gitlab_ci /home/gitlab_ci/data
