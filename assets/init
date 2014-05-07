@@ -237,8 +237,17 @@ sudo -u gitlab_ci -H sed 's/{{UNICORN_TIMEOUT}}/'"${UNICORN_TIMEOUT}"'/' -i /hom
 # configure mail delivery
 sudo -u gitlab_ci -H sed 's/{{SMTP_HOST}}/'"${SMTP_HOST}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 sudo -u gitlab_ci -H sed 's/{{SMTP_PORT}}/'"${SMTP_PORT}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'"${SMTP_PASS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+
+case "${SMTP_USER}" in
+	"") sudo -u gitlab_ci -H sed '/{{SMTP_USER}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+	*) sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+esac
+
+case "${SMTP_PASS}" in
+	"") sudo -u gitlab_ci -H sed '/{{SMTP_PASS}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+	*) sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'"${SMTP_PASS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+esac
+
 sudo -u gitlab_ci -H sed 's/{{SMTP_DOMAIN}}/'"${SMTP_DOMAIN}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 sudo -u gitlab_ci -H sed 's/{{SMTP_STARTTLS}}/'"${SMTP_STARTTLS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
