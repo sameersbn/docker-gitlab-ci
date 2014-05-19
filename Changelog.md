@@ -1,5 +1,8 @@
 # Changelog
 
+**latest**
+- upgrade to gitlab-ci 5.0.1
+
 **5.0.0**
 - upgrade to gitlab-ci 5.0.0
 - upgrade sameersbn/ubuntu:14.04.20140508 base image
