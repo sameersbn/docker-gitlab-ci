@@ -82,14 +82,14 @@ You need to provide the URL of the GitLab server while running GitLab CI using t
 ```bash
 docker run --name=gitlab-ci -d \
   -e "GITLAB_URL=http://172.17.0.2" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 GITLAB_CI_IP=$(docker inspect gitlab-ci | grep IPAddres | awk -F'"' '{print $4}')
 ```
 
 Alternately, if the GitLab and GitLab CI servers are running on the same host, you can take advantage of docker links. Lets consider that the GitLab server is running on the same host and has the name **"gitlab"**, then using docker links:
 
 ```bash
-docker run --name=gitlab-ci -d -link gitlab:gitlab sameersbn/gitlab-ci:latest
+docker run --name=gitlab-ci -d -link gitlab:gitlab sameersbn/gitlab-ci:5.0.1
 GITLAB_CI_IP=$(docker inspect gitlab-ci | grep IPAddres | awk -F'"' '{print $4}')
 ```
 
@@ -118,7 +118,7 @@ Volumes can be mounted in docker by specifying the **'-v'** option in the docker
 mkdir -p /opt/gitlab-ci/data
 docker run --name=gitlab-ci -d \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 ## Database
@@ -145,7 +145,7 @@ This docker image is configured to use a MySQL database backend. The database co
 mkdir /opt/gitlab-ci/mysql
 docker run --name=gitlab-ci -d \
   -e "GITLAB_URL=http://172.17.0.2" \
-  -v /opt/gitlab-ci/mysql:/var/lib/mysql sameersbn/gitlab-ci:latest
+  -v /opt/gitlab-ci/mysql:/var/lib/mysql sameersbn/gitlab-ci:5.0.1
 ```
 
 This will make sure that the data stored in the database is not lost when the image is stopped and started again.
@@ -170,7 +170,7 @@ docker run --name=gitlab-ci -i -t --rm \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_HOST=192.168.1.100" -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
-  sameersbn/gitlab-ci:latest app:rake db:setup
+  sameersbn/gitlab-ci:5.0.1 app:rake db:setup
 ```
 
 **NOTE: The above setup is performed only for the first run**.
@@ -182,7 +182,7 @@ docker run --name=gitlab-ci -d \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_HOST=192.168.1.100" -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 #### Linking to MySQL Container
@@ -227,7 +227,7 @@ docker run --name=gitlab-ci -i -t --rm --link mysql:mysql \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
   -e "DB_NAME=gitlab_ci_production" \
-  sameersbn/gitlab-ci:latest app:rake db:setup
+  sameersbn/gitlab-ci:5.0.1 app:rake db:setup
 ```
 
 **NOTE: The above setup is performed only for the first run**.
@@ -239,7 +239,7 @@ docker run --name=gitlab-ci -d --link mysql:mysql \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
   -e "DB_NAME=gitlab_ci_production" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 ### PostgreSQL
@@ -263,7 +263,7 @@ docker run --name=gitlab-ci -i -t --rm \
   -e "DB_TYPE=postgres" -e "DB_HOST=192.168.1.100" \
   -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
-  sameersbn/gitlab-ci:latest app:rake db:setup
+  sameersbn/gitlab-ci:5.0.1 app:rake db:setup
 ```
 
 **NOTE: The above setup is performed only for the first run**.
@@ -276,7 +276,7 @@ docker run --name=gitlab-ci -d \
   -e "DB_TYPE=postgres" -e "DB_HOST=192.168.1.100" \
   -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 #### Linking to PostgreSQL Container
@@ -325,7 +325,7 @@ docker run --name=gitlab-ci -i -t --rm --link postgresql:postgresql \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
   -e "DB_NAME=gitlab_ci_production" \
-  sameersbn/gitlab-ci:latest app:rake db:setup
+  sameersbn/gitlab-ci:5.0.1 app:rake db:setup
 ```
 
 **NOTE: The above setup is performed only for the first run**.
@@ -337,7 +337,7 @@ docker run --name=gitlab-ci -d --link postgresql:postgresql \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
   -e "DB_NAME=gitlab_ci_production" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 ## Redis
@@ -363,7 +363,7 @@ The image can be configured to use an external redis server instead of starting 
 ```bash
 docker run --name=gitlab-ci -i -t --rm \
   -e "REDIS_HOST=192.168.1.100" -e "REDIS_PORT=6379" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 ### Linking to Redis Container
@@ -404,7 +404,7 @@ The following environment variables need to be specified to get mail support to 
 ```bash
 docker run --name=gitlab-ci -d \
   -e "SMTP_USER=USER@gmail.com" -e "SMTP_PASS=PASSWORD" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 Please look up the [Available Configuration Parameters](#available-configuration-parameters) section for all available SMTP configuration options.
@@ -469,7 +469,7 @@ HTTPS support can be enabled by setting the GITLAB_CI_HTTPS option to true.
 docker run --name=gitlab-ci -d \
   -e "GITLAB_CI_HTTPS=true" \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 In this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. However, this is not optimal when using a load balancer.
@@ -489,7 +489,7 @@ docker run --name=gitlab-ci -d \
   -e "GITLAB_CI_HTTPS=true" \
   -e "GITLAB_CI_HTTPS_ONLY=false" \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 #### Establishing trust with your server
@@ -525,7 +525,7 @@ docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
   -e "GITLAB_CI_EMAIL=gitlab@local.host" \
   -e "GITLAB_CI_SUPPORT=support@local.host" \
   -e "SMTP_USER=USER@gmail.com" -e "SMTP_PASS=PASSWORD" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 If you are using an external mysql database
@@ -540,7 +540,7 @@ docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
   -e "GITLAB_CI_EMAIL=gitlab@local.host" \
   -e "GITLAB_CI_SUPPORT=support@local.host" \
   -e "SMTP_USER=USER@gmail.com" -e "SMTP_PASS=PASSWORD" \
-  sameersbn/gitlab-ci:latest
+  sameersbn/gitlab-ci:5.0.1
 ```
 
 ### Available Configuration Parameters
@@ -602,20 +602,20 @@ docker stop gitlab-ci
 - **Step 2**: Update the docker image.
 
 ```bash
-docker pull sameersbn/gitlab-ci:latest
+docker pull sameersbn/gitlab-ci:5.0.1
 ```
 
 - **Step 3**: Migrate the database.
 
 ```bash
 docker run --name=gitlab-ci -i -t --rm [OPTIONS] \
-  sameersbn/gitlab-ci:latest app:rake db:migrate
+  sameersbn/gitlab-ci:5.0.1 app:rake db:migrate
 ```
 
 - **Step 4**: Start the image
 
 ```bash
-docker run --name=gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:latest
+docker run --name=gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:5.0.1
 ```
 
 # References
