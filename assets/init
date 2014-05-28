@@ -230,8 +230,8 @@ sudo -u gitlab_ci -H sed 's/{{DB_PASS}}/'"${DB_PASS}"'/' -i /home/gitlab_ci/gitl
 sudo -u gitlab_ci -H sed 's/{{DB_POOL}}/'"${DB_POOL}"'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
 
 # configure redis
-sudo -u gitlab_ci -H sed 's/{{REDIS_HOST}}/'"${REDIS_HOST}"'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
-sudo -u gitlab_ci -H sed 's/{{REDIS_PORT}}/'"${REDIS_PORT}"'/' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
+sudo -u gitlab_ci -H sed 's/{{REDIS_HOST}}/'"${REDIS_HOST}"'/g' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
+sudo -u gitlab_ci -H sed 's/{{REDIS_PORT}}/'"${REDIS_PORT}"'/g' -i /home/gitlab_ci/gitlab-ci/config/resque.yml
 
 # configure unicorn workers
 sudo -u gitlab_ci -H sed 's/{{UNICORN_WORKERS}}/'"${UNICORN_WORKERS}"'/' -i /home/gitlab_ci/gitlab-ci/config/unicorn.rb
