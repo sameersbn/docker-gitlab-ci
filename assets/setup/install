@@ -34,16 +34,12 @@ chmod -R u+rwX log tmp
 # create production log
 sudo -u gitlab_ci -H touch log/production.log
 
-# install gems required by gitlab
+# install gems required by gitlab-ci, use cache if available
 if [ -d "/app/setup/cache" ]; then
-  # offline gem installation
   mv /app/setup/cache vendor/
   chown -R gitlab_ci:gitlab_ci vendor/cache
-  sudo -u gitlab_ci -H bundle install --local --deployment --without development test
-else
-  # online gem installation
-  sudo -u gitlab_ci -H bundle install --deployment --without development test
 fi
+sudo -u gitlab_ci -H bundle install --deployment --without development test
 
 # install cronjob
 sudo -u gitlab_ci -H bundle exec whenever -w RAILS_ENV=production
