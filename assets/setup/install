@@ -42,7 +42,7 @@ fi
 sudo -u gitlab_ci -H bundle install --deployment --without development test
 
 # install cronjob
-sudo -u gitlab_ci -H bundle exec whenever -w RAILS_ENV=production
+bundle exec whenever -w -u gitlab_ci RAILS_ENV=production
 
 # make sure everything in /home/gitlab_ci is owned by the gitlab_ci user
 chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/
