@@ -93,9 +93,6 @@ echo User: root Password: $ROOT_PASSWORD
 # start supervisord
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
-echo "Starting openssh server..."
-supervisorctl start sshd >/dev/null
-
 # copy configuration templates
 case "${GITLAB_CI_HTTPS}" in
 	true)
