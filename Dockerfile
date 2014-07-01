@@ -1,4 +1,4 @@
-FROM sameersbn/ubuntu:14.04.20140519
+FROM sameersbn/ubuntu:12.04.20140628
 MAINTAINER sameer@damagehead.com
 
 RUN add-apt-repository -y ppa:git-core/ppa && \
