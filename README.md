@@ -546,6 +546,8 @@ docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
 
 ### Available Configuration Parameters
 
+*Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command.*
+
 Below is the complete list of available options that can be used to customize your GitLab CI installation.
 
 - **GITLAB_URL**: Url of the GitLab server to allow connections from. No defaults. Automatically configured when a GitLab server is linked using docker links feature.
