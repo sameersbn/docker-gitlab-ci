@@ -262,6 +262,16 @@ appStart () {
 		sudo -u gitlab_ci -H bundle exec rake db:setup RAILS_ENV=production
 	fi
 
+	# migrate database if the gitlab-ci version has changed.
+	CURRENT_VERSION=
+	GITLAB_CI_VERSION=$(cat VERSION)
+	[ -f /home/gitlab_ci/data/VERSION ] && CURRENT_VERSION=$(cat /home/gitlab_ci/data/VERSION)
+	if [ "${GITLAB_CI_VERSION}" != "${CURRENT_VERSION}" ]; then
+		echo "Migrating database..."
+		sudo -u gitlab_ci -H bundle exec rake db:migrate RAILS_ENV=production 2>/dev/null
+		sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > /home/gitlab_ci/data/VERSION
+	fi
+
 	echo "Starting nginx..."
 	supervisorctl start nginx >/dev/null
 
