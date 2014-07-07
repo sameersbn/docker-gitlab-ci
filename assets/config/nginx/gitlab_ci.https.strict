@@ -14,7 +14,7 @@ server {
 }
 
 server {
-  listen *:443 default_server ssl;
+  listen 443 ssl spdy;
   server_name {{YOUR_SERVER_FQDN}};
   root /home/gitlab_ci/gitlab-ci/public;
 

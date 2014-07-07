@@ -8,7 +8,7 @@ upstream gitlab_ci {
 
 server {
   listen 80;
-  listen *:443 default_server ssl;
+  listen *:443 default_server ssl spdy;
   server_name {{YOUR_SERVER_FQDN}};
   root /home/gitlab_ci/gitlab-ci/public;
 
