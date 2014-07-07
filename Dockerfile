@@ -3,6 +3,7 @@ MAINTAINER sameer@damagehead.com
 
 RUN add-apt-repository -y ppa:git-core/ppa && \
 		add-apt-repository -y ppa:brightbox/ruby-ng && \
+		add-apt-repository -y ppa:nginx/stable && \
 		apt-get update && \
 		apt-get install -y build-essential checkinstall postgresql-client \
 			nginx git-core mysql-server redis-server python2.7 python-docutils \
