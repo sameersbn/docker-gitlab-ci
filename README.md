@@ -585,16 +585,16 @@ Below is the complete list of available options that can be used to customize yo
 
 To upgrade to newer GitLab CI releases, simply follow this 4 step upgrade procedure.
 
-- **Step 1**: Stop the currently running image
-
-```bash
-docker stop gitlab-ci
-```
-
-- **Step 2**: Update the docker image.
+- **Step 1**: Update the docker image.
 
 ```bash
 docker pull sameersbn/gitlab-ci:5.0.1
+```
+
+- **Step 2**: Stop the currently running image
+
+```bash
+docker stop gitlab-ci
 ```
 
 - **Step 3**: Migrate the database.
