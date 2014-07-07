@@ -143,9 +143,6 @@ sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/site
 sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 
-echo "Starting nginx..."
-supervisorctl start nginx >/dev/null
-
 if [ -f "${SSL_CERTIFICATE_PATH}" -o -f "${CA_CERTIFICATES_PATH}" ]; then
 	echo "Updating CA certificates..."
 	[ -f "${SSL_CERTIFICATE_PATH}" ] && \
@@ -264,6 +261,9 @@ chown gitlab_ci:gitlab_ci /home/gitlab_ci/data
 cd /home/gitlab_ci/gitlab-ci/
 
 appStart () {
+	echo "Starting nginx..."
+	supervisorctl start nginx >/dev/null
+
 	echo "Starting gitlab-ci server..."
 	# reset the database if the --db-init switch was given.
 	if [ "$DB_INIT" == "yes" ]; then
