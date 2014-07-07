@@ -583,7 +583,7 @@ Below is the complete list of available options that can be used to customize yo
 
 # Upgrading
 
-To upgrade to newer GitLab CI releases, simply follow this 4 step upgrade procedure.
+To upgrade to newer GitLab CI releases, simply follow this 3 step upgrade procedure.
 
 - **Step 1**: Update the docker image.
 
@@ -597,14 +597,7 @@ docker pull sameersbn/gitlab-ci:5.0.1
 docker stop gitlab-ci
 ```
 
-- **Step 3**: Migrate the database.
-
-```bash
-docker run --name=gitlab-ci -i -t --rm [OPTIONS] \
-  sameersbn/gitlab-ci:5.0.1 app:rake db:migrate
-```
-
-- **Step 4**: Start the image
+- **Step 3**: Start the image
 
 ```bash
 docker run --name=gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:5.0.1
