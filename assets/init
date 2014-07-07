@@ -273,6 +273,10 @@ appStart () {
 	echo "Starting nginx..."
 	supervisorctl start nginx >/dev/null
 
+	# remove stale unicorn and sidekiq pid's if they exist.
+	rm -rf /home/gitlab_ci/gitlab-ci/tmp/pids/unicorn.pid
+	rm -rf /home/gitlab_ci/gitlab-ci/tmp/pids/sidekiq.pid
+
 	# start the gitlab application
 	/etc/init.d/gitlab_ci start
 
