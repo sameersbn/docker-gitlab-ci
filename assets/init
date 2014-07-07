@@ -256,8 +256,6 @@ chown gitlab_ci:gitlab_ci /home/gitlab_ci/data
 cd /home/gitlab_ci/gitlab-ci/
 
 appStart () {
-	echo "Starting gitlab-ci server..."
-	# reset the database if the --db-init switch was given.
 	if [ "$DB_INIT" == "yes" ]; then
 		sudo -u gitlab_ci -H bundle exec rake db:setup RAILS_ENV=production
 	fi
