@@ -85,11 +85,6 @@ case "${GITLAB_CI_HTTPS}" in
 	*) GITLAB_CI_PORT=${GITLAB_CI_PORT:-80} ;;
 esac
 
-# generate a password for root.
-ROOT_PASSWORD=$(pwgen -c -n -1 12)
-echo "root:$ROOT_PASSWORD" | chpasswd
-echo User: root Password: $ROOT_PASSWORD
-
 # start supervisord
 /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 
