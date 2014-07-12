@@ -591,10 +591,11 @@ To upgrade to newer GitLab CI releases, simply follow this 3 step upgrade proced
 docker pull sameersbn/gitlab-ci:5.0.1
 ```
 
-- **Step 2**: Stop the currently running image
+- **Step 2**: Stop and remove the currently running image
 
 ```bash
 docker stop gitlab-ci
+docker rm gitlab-ci
 ```
 
 - **Step 3**: Start the image
