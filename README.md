@@ -165,7 +165,7 @@ To make sure the database is initialized start the container with **app:rake db:
 *Assuming that the mysql server host is 192.168.1.100*
 
 ```bash
-docker run --name=gitlab-ci -i -t --rm \
+docker run --name=gitlab-ci -it --rm \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_HOST=192.168.1.100" -e "DB_NAME=gitlab_ci_production" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
@@ -222,7 +222,7 @@ FLUSH PRIVILEGES;
 Now that we have the database created for GitLab CI, lets install the database schema. This is done by starting the gitlab container with the **app:rake db:setup** command.
 
 ```bash
-docker run --name=gitlab-ci -i -t --rm --link mysql:mysql \
+docker run --name=gitlab-ci -it --rm --link mysql:mysql \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
   -e "DB_NAME=gitlab_ci_production" \
@@ -257,7 +257,7 @@ To make sure the database is initialized start the container with **app:rake db:
 *Assuming that the PostgreSQL server host is 192.168.1.100*
 
 ```bash
-docker run --name=gitlab-ci -i -t --rm \
+docker run --name=gitlab-ci -it --rm \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_TYPE=postgres" -e "DB_HOST=192.168.1.100" \
   -e "DB_NAME=gitlab_ci_production" \
@@ -320,7 +320,7 @@ GRANT ALL PRIVILEGES ON DATABASE gitlab_ci_production to gitlab_ci;
 Now that we have the database created for gitlab ci, lets install the database schema. This is done by starting the gitlab container with the **app:rake db:setup** command.
 
 ```bash
-docker run --name=gitlab-ci -i -t --rm --link postgresql:postgresql \
+docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
   -e "GITLAB_URL=http://172.17.0.2" \
   -e "DB_USER=gitlab_ci" -e "DB_PASS=password" \
   -e "DB_NAME=gitlab_ci_production" \
@@ -360,7 +360,7 @@ The image can be configured to use an external redis server instead of starting 
 *Assuming that the redis server host is 192.168.1.100*
 
 ```bash
-docker run --name=gitlab-ci -i -t --rm \
+docker run --name=gitlab-ci -it --rm \
   -e "REDIS_HOST=192.168.1.100" -e "REDIS_PORT=6379" \
   sameersbn/gitlab-ci:5.0.1
 ```
