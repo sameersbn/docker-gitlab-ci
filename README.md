@@ -192,11 +192,13 @@ If a mysql container is linked, only the DB_HOST and DB_PORT settings are automa
 To illustrate linking with a mysql container, we will use the [sameersbn/mysql](https://github.com/sameersbn/docker-mysql) image. When using docker-mysql in production you should mount a volume for the mysql data store. Please refer the [README](https://github.com/sameersbn/docker-mysql/blob/master/README.md) of docker-mysql for details.
 
 First, lets pull the mysql image from the docker index.
+
 ```bash
 docker pull sameersbn/mysql:latest
 ```
 
 For data persistence lets create a store for the mysql and start the container.
+
 ```bash
 mkdir -p /opt/mysql/data
 docker run --name mysql -d \
@@ -286,11 +288,13 @@ If a postgresql container is linked, only the DB_HOST and DB_PORT settings are a
 To illustrate linking with a postgresql container, we will use the [sameersbn/postgresql](https://github.com/sameersbn/docker-postgresql) image. When using postgresql image in production you should mount a volume for the postgresql data store. Please refer the [README](https://github.com/sameersbn/docker-postgresql/blob/master/README.md) of docker-postgresql for details.
 
 First, lets pull the postgresql image from the docker index.
+
 ```bash
 docker pull sameersbn/postgresql:latest
 ```
 
 For data persistence lets create a store for the postgresql and start the container.
+
 ```bash
 mkdir -p /opt/postgresql/data
 docker run --name postgresql -d \
@@ -371,11 +375,13 @@ You can link this image with a redis container to satisfy GitLab CI's redis requ
 To illustrate linking with a redis container, we will use the [sameersbn/redis](https://github.com/sameersbn/docker-redis) image. Please refer the [README](https://github.com/sameersbn/docker-redis/blob/master/README.md) of docker-redis for details.
 
 First, lets pull the redis image from the docker index.
+
 ```bash
 docker pull sameersbn/redis:latest
 ```
 
 Lets start the redis container
+
 ```bash
 docker run --name=redis -d sameersbn/redis:latest
 ```
@@ -423,16 +429,19 @@ Jump to the [Strengthening the server security](#strengthening-the-server-securi
 Generation of self-signed SSL certificates involves a simple 3 step procedure.
 
 **STEP 1**: Create the server private key
+
 ```bash
 openssl genrsa -out gitlab_ci.key 2048
 ```
 
 **STEP 2**: Create the certificate signing request (CSR)
+
 ```bash
 openssl req -new -key gitlab_ci.key -out gitlab_ci.csr
 ```
 
 **STEP 3**: Sign the certificate using the private key and CSR
+
 ```bash
 openssl x509 -req -days 365 -in gitlab_ci.csr -signkey gitlab_ci.key -out gitlab_ci.crt
 ```
@@ -485,6 +494,7 @@ Note that when the GITLAB_CI_HTTPS_ONLY is disabled, the application does not pe
 P.S. I have noticed problems in issuing builds from the GitLab interface when automatic http to https redirection is enabled on haproxy.
 
 In summation, the docker command would look something like this:
+
 ```bash
 docker run --name=gitlab-ci -d \
   -e 'GITLAB_CI_HTTPS=true' \
@@ -498,7 +508,7 @@ This section deals will self-signed ssl certificates. If you are using CA certif
 
 This section is more of a client side configuration so as to add a level of confidence at the client to be 100 percent sure they are communicating with whom they think they.
 
-This is simply done by adding the servers certificate into their list of trusted ceritficates. On ubuntu, this is done by appending the contents of the gitlab.crt file to the ```/etc/ssl/certs/ca-certificates.crt``` file.
+This is simply done by adding the servers certificate into their list of trusted ceritficates. On ubuntu, this is done by appending the contents of the gitlab.crt file to the `/etc/ssl/certs/ca-certificates.crt` file.
 
 Again, this is a client side configuration which means that everyone who is going to communicate with the server should perform this configuration on their machine. In short, distribute the gitlab_ci.crt file among your developers and ask them to add it to their list of trusted ssl certificates.
 
