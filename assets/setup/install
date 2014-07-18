@@ -9,14 +9,10 @@ adduser --disabled-login --gecos 'GitLab CI' gitlab_ci
 # create the data store
 sudo -u gitlab_ci -H mkdir -p /home/gitlab_ci/data
 
-# install gitlab-ci
-sudo -u gitlab_ci -H mkdir -p /home/gitlab_ci/gitlab-ci
-if [ -f /app/setup/gitlab-ci-${GITLAB_CI_VERSION}.tar.gz ]; then
-  sudo -u gitlab_ci -H tar -zvxf /app/setup/gitlab-ci-${GITLAB_CI_VERSION}.tar.gz --strip=1 -C /home/gitlab_ci/gitlab-ci/
-else
-  wget "https://gitlab.com/gitlab-org/gitlab-ci/repository/archive.tar.gz?ref=v${GITLAB_CI_VERSION}" -O - | tar -zxf - --strip=1 -C /home/gitlab_ci/gitlab-ci/
-  chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/gitlab-ci/
-fi
+# shallow clone gitlab-ci
+sudo -u gitlab_ci -H git clone -b v${GITLAB_CI_VERSION} --depth 1 \
+	https://github.com/gitlabhq/gitlab-ci.git /home/gitlab_ci/gitlab-ci
+
 cd /home/gitlab_ci/gitlab-ci
 
 # copy default configurations

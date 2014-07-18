@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- shallow clone gitlab-ci
 - automatically migrate the database when the gitlab-ci version changes
 - enabled spdy support
 - upgrade to nginx-1.6.x series from the nginx/stable ppa
