@@ -478,16 +478,18 @@ HTTPS support can be enabled by setting the GITLAB_CI_HTTPS option to true.
 ```bash
 docker run --name=gitlab-ci -d \
   -e 'GITLAB_CI_HTTPS=true' \
+  -e 'X_FORWARDED_PROTO=https' \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:5.0.1
 ```
 
 In this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. However, this is not optimal when using a load balancer.
+Setting the X_FORWARDED_PROTO option to https should ensure that gitlab-ci generates only https links by default and should make the http to https redirection hack less needed.
 
 #### Using HTTPS with a load balancer
 Load balancers like haproxy/hipache talk to backend applications over plain http and as such, installation of ssl keys and certificates in the container are not required when using a load balancer.
 
-When using a load balancer, you should set the GITLAB_CI_HTTPS_ONLY option to false and the GITLAB_CI_HTTPS options set to true. With this in place, you should also configure the load balancer to support handling of https requests. But that is out of the scope of this document. Please refer to [Using SSL/HTTPS with HAProxy](http://seanmcgary.com/posts/using-sslhttps-with-haproxy) for information on the subject.
+When using a load balancer, you should set the GITLAB_CI_HTTPS_ONLY option to false, the GITLAB_CI_HTTPS option to true and the X_FORWARDED_PROTO option to http, https or $http_x_forwarded_proto (depending on whether the load balancer exposes gitlab-ci in http, https or both schemes; in the latter case the load balancer must be configured to set the X-Forwarded-Proto header for each request). With this in place, you should also configure the load balancer to support handling of https requests. But that is out of the scope of this document. Please refer to [Using SSL/HTTPS with HAProxy](http://seanmcgary.com/posts/using-sslhttps-with-haproxy) for information on the subject.
 
 Note that when the GITLAB_CI_HTTPS_ONLY is disabled, the application does not perform the automatic http to https redirection and this functionality has to be configured at the load balancer which is also described in the link above. Unfortunately hipache does not come with an option to perform http to https redirection, so the only choice you really have is to switch to using haproxy or nginx for load balancing.
 
@@ -499,6 +501,7 @@ In summation, the docker command would look something like this:
 docker run --name=gitlab-ci -d \
   -e 'GITLAB_CI_HTTPS=true' \
   -e 'GITLAB_CI_HTTPS_ONLY=false' \
+  -e 'X_FORWARDED_PROTO=https' \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:5.0.1
 ```
