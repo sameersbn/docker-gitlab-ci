@@ -14,6 +14,8 @@ SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-/home/gitlab_ci/data/certs/dhparam.pem}
 
 CA_CERTIFICATES_PATH=${CA_CERTIFICATES_PATH:-/home/gitlab_ci/data/certs/ca.crt}
 
+X_FORWARDED_PROTO=${X_FORWARDED_PROTO:-'$scheme'}
+
 REDIS_HOST=${REDIS_HOST:-}
 REDIS_PORT=${REDIS_PORT:-}
 
@@ -99,6 +101,9 @@ case "${GITLAB_CI_HTTPS}" in
 		else
 			echo "SSL keys and certificates were not found."
 			echo "Assuming that the container is running behind a HTTPS enabled load balancer."
+			if [ "${X_FORWARDED_PROTO}" = '$scheme' ]; then
+				X_FORWARDED_PROTO='$http_x_forwarded_proto'
+			fi
 			cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
 		fi
 		;;
@@ -137,6 +142,7 @@ sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /etc/nginx/sites-available/
 sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
+sed 's,{{X_FORWARDED_PROTO}},'"${X_FORWARDED_PROTO}"',' -i /etc/nginx/sites-available/gitlab_ci
 
 if [ -f "${SSL_CERTIFICATE_PATH}" -o -f "${CA_CERTIFICATES_PATH}" ]; then
 	echo "Updating CA certificates..."
