@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- set SMTP_AUTHENTICATION to 'login' by default.
 - shallow clone gitlab-ci
 - automatically migrate the database when the gitlab-ci version changes
 - enabled spdy support
