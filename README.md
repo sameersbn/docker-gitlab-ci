@@ -110,14 +110,14 @@ For storage of the application data, you should mount a volume at
 
 * /home/gitlab_ci/data
 
-Volumes can be mounted in docker by specifying the **'-v'** option in the docker run command.
-
 SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
 
 ```bash
 mkdir -p /opt/gitlab-ci/data
 sudo chcon -Rt svirt_sandbox_file_t /opt/gitlab-ci/data
 ```
+
+Volumes can be mounted in docker by specifying the **'-v'** option in the docker run command.
 
 ```bash
 docker run --name=gitlab-ci -d \
@@ -151,6 +151,8 @@ SELinux users are also required to change the security context of the mount poin
 mkdir -p /opt/gitlab-ci/mysql
 sudo chcon -Rt svirt_sandbox_file_t /opt/gitlab-ci/mysql
 ```
+
+The updated run command looks like this.
 
 ```bash
 docker run --name=gitlab-ci -d \
