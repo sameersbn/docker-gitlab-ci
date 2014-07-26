@@ -112,8 +112,14 @@ For storage of the application data, you should mount a volume at
 
 Volumes can be mounted in docker by specifying the **'-v'** option in the docker run command.
 
+SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
+
 ```bash
 mkdir -p /opt/gitlab-ci/data
+sudo chcon -Rt svirt_sandbox_file_t /opt/gitlab-ci/data
+```
+
+```bash
 docker run --name=gitlab-ci -d \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:5.0.1
@@ -139,8 +145,14 @@ GitLab CI uses a database backend to store its data.
 
 This docker image is configured to use a MySQL database backend. The database connection can be configured using environment variables. If not specified, the image will start a mysql server internally and use it. However in this case, the data stored in the mysql database will be lost if the container is stopped/removed. To avoid this you should mount a volume at /var/lib/mysql.
 
+SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
+
 ```bash
-mkdir /opt/gitlab-ci/mysql
+mkdir -p /opt/gitlab-ci/mysql
+sudo chcon -Rt svirt_sandbox_file_t /opt/gitlab-ci/mysql
+```
+
+```bash
 docker run --name=gitlab-ci -d \
   -e 'GITLAB_URL=http://172.17.0.2' \
   -v /opt/gitlab-ci/mysql:/var/lib/mysql sameersbn/gitlab-ci:5.0.1
