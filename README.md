@@ -108,20 +108,18 @@ You need to provide the URL of the GitLab server while running GitLab CI using t
 docker run --name=gitlab-ci -d \
   -e 'GITLAB_URL=http://172.17.0.2' \
   sameersbn/gitlab-ci:5.0.1
-GITLAB_CI_IP=$(docker inspect gitlab-ci | grep IPAddres | awk -F'"' '{print $4}')
 ```
 
 Alternately, if the GitLab and GitLab CI servers are running on the same host, you can take advantage of docker links. Lets consider that the GitLab server is running on the same host and has the name **"gitlab"**, then using docker links:
 
 ```bash
 docker run --name=gitlab-ci -d -link gitlab:gitlab sameersbn/gitlab-ci:5.0.1
-GITLAB_CI_IP=$(docker inspect gitlab-ci | grep IPAddres | awk -F'"' '{print $4}')
 ```
 
 Access the GitLab CI server
 
 ```bash
-xdg-open "http://${GITLAB_CI_IP}"
+xdg-open "http://$(docker inspect --format {{.NetworkSettings.IPAddress}} gitlab-ci)"
 ```
 
 Login using your GitLab credentials.
@@ -251,7 +249,7 @@ You should now have the mysql server running. By default the sameersbn/mysql ima
 Now, lets login to the mysql server and create a user and database for the GitLab application.
 
 ```bash
-mysql -uroot -h $(docker inspect mysql | grep IPAddres | awk -F'"' '{print $4}')
+mysql -uroot -h$(docker inspect --format {{.NetworkSettings.IPAddress}} mysql)
 ```
 
 ```sql
@@ -351,8 +349,7 @@ docker logs postgresql
 Now, lets login to the postgresql server and create a user and database for the GitLab application.
 
 ```bash
-POSTGRESQL_IP=$(docker inspect postgresql | grep IPAddres | awk -F'"' '{print $4}')
-psql -U postgres -h ${POSTGRESQL_IP}
+psql -U postgres -h $(docker inspect --format {{.NetworkSettings.IPAddress}} postgresql)
 ```
 
 ```sql
