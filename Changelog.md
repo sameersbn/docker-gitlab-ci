@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- update to the sameersbn/ubuntu:12.04.20140812 baseimage
 - set SMTP_AUTHENTICATION to 'login' by default.
 - shallow clone gitlab-ci
 - automatically migrate the database when the gitlab-ci version changes
