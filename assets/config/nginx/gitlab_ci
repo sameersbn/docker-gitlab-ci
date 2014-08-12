@@ -32,5 +32,5 @@ server {
 
   # adjust this to match the largest build log your runners might submit,
   # set to 0 to disable limit
-  client_max_body_size 10m;
+  client_max_body_size {{NGINX_MAX_UPLOAD_SIZE}};
 }
