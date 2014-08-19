@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- update to the sameersbn/ubuntu:12.04.20140818 baseimage
 - added NGINX_MAX_UPLOAD_SIZE configuration option.
 - update to the sameersbn/ubuntu:12.04.20140812 baseimage
 - set SMTP_AUTHENTICATION to 'login' by default.
