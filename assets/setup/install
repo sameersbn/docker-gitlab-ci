@@ -11,7 +11,7 @@ sudo -u gitlab_ci -H mkdir -p /home/gitlab_ci/data
 
 # shallow clone gitlab-ci
 sudo -u gitlab_ci -H git clone -b v${GITLAB_CI_VERSION} --depth 1 \
-	https://github.com/gitlabhq/gitlab-ci.git /home/gitlab_ci/gitlab-ci
+  https://github.com/gitlabhq/gitlab-ci.git /home/gitlab_ci/gitlab-ci
 
 cd /home/gitlab_ci/gitlab-ci
 

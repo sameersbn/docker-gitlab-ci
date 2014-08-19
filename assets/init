@@ -38,20 +38,20 @@ SMTP_USER=${SMTP_USER:-}
 SMTP_PASS=${SMTP_PASS:-}
 SMTP_STARTTLS=${SMTP_STARTTLS:-true}
 [ -n "${SMTP_USER}" ] && \
-	SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-login}
+  SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-login}
 
 GITLAB_URL=${GITLAB_URL:-}
 
 # use docker link feature to figure out gitlab url
 [[ -z "${GITLAB_URL}" && -n "${GITLAB_PORT_80_TCP_ADDR}" ]] && \
-	GITLAB_URL="http://${GITLAB_PORT_80_TCP_ADDR}"
+  GITLAB_URL="http://${GITLAB_PORT_80_TCP_ADDR}"
 
 GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
 
 # is a redis container linked?
 if [ -n "${REDISIO_PORT_6379_TCP_ADDR}" ]; then
-	REDIS_HOST=${REDIS_HOST:-${REDISIO_PORT_6379_TCP_ADDR}}
-	REDIS_PORT=${REDIS_PORT:-${REDISIO_PORT_6379_TCP_PORT}}
+  REDIS_HOST=${REDIS_HOST:-${REDISIO_PORT_6379_TCP_ADDR}}
+  REDIS_PORT=${REDIS_PORT:-${REDISIO_PORT_6379_TCP_PORT}}
 fi
 
 # fallback to using internal redis server
@@ -62,13 +62,13 @@ REDIS_PORT=${REDIS_PORT:-6379}
 # requires that the mysql or postgresql containers have exposed
 # port 3306 and 5432 respectively.
 if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
-	DB_TYPE=mysql
-	DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
-	DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
+  DB_TYPE=mysql
+  DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
+  DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
 elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
-	DB_TYPE=postgres
-	DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
-	DB_PORT=${DB_PORT:-${POSTGRESQL_PORT_5432_TCP_PORT}}
+  DB_TYPE=postgres
+  DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
+  DB_PORT=${DB_PORT:-${POSTGRESQL_PORT_5432_TCP_PORT}}
 fi
 
 # fallback to using the internal mysql server
@@ -77,14 +77,14 @@ DB_HOST=${DB_HOST:-localhost}
 
 # use default port number if it is still not set
 case "${DB_TYPE}" in
-	mysql) DB_PORT=${DB_PORT:-3306} ;;
-	postgres) DB_PORT=${DB_PORT:-5432} ;;
-	*) echo "Unsupported database adapter. Available adapters are mysql and postgres." && exit 1 ;;
+  mysql) DB_PORT=${DB_PORT:-3306} ;;
+  postgres) DB_PORT=${DB_PORT:-5432} ;;
+  *) echo "Unsupported database adapter. Available adapters are mysql and postgres." && exit 1 ;;
 esac
 
 case "${GITLAB_CI_HTTPS}" in
-	true) GITLAB_CI_PORT=${GITLAB_CI_PORT:-443} ;;
-	*) GITLAB_CI_PORT=${GITLAB_CI_PORT:-80} ;;
+  true) GITLAB_CI_PORT=${GITLAB_CI_PORT:-443} ;;
+  *) GITLAB_CI_PORT=${GITLAB_CI_PORT:-80} ;;
 esac
 
 # start supervisord
@@ -92,19 +92,19 @@ esac
 
 # copy configuration templates
 case "${GITLAB_CI_HTTPS}" in
-	true)
-		if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
-			case "${GITLAB_CI_HTTPS_ONLY}" in
-				true) cp /app/setup/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
-				*) cp /app/setup/config/nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
-			esac
-		else
-			echo "SSL keys and certificates were not found."
-			echo "Assuming that the container is running behind a HTTPS enabled load balancer."
-			cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
-		fi
-		;;
-	*) cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
+  true)
+    if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
+      case "${GITLAB_CI_HTTPS_ONLY}" in
+        true) cp /app/setup/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
+        *) cp /app/setup/config/nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
+      esac
+    else
+      echo "SSL keys and certificates were not found."
+      echo "Assuming that the container is running behind a HTTPS enabled load balancer."
+      cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+    fi
+    ;;
+  *) cp /app/setup/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
 esac
 
 sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/application.yml /home/gitlab_ci/gitlab-ci/config/application.yml
@@ -115,23 +115,23 @@ sudo -u gitlab_ci -H cp /app/setup/config/gitlab-ci/smtp_settings.rb /home/gitla
 
 # override default configuration templates with user templates
 if [ -d /home/gitlab_ci/data/config ]; then
-	chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/data/config
-	cd /home/gitlab_ci/data/config
-	case "${GITLAB_CI_HTTPS}" in
-		true)
-			case "${GITLAB_CI_HTTPS_ONLY}" in
-				true) [ -f nginx/gitlab_ci.https.strict ] && cp nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
-				*) [ -f nginx/gitlab_ci.https.permissive ] && cp nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
-			esac
-			;;
-		*) [ -f nginx/gitlab_ci ] && cp nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
-	esac
+  chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/data/config
+  cd /home/gitlab_ci/data/config
+  case "${GITLAB_CI_HTTPS}" in
+    true)
+      case "${GITLAB_CI_HTTPS_ONLY}" in
+        true) [ -f nginx/gitlab_ci.https.strict ] && cp nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
+        *) [ -f nginx/gitlab_ci.https.permissive ] && cp nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
+      esac
+      ;;
+    *) [ -f nginx/gitlab_ci ] && cp nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
+  esac
 
-	[ -f gitlab-ci/application.yml ]	&& sudo -u gitlab_ci -H cp gitlab-ci/application.yml 	/home/gitlab_ci/gitlab-ci/config/application.yml
-	[ -f gitlab-ci/resque.yml ]				&& sudo -u gitlab_ci -H cp gitlab-ci/resque.yml 			/home/gitlab_ci/gitlab-ci/config/resque.yml
-	[ -f gitlab-ci/database.yml ]			&& sudo -u gitlab_ci -H cp gitlab-ci/database.yml 		/home/gitlab_ci/gitlab-ci/config/database.yml
-	[ -f gitlab-ci/unicorn.rb ]				&& sudo -u gitlab_ci -H cp gitlab-ci/unicorn.rb 			/home/gitlab_ci/gitlab-ci/config/unicorn.rb
-	[ -f gitlab-ci/smtp_settings.rb ]	&& sudo -u gitlab_ci -H cp gitlab-ci/smtp_settings.rb /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
+  [ -f gitlab-ci/application.yml ]  && sudo -u gitlab_ci -H cp gitlab-ci/application.yml  /home/gitlab_ci/gitlab-ci/config/application.yml
+  [ -f gitlab-ci/resque.yml ]       && sudo -u gitlab_ci -H cp gitlab-ci/resque.yml       /home/gitlab_ci/gitlab-ci/config/resque.yml
+  [ -f gitlab-ci/database.yml ]     && sudo -u gitlab_ci -H cp gitlab-ci/database.yml     /home/gitlab_ci/gitlab-ci/config/database.yml
+  [ -f gitlab-ci/unicorn.rb ]       && sudo -u gitlab_ci -H cp gitlab-ci/unicorn.rb       /home/gitlab_ci/gitlab-ci/config/unicorn.rb
+  [ -f gitlab-ci/smtp_settings.rb ] && sudo -u gitlab_ci -H cp gitlab-ci/smtp_settings.rb /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 fi
 
 sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/g' -i /etc/nginx/sites-available/gitlab_ci
@@ -142,55 +142,55 @@ sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-availa
 sed 's/{{NGINX_MAX_UPLOAD_SIZE}}/'"${NGINX_MAX_UPLOAD_SIZE}"'/' -i /etc/nginx/sites-available/gitlab_ci
 
 if [ -f "${SSL_CERTIFICATE_PATH}" -o -f "${CA_CERTIFICATES_PATH}" ]; then
-	echo "Updating CA certificates..."
-	[ -f "${SSL_CERTIFICATE_PATH}" ] && \
-		cp "${SSL_CERTIFICATE_PATH}" /usr/local/share/ca-certificates/gitlab_ci.crt
-	[ -f "${CA_CERTIFICATES_PATH}" ] && \
-		cp "${CA_CERTIFICATES_PATH}" /usr/local/share/ca-certificates/ca.crt
-	update-ca-certificates --fresh >/dev/null 2>&1
+  echo "Updating CA certificates..."
+  [ -f "${SSL_CERTIFICATE_PATH}" ] && \
+    cp "${SSL_CERTIFICATE_PATH}" /usr/local/share/ca-certificates/gitlab_ci.crt
+  [ -f "${CA_CERTIFICATES_PATH}" ] && \
+    cp "${CA_CERTIFICATES_PATH}" /usr/local/share/ca-certificates/ca.crt
+  update-ca-certificates --fresh >/dev/null 2>&1
 fi
 
 # start mysql server if ${DB_HOST} is localhost
 if [ "${DB_HOST}" == "localhost" ]; then
-	if [ "${DB_TYPE}" == "postgres" ]; then
-		echo "DB_TYPE 'postgres' is not supported internally. Please provide DB_HOST."
-		exit 1
-	fi
+  if [ "${DB_TYPE}" == "postgres" ]; then
+    echo "DB_TYPE 'postgres' is not supported internally. Please provide DB_HOST."
+    exit 1
+  fi
 
-	# fix permissions and ownership of /var/lib/mysql
-	chown -R mysql:mysql /var/lib/mysql
-	chmod 700 /var/lib/mysql
+  # fix permissions and ownership of /var/lib/mysql
+  chown -R mysql:mysql /var/lib/mysql
+  chmod 700 /var/lib/mysql
 
-	# initialize MySQL data directory
-	if [ ! -d /var/lib/mysql/mysql ]; then
-		mysql_install_db --user=mysql
-	fi
+  # initialize MySQL data directory
+  if [ ! -d /var/lib/mysql/mysql ]; then
+    mysql_install_db --user=mysql
+  fi
 
-	echo "Starting mysql server..."
-	supervisorctl start mysqld >/dev/null
+  echo "Starting mysql server..."
+  supervisorctl start mysqld >/dev/null
 
-	# wait for mysql server to start (max 120 seconds)
-	timeout=120
-	while ! mysqladmin -uroot ${DB_PASS:+-p$DB_PASS} status >/dev/null 2>&1
-	do
-		timeout=$(expr $timeout - 1)
-		if [ $timeout -eq 0 ]; then
-			echo "Failed to start mysql server"
-			exit 1
-		fi
-		sleep 1
-	done
+  # wait for mysql server to start (max 120 seconds)
+  timeout=120
+  while ! mysqladmin -uroot ${DB_PASS:+-p$DB_PASS} status >/dev/null 2>&1
+  do
+    timeout=$(expr $timeout - 1)
+    if [ $timeout -eq 0 ]; then
+      echo "Failed to start mysql server"
+      exit 1
+    fi
+    sleep 1
+  done
 
-	if ! echo "USE ${DB_NAME}" | mysql -uroot ${DB_PASS:+-p$DB_PASS} >/dev/null 2>&1; then
-		DB_INIT="yes"
-		echo "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET \`utf8\` COLLATE \`utf8_unicode_ci\`;" | mysql -uroot ${DB_PASS:+-p$DB_PASS}
-		echo "GRANT SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON \`${DB_NAME}\`.* TO 'root'@'localhost';" | mysql -uroot ${DB_PASS:+-p$DB_PASS}
-	fi
+  if ! echo "USE ${DB_NAME}" | mysql -uroot ${DB_PASS:+-p$DB_PASS} >/dev/null 2>&1; then
+    DB_INIT="yes"
+    echo "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET \`utf8\` COLLATE \`utf8_unicode_ci\`;" | mysql -uroot ${DB_PASS:+-p$DB_PASS}
+    echo "GRANT SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON \`${DB_NAME}\`.* TO 'root'@'localhost';" | mysql -uroot ${DB_PASS:+-p$DB_PASS}
+  fi
 fi
 
 if [ "${REDIS_HOST}" == "localhost" ]; then
-	echo "Starting redis server..."
-	supervisorctl start redis-server >/dev/null
+  echo "Starting redis server..."
+  supervisorctl start redis-server >/dev/null
 fi
 
 # configure server url
@@ -203,15 +203,15 @@ sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_SUPPORT}}/'"${GITLAB_CI_SUPPORT}"'/' -i 
 
 # configure database
 if [ "${DB_TYPE}" == "postgres" ]; then
-	sudo -u gitlab_ci -H sed 's/{{DB_ADAPTER}}/postgresql/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-	sudo -u gitlab_ci -H sed 's/{{DB_ENCODING}}/unicode/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-	sudo -u gitlab_ci -H sed 's/reconnect: false/#reconnect: false/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+  sudo -u gitlab_ci -H sed 's/{{DB_ADAPTER}}/postgresql/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+  sudo -u gitlab_ci -H sed 's/{{DB_ENCODING}}/unicode/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+  sudo -u gitlab_ci -H sed 's/reconnect: false/#reconnect: false/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
 elif [ "${DB_TYPE}" == "mysql" ]; then
-	sudo -u gitlab_ci -H sed 's/{{DB_ADAPTER}}/mysql2/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-	sudo -u gitlab_ci -H sed 's/{{DB_ENCODING}}/utf8/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
-	sudo -u gitlab_ci -H sed 's/#reconnect: false/reconnect: false/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+  sudo -u gitlab_ci -H sed 's/{{DB_ADAPTER}}/mysql2/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+  sudo -u gitlab_ci -H sed 's/{{DB_ENCODING}}/utf8/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
+  sudo -u gitlab_ci -H sed 's/#reconnect: false/reconnect: false/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
 else
-	echo "Invalid database type: '$DB_TYPE'. Supported choices: [mysql, postgres]."
+  echo "Invalid database type: '$DB_TYPE'. Supported choices: [mysql, postgres]."
 fi
 
 sudo -u gitlab_ci -H sed 's/{{DB_HOST}}/'"${DB_HOST}"'/' -i /home/gitlab_ci/gitlab-ci/config/database.yml
@@ -236,21 +236,21 @@ sudo -u gitlab_ci -H sed 's/{{SMTP_HOST}}/'"${SMTP_HOST}"'/' -i /home/gitlab_ci/
 sudo -u gitlab_ci -H sed 's/{{SMTP_PORT}}/'"${SMTP_PORT}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 
 case "${SMTP_USER}" in
-	"") sudo -u gitlab_ci -H sed '/{{SMTP_USER}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
-	*) sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+  "") sudo -u gitlab_ci -H sed '/{{SMTP_USER}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+  *) sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
 esac
 
 case "${SMTP_PASS}" in
-	"") sudo -u gitlab_ci -H sed '/{{SMTP_PASS}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
-	*) sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'"${SMTP_PASS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+  "") sudo -u gitlab_ci -H sed '/{{SMTP_PASS}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+  *) sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'"${SMTP_PASS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
 esac
 
 sudo -u gitlab_ci -H sed 's/{{SMTP_DOMAIN}}/'"${SMTP_DOMAIN}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 sudo -u gitlab_ci -H sed 's/{{SMTP_STARTTLS}}/'"${SMTP_STARTTLS}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb
 
 case "${SMTP_AUTHENTICATION}" in
-	"") sudo -u gitlab_ci -H sed '/{{SMTP_AUTHENTICATION}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
-	*) sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+  "") sudo -u gitlab_ci -H sed '/{{SMTP_AUTHENTICATION}}/d' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
+  *) sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i /home/gitlab_ci/gitlab-ci/config/initializers/smtp_settings.rb ;;
 esac
 
 # take ownership of /home/gitlab_ci/data
@@ -259,75 +259,75 @@ chown gitlab_ci:gitlab_ci /home/gitlab_ci/data
 cd /home/gitlab_ci/gitlab-ci/
 
 appStart () {
-	if [ "$DB_INIT" == "yes" ]; then
-		sudo -u gitlab_ci -H bundle exec rake db:setup RAILS_ENV=production
-	fi
+  if [ "$DB_INIT" == "yes" ]; then
+    sudo -u gitlab_ci -H bundle exec rake db:setup RAILS_ENV=production
+  fi
 
-	# migrate database if the gitlab-ci version has changed.
-	CURRENT_VERSION=
-	GITLAB_CI_VERSION=$(cat VERSION)
-	[ -f /home/gitlab_ci/data/VERSION ] && CURRENT_VERSION=$(cat /home/gitlab_ci/data/VERSION)
-	if [ "${GITLAB_CI_VERSION}" != "${CURRENT_VERSION}" ]; then
-		echo "Migrating database..."
-		sudo -u gitlab_ci -H bundle exec rake db:migrate RAILS_ENV=production 2>/dev/null
-		sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > /home/gitlab_ci/data/VERSION
-	fi
+  # migrate database if the gitlab-ci version has changed.
+  CURRENT_VERSION=
+  GITLAB_CI_VERSION=$(cat VERSION)
+  [ -f /home/gitlab_ci/data/VERSION ] && CURRENT_VERSION=$(cat /home/gitlab_ci/data/VERSION)
+  if [ "${GITLAB_CI_VERSION}" != "${CURRENT_VERSION}" ]; then
+    echo "Migrating database..."
+    sudo -u gitlab_ci -H bundle exec rake db:migrate RAILS_ENV=production 2>/dev/null
+    sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > /home/gitlab_ci/data/VERSION
+  fi
 
-	echo "Starting nginx..."
-	supervisorctl start nginx >/dev/null
+  echo "Starting nginx..."
+  supervisorctl start nginx >/dev/null
 
-	# remove stale unicorn and sidekiq pid's if they exist.
-	rm -rf /home/gitlab_ci/gitlab-ci/tmp/pids/unicorn.pid
-	rm -rf /home/gitlab_ci/gitlab-ci/tmp/pids/sidekiq.pid
+  # remove stale unicorn and sidekiq pid's if they exist.
+  rm -rf /home/gitlab_ci/gitlab-ci/tmp/pids/unicorn.pid
+  rm -rf /home/gitlab_ci/gitlab-ci/tmp/pids/sidekiq.pid
 
-	# start the gitlab application
-	/etc/init.d/gitlab_ci start
+  # start the gitlab application
+  /etc/init.d/gitlab_ci start
 
-	# watch the access logs
-	tail -F /var/log/nginx/gitlab_ci_access.log
+  # watch the access logs
+  tail -F /var/log/nginx/gitlab_ci_access.log
 }
 
 appRake () {
-	if [ -z ${1} ]; then
-		echo "Please specify the rake task to execute."
-		return 1
-	fi
-	echo "Running gitlab rake task..."
-	sudo -u gitlab_ci -H bundle exec rake $@ RAILS_ENV=production
+  if [ -z ${1} ]; then
+    echo "Please specify the rake task to execute."
+    return 1
+  fi
+  echo "Running gitlab rake task..."
+  sudo -u gitlab_ci -H bundle exec rake $@ RAILS_ENV=production
 }
 
 appHelp () {
-	echo "Available options:"
-	echo " app:start          - Starts the gitlab-ci server (default)"
-	echo " app:rake <task>    - Execute a rake task."
-	echo " app:help           - Displays the help"
-	echo " [command]          - Execute the specified linux command eg. bash."
+  echo "Available options:"
+  echo " app:start          - Starts the gitlab-ci server (default)"
+  echo " app:rake <task>    - Execute a rake task."
+  echo " app:help           - Displays the help"
+  echo " [command]          - Execute the specified linux command eg. bash."
 }
 
 case "$1" in
-	app:start)
-		appStart
-		;;
-	app:rake)
-		shift 1
-		appRake $@
-		;;
-	app:help)
-		appHelp
-		;;
-	*)
-		if [ -x $1 ]; then
-			$1
-		else
-			prog=$(which $1)
-			if [ -n "${prog}" ] ; then
-				shift 1
-				$prog $@
-			else
-				appHelp
-			fi
-		fi
-		;;
+  app:start)
+    appStart
+    ;;
+  app:rake)
+    shift 1
+    appRake $@
+    ;;
+  app:help)
+    appHelp
+    ;;
+  *)
+    if [ -x $1 ]; then
+      $1
+    else
+      prog=$(which $1)
+      if [ -n "${prog}" ] ; then
+        shift 1
+        $prog $@
+      else
+        appHelp
+      fi
+    fi
+    ;;
 esac
 
 exit 0
