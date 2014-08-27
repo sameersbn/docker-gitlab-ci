@@ -107,7 +107,7 @@ docker build --tag="$USER/gitlab-ci" .
 
 Before you can start the GitLab CI image you need to make sure you have a [GitLab](https://www.gitlab.com/) server running. Checkout the [docker-gitlab](https://github.com/sameersbn/docker-gitlab) project for getting a GitLab server up and running.
 
-You need to provide the URL of the GitLab server while running GitLab CI using the GITLAB_URL environment configuration. For example if the location of the GitLab server is `172.17.0.2`
+You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. For example if the location of the GitLab server is `172.17.0.2`
 
 ```bash
 docker run --name=gitlab-ci -d \
@@ -548,8 +548,6 @@ Load balancers like haproxy/hipache talk to backend applications over plain http
 When using a load balancer, you should set the `GITLAB_CI_HTTPS_ONLY` option to `false` and the `GITLAB_CI_HTTPS` options set to `true`. With this in place, you should also configure the load balancer to support handling of https requests. But that is out of the scope of this document. Please refer to [Using SSL/HTTPS with HAProxy](http://seanmcgary.com/posts/using-sslhttps-with-haproxy) for information on the subject.
 
 Note that when the `GITLAB_CI_HTTPS_ONLY` is disabled, the application does not perform the automatic http to https redirection and this functionality has to be configured at the load balancer which is also described in the link above. Unfortunately hipache does not come with an option to perform http to https redirection, so the only choice you really have is to switch to using haproxy or nginx for load balancing.
-
-P.S. I have noticed problems in issuing builds from the GitLab interface when automatic http to https redirection is enabled on haproxy.
 
 In summation, the docker command would look something like this:
 
