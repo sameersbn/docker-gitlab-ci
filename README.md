@@ -110,7 +110,7 @@ Before you can start the GitLab CI image you need to make sure you have a [GitLa
 You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. For example if the location of the GitLab server is `172.17.0.2`
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
  -p 10080:80 -e 'GITLAB_URL=http://172.17.0.2' \
   sameersbn/gitlab-ci:5.0.1
 ```
@@ -118,7 +118,7 @@ docker run --name=gitlab-ci -d \
 Alternately, if the GitLab and GitLab CI servers are running on the same host, you can take advantage of docker links. Lets consider that the GitLab server is running on the same host and has the name **gitlab**, then using docker links:
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
 -p 10080:80 -link gitlab:gitlab sameersbn/gitlab-ci:5.0.1
 ```
 
@@ -146,7 +146,7 @@ sudo chcon -Rt svirt_sandbox_file_t /opt/gitlab-ci/data
 Volumes can be mounted in docker by specifying the **'-v'** option in the docker run command.
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:5.0.1
 ```
@@ -182,7 +182,7 @@ sudo chcon -Rt svirt_sandbox_file_t /opt/gitlab-ci/mysql
 The updated run command looks like this.
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_URL=http://172.17.0.2' \
   -v /opt/gitlab-ci/mysql:/var/lib/mysql sameersbn/gitlab-ci:5.0.1
 ```
@@ -218,7 +218,7 @@ docker run --name=gitlab-ci -it --rm \
 This will initialize the GitLab CI database. Now that the database is initialized, start the container normally.
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_URL=http://172.17.0.2' \
   -e 'DB_HOST=192.168.1.100' -e 'DB_NAME=gitlab_ci_production' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
@@ -278,7 +278,7 @@ docker run --name=gitlab-ci -it --rm --link mysql:mysql \
 We are now ready to start the GitLab application.
 
 ```bash
-docker run --name=gitlab-ci -d --link mysql:mysql \
+docker run --name=gitlab-ci -it --rm --link mysql:mysql \
   -e 'GITLAB_URL=http://172.17.0.2' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
   -e 'DB_NAME=gitlab_ci_production' \
@@ -315,7 +315,7 @@ docker run --name=gitlab-ci -it --rm \
 This will initialize the GitLab CI database. Now that the database is initialized, start the container normally.
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_URL=http://172.17.0.2' \
   -e 'DB_TYPE=postgres' -e 'DB_HOST=192.168.1.100' \
   -e 'DB_NAME=gitlab_ci_production' \
@@ -379,7 +379,7 @@ docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
 We are now ready to start the GitLab CI application.
 
 ```bash
-docker run --name=gitlab-ci -d --link postgresql:postgresql \
+docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
   -e 'GITLAB_URL=http://172.17.0.2' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
   -e 'DB_NAME=gitlab_ci_production' \
@@ -434,7 +434,7 @@ docker run --name=redis -d sameersbn/redis:latest
 We are now ready to start the GitLab CI application.
 
 ```bash
-docker run --name=gitlab-ci -d --link redis:redisio \
+docker run --name=gitlab-ci -it --rm --link redis:redisio \
   sameersbn/gitlab:latest
 ```
 
@@ -454,7 +454,7 @@ The following environment variables need to be specified to get mail support to 
 * SMTP_AUTHENTICATION (defaults to `login`)
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
   -e 'SMTP_USER=USER@gmail.com' -e 'SMTP_PASS=PASSWORD' \
   sameersbn/gitlab-ci:5.0.1
 ```
@@ -528,7 +528,7 @@ Great! we are now just one step away from having our application secured.
 HTTPS support can be enabled by setting the `GITLAB_CI_HTTPS` option to `true`.
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_CI_HTTPS=true' \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:5.0.1
@@ -547,7 +547,7 @@ Note that when the `GITLAB_CI_HTTPS_ONLY` is disabled, the application does not 
 In summation, the docker command would look something like this:
 
 ```bash
-docker run --name=gitlab-ci -d \
+docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_CI_HTTPS=true' \
   -e 'GITLAB_CI_HTTPS_ONLY=false' \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
