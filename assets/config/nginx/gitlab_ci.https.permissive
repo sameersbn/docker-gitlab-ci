@@ -7,7 +7,35 @@ upstream gitlab_ci {
 }
 
 server {
-  listen 80;
+  listen 80 default_server;         # e.g., listen 192.168.1.1:80;
+  server_name {{YOUR_SERVER_FQDN}};     # e.g., server_name source.example.com;
+  root {{INSTALL_DIR}}/public;
+
+  access_log  /var/log/nginx/gitlab_ci_access.log;
+  error_log   /var/log/nginx/gitlab_ci_error.log;
+
+  location / {
+    try_files $uri $uri/index.html $uri.html @gitlab_ci;
+  }
+
+  location @gitlab_ci {
+    proxy_read_timeout 300;
+    proxy_connect_timeout 300;
+    proxy_redirect     off;
+
+    proxy_set_header   X-Forwarded-Proto $scheme;
+    proxy_set_header   Host              $http_host;
+    proxy_set_header   X-Real-IP         $remote_addr;
+
+    proxy_pass http://gitlab_ci;
+  }
+
+  # adjust this to match the largest build log your runners might submit,
+  # set to 0 to disable limit
+  client_max_body_size {{NGINX_MAX_UPLOAD_SIZE}};
+}
+
+server {
   listen *:443 default_server ssl spdy;
   server_name {{YOUR_SERVER_FQDN}};
   root {{INSTALL_DIR}}/public;
