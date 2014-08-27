@@ -130,7 +130,7 @@ case "${GITLAB_CI_HTTPS}" in
       *) [ -f ${DATA_DIR}/config/nginx/gitlab_ci.https.permissive ] && cp ${DATA_DIR}/config/nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
     esac
     ;;
-  *) [ -f nginx/gitlab_ci ] && cp nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
+  *) [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
 esac
 [ -f ${DATA_DIR}/config/gitlab-ci/application.yml ]  && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/application.yml  config/application.yml
 [ -f ${DATA_DIR}/config/gitlab-ci/resque.yml ]       && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
