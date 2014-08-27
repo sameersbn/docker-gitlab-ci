@@ -41,8 +41,11 @@ SMTP_PORT=${SMTP_PORT:-587}
 SMTP_USER=${SMTP_USER:-}
 SMTP_PASS=${SMTP_PASS:-}
 SMTP_STARTTLS=${SMTP_STARTTLS:-true}
-[ -n "${SMTP_USER}" ] && \
+if [ -n "${SMTP_USER}" ]; then
+  SMTP_ENABLED=${SMTP_ENABLED:-true}
   SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-login}
+fi
+SMTP_ENABLED=${SMTP_ENABLED:-false}
 
 GITLAB_URL=${GITLAB_URL:-}
 
@@ -116,6 +119,7 @@ sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/application.yml config/app
 sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/resque.yml config/resque.yml
 sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/database.yml config/database.yml
 sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/unicorn.rb config/unicorn.rb
+[ "${SMTP_ENABLED}" == "true" ] && \
 sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
 
 # override default configuration templates with user templates
@@ -132,6 +136,7 @@ esac
 [ -f ${DATA_DIR}/config/gitlab-ci/resque.yml ]       && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
 [ -f ${DATA_DIR}/config/gitlab-ci/database.yml ]     && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/database.yml     config/database.yml
 [ -f ${DATA_DIR}/config/gitlab-ci/unicorn.rb ]       && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/unicorn.rb       config/unicorn.rb
+[ "${SMTP_ENABLED}" == "true" ] && \
 [ -f ${DATA_DIR}/config/gitlab-ci/smtp_settings.rb ] && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
 
 if [ -f "${SSL_CERTIFICATE_PATH}" -o -f "${CA_CERTIFICATES_PATH}" ]; then
@@ -236,23 +241,25 @@ sudo -u gitlab_ci -H sed 's/{{UNICORN_TIMEOUT}}/'"${UNICORN_TIMEOUT}"'/' -i conf
 sudo -u gitlab_ci -H sed 's/{{SMTP_HOST}}/'"${SMTP_HOST}"'/' -i config/initializers/smtp_settings.rb
 sudo -u gitlab_ci -H sed 's/{{SMTP_PORT}}/'"${SMTP_PORT}"'/' -i config/initializers/smtp_settings.rb
 
-case "${SMTP_USER}" in
-  "") sudo -u gitlab_ci -H sed '/{{SMTP_USER}}/d' -i config/initializers/smtp_settings.rb ;;
-  *) sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i config/initializers/smtp_settings.rb ;;
-esac
+if [ "${SMTP_ENABLED}" == "true" ]; then
+  case "${SMTP_USER}" in
+    "") sudo -u gitlab_ci -H sed '/{{SMTP_USER}}/d' -i config/initializers/smtp_settings.rb ;;
+    *) sudo -u gitlab_ci -H sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i config/initializers/smtp_settings.rb ;;
+  esac
 
-case "${SMTP_PASS}" in
-  "") sudo -u gitlab_ci -H sed '/{{SMTP_PASS}}/d' -i config/initializers/smtp_settings.rb ;;
-  *) sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'"${SMTP_PASS}"'/' -i config/initializers/smtp_settings.rb ;;
-esac
+  case "${SMTP_PASS}" in
+    "") sudo -u gitlab_ci -H sed '/{{SMTP_PASS}}/d' -i config/initializers/smtp_settings.rb ;;
+    *) sudo -u gitlab_ci -H sed 's/{{SMTP_PASS}}/'"${SMTP_PASS}"'/' -i config/initializers/smtp_settings.rb ;;
+  esac
 
-sudo -u gitlab_ci -H sed 's/{{SMTP_DOMAIN}}/'"${SMTP_DOMAIN}"'/' -i config/initializers/smtp_settings.rb
-sudo -u gitlab_ci -H sed 's/{{SMTP_STARTTLS}}/'"${SMTP_STARTTLS}"'/' -i config/initializers/smtp_settings.rb
+  sudo -u gitlab_ci -H sed 's/{{SMTP_DOMAIN}}/'"${SMTP_DOMAIN}"'/' -i config/initializers/smtp_settings.rb
+  sudo -u gitlab_ci -H sed 's/{{SMTP_STARTTLS}}/'"${SMTP_STARTTLS}"'/' -i config/initializers/smtp_settings.rb
 
-case "${SMTP_AUTHENTICATION}" in
-  "") sudo -u gitlab_ci -H sed '/{{SMTP_AUTHENTICATION}}/d' -i config/initializers/smtp_settings.rb ;;
-  *) sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i config/initializers/smtp_settings.rb ;;
-esac
+  case "${SMTP_AUTHENTICATION}" in
+    "") sudo -u gitlab_ci -H sed '/{{SMTP_AUTHENTICATION}}/d' -i config/initializers/smtp_settings.rb ;;
+    *) sudo -u gitlab_ci -H sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i config/initializers/smtp_settings.rb ;;
+  esac
+fi
 
 # take ownership of ${DATA_DIR}
 chown gitlab_ci:gitlab_ci ${DATA_DIR}
