@@ -241,8 +241,16 @@ docker pull sameersbn/mysql:latest
 
 For data persistence lets create a store for the mysql and start the container.
 
+SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
+
 ```bash
 mkdir -p /opt/mysql/data
+sudo chcon -Rt svirt_sandbox_file_t /opt/mysql/data
+```
+
+The updated run command looks like this.
+
+```bash
 docker run --name mysql -d \
   -v /opt/mysql/data:/var/lib/mysql \
   sameersbn/mysql:latest
@@ -339,8 +347,16 @@ docker pull sameersbn/postgresql:latest
 
 For data persistence lets create a store for the postgresql and start the container.
 
+SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
+
 ```bash
 mkdir -p /opt/postgresql/data
+sudo chcon -Rt svirt_sandbox_file_t /opt/postgresql/data
+```
+
+The updated run command looks like this.
+
+```bash
 docker run --name postgresql -d \
   -v /opt/postgresql/data:/var/lib/postgresql \
   sameersbn/postgresql:latest
