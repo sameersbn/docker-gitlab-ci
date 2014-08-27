@@ -111,23 +111,18 @@ You need to provide the URL of the GitLab server while running GitLab CI using t
 
 ```bash
 docker run --name=gitlab-ci -d \
-  -e 'GITLAB_URL=http://172.17.0.2' \
+ -p 10080:80 -e 'GITLAB_URL=http://172.17.0.2' \
   sameersbn/gitlab-ci:5.0.1
 ```
 
 Alternately, if the GitLab and GitLab CI servers are running on the same host, you can take advantage of docker links. Lets consider that the GitLab server is running on the same host and has the name **gitlab**, then using docker links:
 
 ```bash
-docker run --name=gitlab-ci -d -link gitlab:gitlab sameersbn/gitlab-ci:5.0.1
+docker run --name=gitlab-ci -d \
+-p 10080:80 -link gitlab:gitlab sameersbn/gitlab-ci:5.0.1
 ```
 
-Access the GitLab CI server
-
-```bash
-xdg-open "http://$(docker inspect --format {{.NetworkSettings.IPAddress}} gitlab-ci)"
-```
-
-Login using your GitLab credentials.
+Point your browser to `http://localhost:10080` and login using your GitLab credentials.
 
 You should now have the GitLab CI ready for testing. If you want to use this image in production the please read on.
 
