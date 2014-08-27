@@ -20,6 +20,8 @@ CA_CERTIFICATES_PATH=${CA_CERTIFICATES_PATH:-$DATA_DIR/certs/ca.crt}
 
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-20m}
 
+X_FORWARDED_PROTO=${X_FORWARDED_PROTO:-'$scheme'}
+
 REDIS_HOST=${REDIS_HOST:-}
 REDIS_PORT=${REDIS_PORT:-}
 
@@ -110,6 +112,9 @@ case "${GITLAB_CI_HTTPS}" in
     else
       echo "SSL keys and certificates were not found."
       echo "Assuming that the container is running behind a HTTPS enabled load balancer."
+      if [ "${X_FORWARDED_PROTO}" = '$scheme' ]; then
+        X_FORWARDED_PROTO='$http_x_forwarded_proto'
+      fi
       cp ${SETUP_DIR}/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
     fi
     ;;
@@ -199,6 +204,7 @@ sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/site
 sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
 sed 's/{{NGINX_MAX_UPLOAD_SIZE}}/'"${NGINX_MAX_UPLOAD_SIZE}"'/g' -i /etc/nginx/sites-available/gitlab_ci
+sed 's,{{X_FORWARDED_PROTO}},'"${X_FORWARDED_PROTO}"',' -i /etc/nginx/sites-available/gitlab_ci
 
 # configure server url
 sudo -u gitlab_ci -H sed 's/{{GITLAB_URL}}/'"${GITLAB_URL}"'/' -i config/application.yml
