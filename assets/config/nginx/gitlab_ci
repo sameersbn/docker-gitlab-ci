@@ -3,13 +3,13 @@
 # App Version: 2.0
 
 upstream gitlab_ci {
-  server unix:/home/gitlab_ci/gitlab-ci/tmp/sockets/gitlab-ci.socket;
+  server unix:{{INSTALL_DIR}}/tmp/sockets/gitlab-ci.socket;
 }
 
 server {
   listen 80 default_server;         # e.g., listen 192.168.1.1:80;
   server_name {{YOUR_SERVER_FQDN}};     # e.g., server_name source.example.com;
-  root /home/gitlab_ci/gitlab-ci/public;
+  root {{INSTALL_DIR}}/public;
 
   access_log  /var/log/nginx/gitlab_ci_access.log;
   error_log   /var/log/nginx/gitlab_ci_error.log;

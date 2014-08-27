@@ -3,17 +3,22 @@ set -e
 
 GITLAB_CI_VERSION=5.0.1
 
+INSTALL_DIR="/home/gitlab_ci/gitlab-ci"
+DATA_DIR="/home/gitlab_ci/data"
+SETUP_DIR="/app/setup"
+GEM_CACHE_DIR="${SETUP_DIR}/cache"
+
 # add git user
 adduser --disabled-login --gecos 'GitLab CI' gitlab_ci
 
 # create the data store
-sudo -u gitlab_ci -H mkdir -p /home/gitlab_ci/data
+sudo -u gitlab_ci -H mkdir -p ${DATA_DIR}
 
 # shallow clone gitlab-ci
 sudo -u gitlab_ci -H git clone -b v${GITLAB_CI_VERSION} --depth 1 \
-  https://github.com/gitlabhq/gitlab-ci.git /home/gitlab_ci/gitlab-ci
+  https://github.com/gitlabhq/gitlab-ci.git ${INSTALL_DIR}
 
-cd /home/gitlab_ci/gitlab-ci
+cd ${INSTALL_DIR}
 
 # copy default configurations
 cp lib/support/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
@@ -31,8 +36,8 @@ chmod -R u+rwX log tmp
 sudo -u gitlab_ci -H touch log/production.log
 
 # install gems required by gitlab-ci, use cache if available
-if [ -d "/app/setup/cache" ]; then
-  mv /app/setup/cache vendor/
+if [ -d "${GEM_CACHE_DIR}" ]; then
+  mv ${GEM_CACHE_DIR} vendor/
   chown -R gitlab_ci:gitlab_ci vendor/cache
 fi
 sudo -u gitlab_ci -H bundle install --deployment --without development test
@@ -45,9 +50,6 @@ chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/
 
 # install gitlab bootscript
 cp lib/support/init.d/gitlab_ci /etc/init.d/gitlab_ci
-
-# install logrotate configuration
-# cp lib/support/logrotate/gitlab /etc/logrotate.d/gitlab
 
 # disable default nginx configuration and enable gitlab's nginx configuration
 rm -f /etc/nginx/sites-enabled/default
