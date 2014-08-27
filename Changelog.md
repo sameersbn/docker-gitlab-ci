@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- update to sameersbn/ubuntu:14.04.20140628 image
 - added new SMTP_ENABLED configuration option.
 - update to the sameersbn/ubuntu:12.04.20140818 baseimage
 - added NGINX_MAX_UPLOAD_SIZE configuration option.
