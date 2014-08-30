@@ -109,10 +109,7 @@ cd ${INSTALL_DIR}
 case "${GITLAB_CI_HTTPS}" in
   true)
     if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
-      case "${GITLAB_CI_HTTPS_ONLY}" in
-        true) cp ${SETUP_DIR}/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
-        *) cp ${SETUP_DIR}/config/nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
-      esac
+      cp ${SETUP_DIR}/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci
     else
       echo "SSL keys and certificates were not found."
       echo "Assuming that the container is running behind a HTTPS enabled load balancer."
@@ -131,10 +128,11 @@ sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/smtp_settings.rb config/in
 # override default configuration templates with user templates
 case "${GITLAB_CI_HTTPS}" in
   true)
-    case "${GITLAB_CI_HTTPS_ONLY}" in
-      true) [ -f ${DATA_DIR}/config/nginx/gitlab_ci.https.strict ] && cp ${DATA_DIR}/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci ;;
-      *) [ -f ${DATA_DIR}/config/nginx/gitlab_ci.https.permissive ] && cp ${DATA_DIR}/config/nginx/gitlab_ci.https.permissive /etc/nginx/sites-available/gitlab_ci ;;
-    esac
+    if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
+      [ -f ${DATA_DIR}/config/nginx/gitlab_ci.https.strict ] && cp ${DATA_DIR}/config/nginx/gitlab_ci.https.strict /etc/nginx/sites-available/gitlab_ci
+    else
+      [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+    fi
     ;;
   *) [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
 esac
