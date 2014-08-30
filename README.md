@@ -561,7 +561,7 @@ Load balancers like haproxy/hipache talk to backend applications over plain http
 
 When using a load balancer, you should set the `GITLAB_CI_HTTPS` option set to `true`. With this in place, you should also configure the load balancer to support handling of https requests. But that is out of the scope of this document. Please refer to [Using SSL/HTTPS with HAProxy](http://seanmcgary.com/posts/using-sslhttps-with-haproxy) for information on the subject; if TL;DR then at least set the `X-Forwarded-SSL: on` header in the load balancer virtualhost configuration, or set `X-Forwarded-Proto: https` header in the load balancer virtual host configuration and append `-e 'NGINX_X_FORWARDED_PROTO=$http_x_forwarded_proto'` to the docker run command line.
 
-When using a load balancer, you probably want to make sure the load balancer performs the automatic http to https redirection. Information on this can also be found in the link above. Unfortunately hipache does not come with an option to perform http to https redirection, so the only choice you really have is to switch to using haproxy or nginx for load balancing.
+When using a load balancer, you probably want to make sure the load balancer performs the automatic http to https redirection. Information on this can also be found in the link above.
 
 In summation, the docker command would look something like this (if setting the X-Forwarded-SSL header in the load balancer):
 
