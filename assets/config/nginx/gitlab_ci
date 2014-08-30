@@ -7,30 +7,44 @@ upstream gitlab_ci {
 }
 
 server {
-  listen 80 default_server;         # e.g., listen 192.168.1.1:80;
+  listen *:80 default_server;         # e.g., listen 192.168.1.1:80; In most cases *:80 is a good idea
   server_name {{YOUR_SERVER_FQDN}};     # e.g., server_name source.example.com;
+  server_tokens off;     # don't show the version number, a security best practice
   root {{INSTALL_DIR}}/public;
+  
+  # Increase this if you want to upload large attachments
+  # Or if you want to accept large git objects over http
+  client_max_body_size {{NGINX_MAX_UPLOAD_SIZE}};
 
+  # individual nginx logs for this gitlab_ci vhost
   access_log  /var/log/nginx/gitlab_ci_access.log;
   error_log   /var/log/nginx/gitlab_ci_error.log;
 
   location / {
+    # serve static files from defined root folder;.
+    # @gitlab_ci is a named location for the upstream fallback, see below
     try_files $uri $uri/index.html $uri.html @gitlab_ci;
   }
 
+  # if a file, which is not found in the root folder is requested,
+  # then the proxy pass the request to the upsteam (gitlab_ci unicorn)
   location @gitlab_ci {
-    proxy_read_timeout 300;
-    proxy_connect_timeout 300;
+    # If you use https make sure you disable gzip compression 
+    # to be safe against BREACH attack
+    # gzip off;
+
+    proxy_read_timeout 300; # Some requests take more than 30 seconds.
+    proxy_connect_timeout 300; # Some requests take more than 30 seconds.
     proxy_redirect     off;
 
     proxy_set_header   X-Forwarded-Proto {{NGINX_X_FORWARDED_PROTO}};
     proxy_set_header   Host              $http_host;
     proxy_set_header   X-Real-IP         $remote_addr;
+    proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header   X-Frame-Options   SAMEORIGIN;
 
     proxy_pass http://gitlab_ci;
   }
 
-  # adjust this to match the largest build log your runners might submit,
-  # set to 0 to disable limit
-  client_max_body_size {{NGINX_MAX_UPLOAD_SIZE}};
+  error_page 500 /500.html;
 }
