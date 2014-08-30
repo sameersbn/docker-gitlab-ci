@@ -546,44 +546,28 @@ HTTPS support can be enabled by setting the `GITLAB_CI_HTTPS` option to `true`.
 ```bash
 docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_CI_HTTPS=true' \
-  -e 'NGINX_X_FORWARDED_PROTO=https' \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:5.0.1
 ```
 
 In this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. However, this is not optimal when using a load balancer.
 
-Setting the NGINX_X_FORWARDED_PROTO option to https should ensure that gitlab-ci generates only https links by default and should make the http to https redirection hack less needed.
-
 #### Using HTTPS with a load balancer
 
-Load balancers like haproxy/hipache talk to backend applications over plain http and as such, installation of ssl keys and certificates in the container are not required when using a load balancer.
+Load balancers like nginx/haproxy/hipache talk to backend applications over plain http and as such the installation of ssl keys and certificates are not required and should **NOT** be installed in the container. The SSL configuration has to instead be done at the load balancer. Hoewever, when using a load balancer you **MUST** set `GITLAB_CI_HTTPS` to `true`.
 
-When using a load balancer, you should set the `GITLAB_CI_HTTPS_ONLY` option to `false` and the `GITLAB_CI_HTTPS` option set to `true`. With this in place, you should also configure the load balancer to support handling of https requests. But that is out of the scope of this document. Please refer to [Using SSL/HTTPS with HAProxy](http://seanmcgary.com/posts/using-sslhttps-with-haproxy) for information on the subject; if TL;DR then at least set the `X-Forwarded-SSL: on` header in the load balancer virtualhost configuration, or set `X-Forwarded-Proto: https` header in the load balancer virtual host configuration and append `-e 'NGINX_X_FORWARDED_PROTO=$http_x_forwarded_proto'` to the docker run command line.
+With this in place, you should configure the load balancer to support handling of https requests. But that is out of the scope of this document. Please refer to [Using SSL/HTTPS with HAProxy](http://seanmcgary.com/posts/using-sslhttps-with-haproxy) for information on the subject.
 
-Note that when the `GITLAB_CI_HTTPS_ONLY` is disabled, the application does not perform the automatic http to https redirection and this functionality has to be configured at the load balancer which is also described in the link above. Unfortunately hipache does not come with an option to perform http to https redirection, so the only choice you really have is to switch to using haproxy or nginx for load balancing.
+When using a load balancer, you probably want to make sure the load balancer performs the automatic http to https redirection. Information on this can also be found in the link above.
 
-In summation, the docker command would look something like this (if setting the X-Forwarded-SSL header in the load balancer):
+In summation, when using a load balancer, the docker command would look for the most part something like this:
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_CI_HTTPS=true' \
-  -e 'GITLAB_CI_HTTPS_ONLY=false' \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:5.0.1
 ```
-
-or like this (if setting the X-Forwarded-Proto header in the load balancer):
-
-```bash
-docker run --name=gitlab-ci -d \
-  -e 'GITLAB_CI_HTTPS=true' \
-  -e 'GITLAB_CI_HTTPS_ONLY=false' \
-  -e 'NGINX_X_FORWARDED_PROTO=$http_x_forwarded_proto' \
-  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:5.0.1
-```
-
 
 #### Establishing trust with your server
 
@@ -650,7 +634,6 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_EMAIL**: The email address for the GitLab CI server. Defaults to `gitlab@localhost`.
 - **GITLAB_CI_SUPPORT**: The support email address for the GitLab CI server. Defaults to `support@localhost`.
 - **GITLAB_CI_HTTPS**: Set to `true` to enable https support, disabled by default.
-- **GITLAB_CI_HTTPS_ONLY**: Configure access over plain http when `GITLAB_CI_HTTPS` is enabled. Should be set to `false` when using a load balancer. Defaults to `true`.
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to `/home/gitlab_ci/data/certs/gitlab.crt`
 - **SSL_KEY_PATH**: Location of the ssl private key. Defaults to `/home/gitlab_ci/data/certs/gitlab.key`
 - **SSL_DHPARAM_PATH**: Location of the dhparam file. Defaults to `/home/gitlab_ci/data/certs/dhparam.pem`
