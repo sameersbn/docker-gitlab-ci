@@ -607,7 +607,7 @@ docker run --name=gitlab-ci -it --rm \
   sameersbn/gitlab-ci:5.0.1
 ```
 
-GitLab CI will now be accessible at the `/ci` path, e.g. `http://git.example.com/ci`.
+GitLab CI will now be accessible at the `/ci` path, e.g. `http://www.example.com/ci`.
 
 **Note**: *The `GITLAB_CI_RELATIVE_URL_ROOT` parameter should always begin with a slash and **SHOULD NOT** have any trailing slashes.*
 
