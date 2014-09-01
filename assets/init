@@ -10,6 +10,7 @@ GITLAB_CI_PORT=${GITLAB_CI_PORT:-}
 GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}
 GITLAB_CI_EMAIL=${GITLAB_CI_EMAIL:-gitlab@localhost}
 GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
+GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS:-true}
 GITLAB_CI_RELATIVE_URL_ROOT=${GITLAB_CI_RELATIVE_URL_ROOT:-}
 
 SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-$DATA_DIR/certs/gitlab_ci.crt}
@@ -222,6 +223,7 @@ sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i config
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HTTPS}}/'"${GITLAB_CI_HTTPS}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_EMAIL}}/'"${GITLAB_CI_EMAIL}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_SUPPORT}}/'"${GITLAB_CI_SUPPORT}"'/' -i config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}/'"${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}"'/' -i config/application.yml
 
 # configure database
 if [ "${DB_TYPE}" == "postgres" ]; then

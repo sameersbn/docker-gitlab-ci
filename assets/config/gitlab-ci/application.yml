@@ -20,7 +20,7 @@ defaults: &defaults
     # Default project notifications settings:
     #
     # Send emails only on broken builds (default: true)
-    # all_broken_builds: true
+    all_broken_builds: {{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}
     #
     # Add committer to recipients list (default: false)
     # add_committer: true

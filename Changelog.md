@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- added GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS configuration option.
 - added GITLAB_CI_RELATIVE_URL_ROOT configuration option.
 - update to sameersbn/ubuntu:14.04.20140628 image
 - added new SMTP_ENABLED configuration option.
