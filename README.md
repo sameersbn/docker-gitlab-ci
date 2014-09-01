@@ -30,6 +30,7 @@
       - [Using HTTPS with a load balancer](#using-https-with-a-load-balancer)
       - [Establishing trust with your server](#establishing-trust-with-your-server)
       - [Installing Trusted SSL Server Certificates](#installing-trusted-ssl-server-certificates)
+    - [Deploy to a subdirectory (relative url root)](#deploy-to-a-subdirectory-relative-url-root)
     - [Putting it all together](#putting-it-all-together)
     - [Available Configuration Parameters](#available-configuration-parameters)
 - [Shell Access](#shell-access)
@@ -593,6 +594,23 @@ Copy the `ca.crt` file into the certs directory on the [datastore](#data-store).
 
 By default, our own server certificate [gitlab_ci.crt](#generation-of-self-signed-certificates) is added to the trusted certificates list.
 
+### Deploy to a subdirectory (relative url root)
+
+By default GitLab CI expects that your application is running at the root (eg. /). This section explains how to run your application inside a directory.
+
+Let's assume we want to deploy our application to '/ci'. GitLab CI needs to know this directory to generate the appropriate routes. This can be specified using the `GITLAB_CI_RELATIVE_URL_ROOT` configuration option like so:
+
+```bash
+docker run --name=gitlab-ci -it --rm \
+  -e 'GITLAB_CI_RELATIVE_URL_ROOT=/ci' \
+  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
+  sameersbn/gitlab-ci:5.0.1
+```
+
+GitLab CI will now be accessible at the `/ci` path, e.g. `http://git.example.com/ci`.
+
+**Note**: *The `GITLAB_CI_RELATIVE_URL_ROOT` parameter should always begin with a slash and **SHOULD NOT** have any trailing slashes.*
+
 ### Putting it all together
 
 ```bash
@@ -634,6 +652,7 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_EMAIL**: The email address for the GitLab CI server. Defaults to `gitlab@localhost`.
 - **GITLAB_CI_SUPPORT**: The support email address for the GitLab CI server. Defaults to `support@localhost`.
 - **GITLAB_CI_HTTPS**: Set to `true` to enable https support, disabled by default.
+- **GITLAB_CI_RELATIVE_URL_ROOT**: The sub URI of the GitLab CI server, e.g. `/ci`. No default.
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to `/home/gitlab_ci/data/certs/gitlab.crt`
 - **SSL_KEY_PATH**: Location of the ssl private key. Defaults to `/home/gitlab_ci/data/certs/gitlab.key`
 - **SSL_DHPARAM_PATH**: Location of the dhparam file. Defaults to `/home/gitlab_ci/data/certs/dhparam.pem`

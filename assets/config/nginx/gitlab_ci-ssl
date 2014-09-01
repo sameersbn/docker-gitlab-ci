@@ -51,7 +51,8 @@ server {
   access_log  /var/log/nginx/gitlab_ci_access.log;
   error_log   /var/log/nginx/gitlab_ci_error.log;
 
-  location / {
+  location {{GITLAB_CI_RELATIVE_URL_ROOT}} {
+    # alias {{INSTALL_DIR}}/public;
     ## Serve static files from defined root folder.
     ## @gitlab_ci is a named location for the upstream fallback, see below.
     try_files $uri $uri/index.html $uri.html @gitlab_ci;
