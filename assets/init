@@ -111,14 +111,14 @@ cd ${INSTALL_DIR}
 case "${GITLAB_CI_HTTPS}" in
   true)
     if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
-      cp ${SETUP_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-available/gitlab_ci
+      cp ${SETUP_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-enabled/gitlab_ci
     else
       echo "SSL keys and certificates were not found."
       echo "Assuming that the container is running behind a HTTPS enabled load balancer."
-      cp ${SETUP_DIR}/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+      cp ${SETUP_DIR}/config/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci
     fi
     ;;
-  *) cp ${SETUP_DIR}/config/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
+  *) cp ${SETUP_DIR}/config/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
 esac
 sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/application.yml config/application.yml
 sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/resque.yml config/resque.yml
@@ -131,12 +131,12 @@ sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/smtp_settings.rb config/in
 case "${GITLAB_CI_HTTPS}" in
   true)
     if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
-      [ -f ${DATA_DIR}/config/nginx/gitlab_ci-ssl ] && cp ${DATA_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-available/gitlab_ci
+      [ -f ${DATA_DIR}/config/nginx/gitlab_ci-ssl ] && cp ${DATA_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-enabled/gitlab_ci
     else
-      [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
+      [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci
     fi
     ;;
-  *) [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci ;;
+  *) [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
 esac
 [ -f ${DATA_DIR}/config/gitlab-ci/application.yml ]  && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/application.yml  config/application.yml
 [ -f ${DATA_DIR}/config/gitlab-ci/resque.yml ]       && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
@@ -198,14 +198,14 @@ if [ "${REDIS_HOST}" == "localhost" ]; then
 fi
 
 # configure nginx
-sed 's,{{INSTALL_DIR}},'"${INSTALL_DIR}"',g' -i /etc/nginx/sites-available/gitlab_ci
-sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/g' -i /etc/nginx/sites-available/gitlab_ci
-sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /etc/nginx/sites-available/gitlab_ci
-sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
-sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
-sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-available/gitlab_ci
-sed 's/{{NGINX_MAX_UPLOAD_SIZE}}/'"${NGINX_MAX_UPLOAD_SIZE}"'/g' -i /etc/nginx/sites-available/gitlab_ci
-sed 's,{{NGINX_X_FORWARDED_PROTO}},'"${NGINX_X_FORWARDED_PROTO}"',g' -i /etc/nginx/sites-available/gitlab_ci
+sed 's,{{INSTALL_DIR}},'"${INSTALL_DIR}"',g' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/g' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's/{{NGINX_MAX_UPLOAD_SIZE}}/'"${NGINX_MAX_UPLOAD_SIZE}"'/g' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's,{{NGINX_X_FORWARDED_PROTO}},'"${NGINX_X_FORWARDED_PROTO}"',g' -i /etc/nginx/sites-enabled/gitlab_ci
 
 # configure relative_url_root
 if [ -n "${GITLAB_CI_RELATIVE_URL_ROOT}" ]; then
