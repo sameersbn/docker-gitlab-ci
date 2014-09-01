@@ -652,6 +652,7 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_EMAIL**: The email address for the GitLab CI server. Defaults to `gitlab@localhost`.
 - **GITLAB_CI_SUPPORT**: The support email address for the GitLab CI server. Defaults to `support@localhost`.
 - **GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS**: Enable or disable broken build notification emails. Defaults to `true`
+- **GITLAB_CI_NOTIFY_ADD_COMMITTER**: Add committer to recipients list of broken build notification emails. Defaults to `false`
 - **GITLAB_CI_HTTPS**: Set to `true` to enable https support, disabled by default.
 - **GITLAB_CI_RELATIVE_URL_ROOT**: The sub URI of the GitLab CI server, e.g. `/ci`. No default.
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to `/home/gitlab_ci/data/certs/gitlab.crt`
