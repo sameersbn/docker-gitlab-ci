@@ -1,6 +1,6 @@
 # Changelog
 
-**latest**
+**5.0.1-1**
 - added GITLAB_CI_NOTIFY_ADD_COMMITTER configuration option
 - added GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS configuration option.
 - added GITLAB_CI_RELATIVE_URL_ROOT configuration option.
