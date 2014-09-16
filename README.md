@@ -120,7 +120,7 @@ Alternately, if the GitLab and GitLab CI servers are running on the same host, y
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
--p 10080:80 -link gitlab:gitlab sameersbn/gitlab-ci:5.0.1-1
+-p 10080:80 --link gitlab:gitlab sameersbn/gitlab-ci:5.0.1-1
 ```
 
 Point your browser to `http://localhost:10080` and login using your GitLab credentials.
