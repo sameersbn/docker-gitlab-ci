@@ -1,5 +1,8 @@
 # Changelog
 
+**latest**
+- rebase image on sameersbn/debian:jessie.20140918 base image
+
 **5.0.1-1**
 - added GITLAB_CI_NOTIFY_ADD_COMMITTER configuration option
 - added GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS configuration option.
