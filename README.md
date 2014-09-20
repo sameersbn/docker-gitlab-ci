@@ -114,6 +114,8 @@ You need to provide the URL of the GitLab server while running GitLab CI using t
 ```bash
 docker run --name=gitlab-ci -it --rm \
  -p 10080:80 -e 'GITLAB_URL=http://172.17.0.2' \
+ -v /var/run/docker.sock:/run/docker.sock \
+ -v $(which docker):/bin/docker \
   sameersbn/gitlab-ci:5.0.1-1
 ```
 
@@ -121,7 +123,10 @@ Alternately, if the GitLab and GitLab CI servers are running on the same host, y
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
--p 10080:80 --link gitlab:gitlab sameersbn/gitlab-ci:5.0.1-1
+-p 10080:80 --link gitlab:gitlab \
+-v /var/run/docker.sock:/run/docker.sock \
+-v $(which docker):/bin/docker \
+sameersbn/gitlab-ci:5.0.1-1
 ```
 
 Point your browser to `http://localhost:10080` and login using your GitLab credentials.
@@ -164,13 +169,25 @@ GitLab CI uses a database backend to store its data.
 > **Warning**
 >
 > The internal mysql server will soon be removed from the image.
-
-> Please use a linked [mysql](#linking-to-mysql-container) or
-> [postgresql](#linking-to-postgresql-container) container instead.
-> Or else connect with an external [mysql](#external-mysql-server) or
-> [postgresql](#external-postgresql-server) server.
-
-> You've been warned.
+>
+> Please use a [linked mysql](#linking-to-mysql-container) container or specify a connection to a [external mysql](#external-mysql-server) server.
+>
+> **You've been warned.**
+>
+> If you are already using the internal mysql server then follow these instructions to migrate to a linked mysql container:
+>
+> Assuming that your mysql data is available at `/opt/gitlab-ci/mysql`
+>
+> ```bash
+> docker run --name=mysql -d \
+>   -v /opt/gitlab-ci/mysql:/var/lib/mysql \
+>   sameersbn/mysql:latest
+> ```
+> This will start a mysql container with your existing mysql data.
+> All you need to do now is link this mysql container to the gitlab ci container using the `--link mysql:mysql` option. 
+>
+> Refer to [Linking to MySQL Container](#linking-to-mysql-container) for more information.
+>
 
 This docker image is configured to use a MySQL database backend. The database connection can be configured using environment variables. If not specified, the image will start a mysql server internally and use it. However in this case the data stored in the mysql database will be lost if the container is stopped/removed. To avoid this you should mount a volume at `/var/lib/mysql`.
 
@@ -406,18 +423,20 @@ docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
 
 ## Redis
 
+GitLab CI uses the redis server for its key-value data store. The redis server connection details can be specified using environment variables.
+
 ### Internal Redis Server
 
-> **Warning**
+The internal redis server has been removed from the image. Please use a [linked redis](#linking-to-redis-container) container or specify a [external redis](#external-redis-server) connection.
+
+> **Notice**
 >
-> The internal redis server will soon be removed from the image.
-
-> Please use a linked [redis](#linking-to-redis-container) container
-> or a external [redis](#external-redis-server) server
-
-> You've been warned.
-
-GitLab CI uses the redis server for its key-value data store. The redis server connection details can be specified using environment variables. If not specified, the  starts a redis server internally, no additional configuration is required.
+> The internal mysql server will also be removed in the next release.
+>
+> If you have been using the internal mysql server, then please migrate to a using a [linked mysql server](#linking-to-mysql-container) using the migration instructions listed [here](#internal-mysql-server).
+>
+> **You've been warned**
+>
 
 ### External Redis Server
 
