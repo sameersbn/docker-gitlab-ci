@@ -4,11 +4,11 @@ help:
 	@echo ""
 	@echo "-- Help Menu"
 	@echo ""
-	@echo "   1. make build  - build the gitlab-ci image"
-	@echo "   2. make start  - start gitlab-ci"
-	@echo "   3. make stop   - stop gitlab-ci"
-	@echo "   4. make logs   - view logs"
-	@echo "   5. make purge  - stop and remove the container"
+	@echo "   1. make build        - build the gitlab-ci image"
+	@echo "   2. make quickstart   - start gitlab-ci"
+	@echo "   3. make stop         - stop gitlab-ci"
+	@echo "   4. make logs         - view logs"
+	@echo "   5. make purge        - stop and remove the container"
 
 build:
 	@docker build --tag=${USER}/gitlab-ci .
