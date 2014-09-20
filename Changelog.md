@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- added GITLAB_CI_HTTPS_HSTS_ENABLED configuration option (advanced config)
 - added GITLAB_CI_HTTPS_HSTS_MAX_AGE configuration option (advanced config)
 - shutdown the container gracefully
 - purge development packages after install. shaves off ~150MB from the image.

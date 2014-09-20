@@ -22,6 +22,7 @@ SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-$DATA_DIR/certs/dhparam.pem}
 
 CA_CERTIFICATES_PATH=${CA_CERTIFICATES_PATH:-$DATA_DIR/certs/ca.crt}
 
+GITLAB_CI_HTTPS_HSTS_ENABLED=${GITLAB_CI_HTTPS_HSTS_ENABLED:-true}
 GITLAB_CI_HTTPS_HSTS_MAX_AGE=${GITLAB_CI_HTTPS_HSTS_MAX_AGE:-31536000}
 
 NGINX_MAX_UPLOAD_SIZE=${NGINX_MAX_UPLOAD_SIZE:-20m}
@@ -211,7 +212,11 @@ sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-enable
 sed 's/{{NGINX_MAX_UPLOAD_SIZE}}/'"${NGINX_MAX_UPLOAD_SIZE}"'/g' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's,{{NGINX_X_FORWARDED_PROTO}},'"${NGINX_X_FORWARDED_PROTO}"',g' -i /etc/nginx/sites-enabled/gitlab_ci
 
-sed 's/{{GITLAB_CI_HTTPS_HSTS_MAX_AGE}}/'"${GITLAB_CI_HTTPS_HSTS_MAX_AGE}"'/' -i /etc/nginx/sites-enabled/gitlab_ci
+if [ "${GITLAB_CI_HTTPS_HSTS_ENABLED}" == "true" ]; then
+  sed 's/{{GITLAB_CI_HTTPS_HSTS_MAX_AGE}}/'"${GITLAB_CI_HTTPS_HSTS_MAX_AGE}"'/' -i /etc/nginx/sites-enabled/gitlab_ci
+else
+  sed '/{{GITLAB_CI_HTTPS_HSTS_MAX_AGE}}/d' -i /etc/nginx/sites-enabled/gitlab_ci
+fi
 
 # configure relative_url_root
 if [ -n "${GITLAB_CI_RELATIVE_URL_ROOT}" ]; then

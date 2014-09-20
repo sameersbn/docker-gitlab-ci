@@ -654,6 +654,7 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS**: Enable or disable broken build notification emails. Defaults to `true`
 - **GITLAB_CI_NOTIFY_ADD_COMMITTER**: Add committer to recipients list of broken build notification emails. Defaults to `false`
 - **GITLAB_CI_HTTPS**: Set to `true` to enable https support, disabled by default.
+- **GITLAB_CI_HTTPS_HSTS_ENABLED**: Advanced configuration option for turning off the HSTS configuration. Applicable only when SSL is in use. Defaults to `true`. See [#138](https://github.com/sameersbn/docker-gitlab/issues/138) for use case scenario.
 - **GITLAB_CI_HTTPS_HSTS_MAXAGE**: Advanced configuration option for setting the HSTS max-age in the gitlab-ci nginx vHost configuration. Applicable only when SSL is in use. Defaults to `31536000`.
 - **GITLAB_CI_RELATIVE_URL_ROOT**: The sub URI of the GitLab CI server, e.g. `/ci`. No default.
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to `/home/gitlab_ci/data/certs/gitlab.crt`
