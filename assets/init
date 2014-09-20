@@ -298,6 +298,9 @@ appStart () {
     sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > ${DATA_DIR}/VERSION
   fi
 
+  echo "Starting cron..."
+  supervisorctl start cron >/dev/null
+
   echo "Starting nginx..."
   supervisorctl start nginx >/dev/null
 
