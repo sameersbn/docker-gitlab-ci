@@ -8,6 +8,15 @@ DATA_DIR="/home/gitlab_ci/data"
 SETUP_DIR="/app/setup"
 GEM_CACHE_DIR="${SETUP_DIR}/cache"
 
+# rebuild apt cache
+apt-get update
+
+# install build dependencies for gem installation
+apt-get install -y gcc g++ make libc6-dev ruby-dev \
+  libmysqlclient-dev libpq-dev zlib1g-dev libyaml-dev libssl-dev \
+  libgdbm-dev libreadline-dev libncurses5-dev libffi-dev \
+  libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev
+
 # add git user
 adduser --disabled-login --gecos 'GitLab CI' gitlab_ci
 
@@ -35,30 +44,12 @@ chmod -R u+rwX log tmp
 # create production log
 sudo -u gitlab_ci -H touch log/production.log
 
-# rebuild apt cache
-apt-get update
-
-# install build dependencies for gem installation
-apt-get install -y gcc g++ make libc6-dev ruby-dev \
-  libmysqlclient-dev libpq-dev zlib1g-dev libyaml-dev libssl-dev \
-  libgdbm-dev libreadline-dev libncurses5-dev libffi-dev \
-  libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev
-
 # install gems required by gitlab-ci, use cache if available
 if [ -d "${GEM_CACHE_DIR}" ]; then
   mv ${GEM_CACHE_DIR} vendor/
   chown -R gitlab_ci:gitlab_ci vendor/cache
 fi
 sudo -u gitlab_ci -H bundle install --deployment --without development test
-
-# purge build dependencies
-apt-get purge -y --auto-remove gcc g++ make libc6-dev ruby-dev \
-  libmysqlclient-dev libpq-dev zlib1g-dev libyaml-dev libssl-dev \
-  libgdbm-dev libreadline-dev libncurses5-dev libffi-dev \
-  libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev
-
-# cleanup
-rm -rf /var/lib/apt/lists/*
 
 # install cronjob
 bundle exec whenever -w -u gitlab_ci RAILS_ENV=production
@@ -128,3 +119,12 @@ autorestart=true
 stdout_logfile=/var/log/supervisor/%(program_name)s.log
 stderr_logfile=/var/log/supervisor/%(program_name)s.log
 EOF
+
+# purge build dependencies
+apt-get purge -y --auto-remove gcc g++ make libc6-dev ruby-dev \
+  libmysqlclient-dev libpq-dev zlib1g-dev libyaml-dev libssl-dev \
+  libgdbm-dev libreadline-dev libncurses5-dev libffi-dev \
+  libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev
+
+# cleanup
+rm -rf /var/lib/apt/lists/*
