@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+trap appStop SIGINT SIGTERM
+
 INSTALL_DIR="/home/gitlab_ci/gitlab-ci"
 DATA_DIR="/home/gitlab_ci/data"
 SETUP_DIR="/app/setup"
@@ -313,6 +315,22 @@ appStart () {
 
   # watch the access logs
   tail -F /var/log/nginx/gitlab_ci_access.log
+}
+
+appStop() {
+  echo ""
+  /etc/init.d/gitlab_ci stop
+  echo "Stopping crond..."
+  supervisorctl stop cron >/dev/null
+  echo "Stopping nginx..."
+  supervisorctl stop nginx >/dev/null
+  echo "Stopping mysqld..."
+  supervisorctl stop mysqld >/dev/null
+  echo "Stopping redis-server..."
+  supervisorctl stop redis-server >/dev/null
+  echo "Stopping supervisord..."
+  kill -15 $(cat /var/run/supervisord.pid)
+  exit
 }
 
 appRake () {

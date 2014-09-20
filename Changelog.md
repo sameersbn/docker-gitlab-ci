@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- shutdown the container gracefully
 - purge development packages after install. shaves off ~150MB from the image.
 - rebase image on sameersbn/debian:jessie.20140918 base image
 
