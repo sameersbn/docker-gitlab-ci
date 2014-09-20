@@ -17,6 +17,8 @@ quickstart:
 	@echo "Starting gitlab-ci..."
 	@docker run --name='gitlab-ci-demo' -d \
 		-p 10080:80 --link gitlab:gitlab \
+		-v /var/run/docker.sock:/run/docker.sock \
+		-v $(shell which docker):/bin/docker \
 		${USER}/gitlab-ci:latest >/dev/null
 	@echo "Please be patient. This could take a while..."
 	@echo "GitLab CI will be available at http://localhost:10080"

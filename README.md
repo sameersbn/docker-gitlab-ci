@@ -114,6 +114,8 @@ You need to provide the URL of the GitLab server while running GitLab CI using t
 ```bash
 docker run --name=gitlab-ci -it --rm \
  -p 10080:80 -e 'GITLAB_URL=http://172.17.0.2' \
+ -v /var/run/docker.sock:/run/docker.sock \
+ -v $(which docker):/bin/docker \
   sameersbn/gitlab-ci:5.0.1-1
 ```
 
@@ -121,7 +123,10 @@ Alternately, if the GitLab and GitLab CI servers are running on the same host, y
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
--p 10080:80 --link gitlab:gitlab sameersbn/gitlab-ci:5.0.1-1
+-p 10080:80 --link gitlab:gitlab \
+-v /var/run/docker.sock:/run/docker.sock \
+-v $(which docker):/bin/docker \
+sameersbn/gitlab-ci:5.0.1-1
 ```
 
 Point your browser to `http://localhost:10080` and login using your GitLab credentials.
