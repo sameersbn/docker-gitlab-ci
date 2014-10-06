@@ -334,7 +334,7 @@ appStart () {
   [ -f ${DATA_DIR}/VERSION ] && CURRENT_VERSION=$(cat ${DATA_DIR}/VERSION)
   if [ "${GITLAB_CI_VERSION}" != "${CURRENT_VERSION}" ]; then
     echo "Migrating database..."
-    sudo -u gitlab_ci -H bundle exec rake db:migrate RAILS_ENV=production 2>/dev/null
+    sudo -u gitlab_ci -H bundle exec rake db:migrate RAILS_ENV=production >/dev/null
     sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > ${DATA_DIR}/VERSION
   fi
 
