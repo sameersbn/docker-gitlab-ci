@@ -61,6 +61,101 @@ GITLAB_URL=${GITLAB_URL:-}
 
 GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
 
+# is a mysql or postgresql database linked?
+# requires that the mysql or postgresql containers have exposed
+# port 3306 and 5432 respectively.
+if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
+  DB_TYPE=mysql
+  DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
+  DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
+
+  # support for linked sameersbn/mysql image
+  DB_USER=${DB_USER:-${MYSQL_ENV_DB_USER}}
+  DB_PASS=${DB_PASS:-${MYSQL_ENV_DB_PASS}}
+  DB_NAME=${DB_NAME:-${MYSQL_ENV_DB_NAME}}
+
+  # support for linked orchardup/mysql and centurylink/mysql image
+  DB_USER=${DB_USER:-${MYSQL_ENV_MYSQL_USER}}
+  DB_PASS=${DB_PASS:-${MYSQL_ENV_MYSQL_PASSWORD}}
+  DB_NAME=${DB_NAME:-${MYSQL_ENV_MYSQL_DATABASE}}
+elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
+  DB_TYPE=postgres
+  DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
+  DB_PORT=${DB_PORT:-${POSTGRESQL_PORT_5432_TCP_PORT}}
+
+  # support for linked sameersbn/postgresql image
+  DB_USER=${DB_USER:-${POSTGRESQL_ENV_DB_USER}}
+  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_DB_PASS}}
+  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB_NAME}}
+
+  # support for linked orchardup/postgresql image
+  DB_USER=${DB_USER:-${POSTGRESQL_ENV_POSTGRESQL_USER}}
+  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_POSTGRESQL_PASS}}
+  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_POSTGRESQL_DB}}
+
+  # support for linked paintedfox/postgresql image
+  DB_USER=${DB_USER:-${POSTGRESQL_ENV_USER}}
+  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_PASS}}
+  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB}}
+fi
+
+##
+## For the sake of getting the quick start guide to work,
+## we attempt to spin up a postgresql container if possible.
+##
+## NOTE: this is only meant for getting the quick start guide to work .
+##
+if [ -z "${DB_HOST}" -a -n "$(which docker)" -a -S /var/run/docker.sock ]; then
+  echo "Database connection details not specified."
+  echo "Will try to spin up a new postgresql image with the name postgresql-gitlab-ci."
+  echo "Please manually configure the database connection in production."
+  case "$(docker inspect --format {{.State.Running}} postgresql-gitlab-ci 2>/dev/null)" in
+    true)
+      echo "Using existing postgresql container..."
+      ;;
+    false)
+      echo "Starting up existing postgresql container..."
+      docker start postgresql-gitlab-ci >/dev/null 2>/dev/null
+      ;;
+    *)
+      echo "Starting up a new postgresql container..."
+      docker run --name='postgresql-gitlab-ci' -d \
+        -e 'DB_USER=gitlab_ci_user' -e 'DB_PASS=gitlab_ci_pass' -e 'DB_NAME=gitlab_ci_db' \
+        sameersbn/postgresql:latest >/dev/null 2>/dev/null
+      ;;
+  esac
+  DB_TYPE=postgres
+  DB_HOST=$(docker inspect --format {{.NetworkSettings.IPAddress}} postgresql-gitlab-ci 2>/dev/null)
+  DB_PORT=5432
+  DB_USER=gitlab_ci_user
+  DB_PASS=gitlab_ci_pass
+  DB_NAME=gitlab_ci_db
+fi
+
+if [ -z "${DB_HOST}" ]; then
+  echo "ERROR: "
+  echo "  Please configure the database connection."
+  echo "  Refer http://git.io/kD0ndg for more information."
+  echo "  Cannot continue without a database. Aborting..."
+  exit 1
+fi
+
+# use default port number if it is still not set
+case "${DB_TYPE}" in
+  mysql) DB_PORT=${DB_PORT:-3306} ;;
+  postgres) DB_PORT=${DB_PORT:-5432} ;;
+  *)
+    echo "ERROR: "
+    echo "  Please specify the database type in use via the DB_TYPE configuration option."
+    echo "  Accepted values are \"postgres\" or \"mysql\". Aborting..."
+    exit 1
+    ;;
+esac
+
+# set default user and database
+DB_USER=${DB_USER:-root}
+DB_NAME=${DB_NAME:-gitlab_ci_production}
+
 # is a redis container linked?
 if [ -n "${REDISIO_PORT_6379_TCP_ADDR}" ]; then
   REDIS_HOST=${REDIS_HOST:-${REDISIO_PORT_6379_TCP_ADDR}}
@@ -104,67 +199,6 @@ if [ -z "${REDIS_HOST}" ]; then
   echo "  Cannot continue without a redis connection. Aborting..."
   exit 1
 fi
-
-# is a mysql or postgresql database linked?
-# requires that the mysql or postgresql containers have exposed
-# port 3306 and 5432 respectively.
-if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
-  DB_TYPE=mysql
-  DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
-  DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
-
-  # support for linked sameersbn/mysql image
-  DB_USER=${DB_USER:-${MYSQL_ENV_DB_USER}}
-  DB_PASS=${DB_PASS:-${MYSQL_ENV_DB_PASS}}
-  DB_NAME=${DB_NAME:-${MYSQL_ENV_DB_NAME}}
-
-  # support for linked orchardup/mysql and centurylink/mysql image
-  DB_USER=${DB_USER:-${MYSQL_ENV_MYSQL_USER}}
-  DB_PASS=${DB_PASS:-${MYSQL_ENV_MYSQL_PASSWORD}}
-  DB_NAME=${DB_NAME:-${MYSQL_ENV_MYSQL_DATABASE}}
-elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
-  DB_TYPE=postgres
-  DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
-  DB_PORT=${DB_PORT:-${POSTGRESQL_PORT_5432_TCP_PORT}}
-
-  # support for linked sameersbn/postgresql image
-  DB_USER=${DB_USER:-${POSTGRESQL_ENV_DB_USER}}
-  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_DB_PASS}}
-  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB_NAME}}
-
-  # support for linked orchardup/postgresql image
-  DB_USER=${DB_USER:-${POSTGRESQL_ENV_POSTGRESQL_USER}}
-  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_POSTGRESQL_PASS}}
-  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_POSTGRESQL_DB}}
-
-  # support for linked paintedfox/postgresql image
-  DB_USER=${DB_USER:-${POSTGRESQL_ENV_USER}}
-  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_PASS}}
-  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB}}
-fi
-
-if [ -z "${DB_HOST}" ]; then
-  echo "ERROR: "
-  echo "  Please configure the database connection."
-  echo "  Refer http://git.io/kD0ndg for more information."
-  echo "  Cannot continue without a database. Aborting..."
-  exit 1
-fi
-
-# use default port number if it is still not set
-case "${DB_TYPE}" in
-  mysql) DB_PORT=${DB_PORT:-3306} ;;
-  postgres) DB_PORT=${DB_PORT:-5432} ;;
-  *)
-    echo "ERROR: "
-    echo "  Please specify the database type in use via the DB_TYPE configuration option."
-    echo "  Accepted values are \"postgres\" or \"mysql\". Aborting..."
-    exit 1
-    ;;
-esac
-
-DB_NAME=${DB_NAME:-gitlab_ci_production}
-DB_USER=${DB_USER:-root}
 
 case "${GITLAB_CI_HTTPS}" in
   true)
