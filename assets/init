@@ -113,6 +113,11 @@ if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
   DB_TYPE=mysql
   DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
   DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
+
+  # support for linked sameersbn/mysql image
+  DB_USER=${DB_USER:-${MYSQL_ENV_DB_USER}}
+  DB_PASS=${DB_PASS:-${MYSQL_ENV_DB_PASS}}
+  DB_NAME=${DB_NAME:-${MYSQL_ENV_DB_NAME}}
 elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
   DB_TYPE=postgres
   DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
