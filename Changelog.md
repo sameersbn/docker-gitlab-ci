@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- added support for fetching `DB_NAME`, `DB_USER` and `DB_PASS` from the postgresql linkage
 - added support for fetching `DB_NAME`, `DB_USER` and `DB_PASS` from the mysql linkage
 - removed internal redis server
 - added GITLAB_CI_HTTPS_HSTS_ENABLED configuration option (advanced config)
