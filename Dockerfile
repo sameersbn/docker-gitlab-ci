@@ -9,7 +9,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv E1DF1F24 \
  && echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" >> /etc/apt/sources.list \
  && apt-get update \
  && apt-get install -y supervisor logrotate locales \
-      nginx openssh-server mysql-server redis-tools \
+      nginx openssh-server mysql-client redis-tools \
       git-core postgresql-client ruby2.1 \
       python2.7 python-docutils \
       libmysqlclient18 libpq5 zlib1g libyaml-0-2 libssl1.0.0 \
