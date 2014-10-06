@@ -24,7 +24,8 @@ adduser --disabled-login --gecos 'GitLab CI' gitlab_ci
 sudo -u gitlab_ci -H mkdir -p ${DATA_DIR}
 
 # shallow clone gitlab-ci
-sudo -u gitlab_ci -H git clone -b v${GITLAB_CI_VERSION} --depth 1 \
+echo "Cloning gitlab-ci v.${GITLAB_CI_VERSION}..."
+sudo -u gitlab_ci -H git clone -q -b v${GITLAB_CI_VERSION} --depth 1 \
   https://github.com/gitlabhq/gitlab-ci.git ${INSTALL_DIR}
 
 cd ${INSTALL_DIR}
