@@ -39,7 +39,6 @@ DB_PORT=${DB_PORT:-}
 DB_NAME=${DB_NAME:-gitlab_ci_production}
 DB_USER=${DB_USER:-root}
 DB_PASS=${DB_PASS:-}
-DB_INIT=${DB_INIT:-}
 DB_POOL=${DB_POOL:-10}
 
 SMTP_DOMAIN=${SMTP_DOMAIN:-www.gmail.com}
@@ -372,8 +371,20 @@ appStart () {
     sleep 1
   done
 
-  if [ "$DB_INIT" == "yes" ]; then
-    sudo -u gitlab_ci -H bundle exec rake db:setup RAILS_ENV=production
+  # run the `db:setup` rake task if required
+  case "${DB_TYPE}" in
+    mysql)
+      QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = '${DB_NAME}';"
+      COUNT=$(mysql -h ${DB_HOST} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} -ss -e "${QUERY}")
+      ;;
+    postgres)
+      QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';"
+      COUNT=$(PGPASSWORD="${DB_PASS}" psql -h ${DB_HOST} -U ${DB_USER} -d ${DB_NAME} -Atw -c "${QUERY}" 2>/dev/null)
+      ;;
+  esac
+  if [ -z "${COUNT}" -o ${COUNT} -eq 0 ]; then
+    echo "Setting up GitLab CI for firstrun. Please be patient, this could take a while..."
+    sudo -u gitlab_ci -H bundle exec rake db:setup RAILS_ENV=production >/dev/null
   fi
 
   # migrate database if the gitlab-ci version has changed.
