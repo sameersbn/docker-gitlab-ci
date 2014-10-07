@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- update to sameersbn/ubuntu:14.04.20141001 base image
 - added support for fetching `DB_NAME`, `DB_USER` and `DB_PASS` from the postgresql linkage
 - added support for fetching `DB_NAME`, `DB_USER` and `DB_PASS` from the mysql linkage
 - removed internal redis server
@@ -8,7 +9,6 @@
 - added GITLAB_CI_HTTPS_HSTS_MAX_AGE configuration option (advanced config)
 - shutdown the container gracefully
 - purge development packages after install. shaves off ~150MB from the image.
-- rebase image on sameersbn/debian:jessie.20140918 base image
 
 **5.0.1-1**
 - added GITLAB_CI_NOTIFY_ADD_COMMITTER configuration option
