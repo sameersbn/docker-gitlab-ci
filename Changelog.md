@@ -2,6 +2,7 @@
 
 **latest**
 - automatically run the `db:setup` rake task for new installs
+- removed internal mysql server
 - update to sameersbn/ubuntu:14.04.20141001 base image
 - added support for fetching `DB_NAME`, `DB_USER` and `DB_PASS` from the postgresql linkage
 - added support for fetching `DB_NAME`, `DB_USER` and `DB_PASS` from the mysql linkage

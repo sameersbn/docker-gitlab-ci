@@ -36,8 +36,8 @@ UNICORN_TIMEOUT=${UNICORN_TIMEOUT:-60}
 DB_TYPE=${DB_TYPE:-}
 DB_HOST=${DB_HOST:-}
 DB_PORT=${DB_PORT:-}
-DB_NAME=${DB_NAME:-gitlab_ci_production}
-DB_USER=${DB_USER:-root}
+DB_NAME=${DB_NAME:-}
+DB_USER=${DB_USER:-}
 DB_PASS=${DB_PASS:-}
 DB_POOL=${DB_POOL:-10}
 
@@ -60,6 +60,101 @@ GITLAB_URL=${GITLAB_URL:-}
   GITLAB_URL="http://${GITLAB_PORT_80_TCP_ADDR}"
 
 GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
+
+# is a mysql or postgresql database linked?
+# requires that the mysql or postgresql containers have exposed
+# port 3306 and 5432 respectively.
+if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
+  DB_TYPE=mysql
+  DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
+  DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
+
+  # support for linked sameersbn/mysql image
+  DB_USER=${DB_USER:-${MYSQL_ENV_DB_USER}}
+  DB_PASS=${DB_PASS:-${MYSQL_ENV_DB_PASS}}
+  DB_NAME=${DB_NAME:-${MYSQL_ENV_DB_NAME}}
+
+  # support for linked orchardup/mysql and centurylink/mysql image
+  DB_USER=${DB_USER:-${MYSQL_ENV_MYSQL_USER}}
+  DB_PASS=${DB_PASS:-${MYSQL_ENV_MYSQL_PASSWORD}}
+  DB_NAME=${DB_NAME:-${MYSQL_ENV_MYSQL_DATABASE}}
+elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
+  DB_TYPE=postgres
+  DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
+  DB_PORT=${DB_PORT:-${POSTGRESQL_PORT_5432_TCP_PORT}}
+
+  # support for linked sameersbn/postgresql image
+  DB_USER=${DB_USER:-${POSTGRESQL_ENV_DB_USER}}
+  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_DB_PASS}}
+  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB_NAME}}
+
+  # support for linked orchardup/postgresql image
+  DB_USER=${DB_USER:-${POSTGRESQL_ENV_POSTGRESQL_USER}}
+  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_POSTGRESQL_PASS}}
+  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_POSTGRESQL_DB}}
+
+  # support for linked paintedfox/postgresql image
+  DB_USER=${DB_USER:-${POSTGRESQL_ENV_USER}}
+  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_PASS}}
+  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB}}
+fi
+
+##
+## For the sake of getting the quick start guide to work,
+## we attempt to spin up a postgresql container if possible.
+##
+## NOTE: this is only meant for getting the quick start guide to work .
+##
+if [ -z "${DB_HOST}" -a -n "$(which docker)" -a -S /var/run/docker.sock ]; then
+  echo "Database connection details not specified."
+  echo "Will try to spin up a new postgresql image with the name postgresql-gitlab-ci."
+  echo "Please manually configure the database connection in production."
+  case "$(docker inspect --format {{.State.Running}} postgresql-gitlab-ci 2>/dev/null)" in
+    true)
+      echo "Using existing postgresql container..."
+      ;;
+    false)
+      echo "Starting up existing postgresql container..."
+      docker start postgresql-gitlab-ci >/dev/null 2>/dev/null
+      ;;
+    *)
+      echo "Starting up a new postgresql container..."
+      docker run --name='postgresql-gitlab-ci' -d \
+        -e 'DB_USER=gitlab_ci_user' -e 'DB_PASS=gitlab_ci_pass' -e 'DB_NAME=gitlab_ci_db' \
+        sameersbn/postgresql:latest >/dev/null 2>/dev/null
+      ;;
+  esac
+  DB_TYPE=postgres
+  DB_HOST=$(docker inspect --format {{.NetworkSettings.IPAddress}} postgresql-gitlab-ci 2>/dev/null)
+  DB_PORT=5432
+  DB_USER=gitlab_ci_user
+  DB_PASS=gitlab_ci_pass
+  DB_NAME=gitlab_ci_db
+fi
+
+if [ -z "${DB_HOST}" ]; then
+  echo "ERROR: "
+  echo "  Please configure the database connection."
+  echo "  Refer http://git.io/kD0ndg for more information."
+  echo "  Cannot continue without a database. Aborting..."
+  exit 1
+fi
+
+# use default port number if it is still not set
+case "${DB_TYPE}" in
+  mysql) DB_PORT=${DB_PORT:-3306} ;;
+  postgres) DB_PORT=${DB_PORT:-5432} ;;
+  *)
+    echo "ERROR: "
+    echo "  Please specify the database type in use via the DB_TYPE configuration option."
+    echo "  Accepted values are \"postgres\" or \"mysql\". Aborting..."
+    exit 1
+    ;;
+esac
+
+# set default user and database
+DB_USER=${DB_USER:-root}
+DB_NAME=${DB_NAME:-gitlab_ci_production}
 
 # is a redis container linked?
 if [ -n "${REDISIO_PORT_6379_TCP_ADDR}" ]; then
@@ -104,55 +199,6 @@ if [ -z "${REDIS_HOST}" ]; then
   echo "  Cannot continue without a redis connection. Aborting..."
   exit 1
 fi
-
-# is a mysql or postgresql database linked?
-# requires that the mysql or postgresql containers have exposed
-# port 3306 and 5432 respectively.
-if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
-  DB_TYPE=mysql
-  DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
-  DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
-
-  # support for linked sameersbn/mysql image
-  DB_USER=${DB_USER:-${MYSQL_ENV_DB_USER}}
-  DB_PASS=${DB_PASS:-${MYSQL_ENV_DB_PASS}}
-  DB_NAME=${DB_NAME:-${MYSQL_ENV_DB_NAME}}
-
-  # support for linked orchardup/mysql and centurylink/mysql image
-  DB_USER=${DB_USER:-${MYSQL_ENV_MYSQL_USER}}
-  DB_PASS=${DB_PASS:-${MYSQL_ENV_MYSQL_PASSWORD}}
-  DB_NAME=${DB_NAME:-${MYSQL_ENV_MYSQL_DATABASE}}
-elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
-  DB_TYPE=postgres
-  DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
-  DB_PORT=${DB_PORT:-${POSTGRESQL_PORT_5432_TCP_PORT}}
-
-  # support for linked sameersbn/postgresql image
-  DB_USER=${DB_USER:-${POSTGRESQL_ENV_DB_USER}}
-  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_DB_PASS}}
-  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB_NAME}}
-
-  # support for linked orchardup/postgresql image
-  DB_USER=${DB_USER:-${POSTGRESQL_ENV_POSTGRESQL_USER}}
-  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_POSTGRESQL_PASS}}
-  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_POSTGRESQL_DB}}
-
-  # support for linked paintedfox/postgresql image
-  DB_USER=${DB_USER:-${POSTGRESQL_ENV_USER}}
-  DB_PASS=${DB_PASS:-${POSTGRESQL_ENV_PASS}}
-  DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB}}
-fi
-
-# fallback to using the internal mysql server
-DB_TYPE=${DB_TYPE:-mysql}
-DB_HOST=${DB_HOST:-localhost}
-
-# use default port number if it is still not set
-case "${DB_TYPE}" in
-  mysql) DB_PORT=${DB_PORT:-3306} ;;
-  postgres) DB_PORT=${DB_PORT:-5432} ;;
-  *) echo "Unsupported database adapter. Available adapters are mysql and postgres." && exit 1 ;;
-esac
 
 case "${GITLAB_CI_HTTPS}" in
   true)
@@ -215,44 +261,6 @@ if [ -f "${SSL_CERTIFICATE_PATH}" -o -f "${CA_CERTIFICATES_PATH}" ]; then
   [ -f "${CA_CERTIFICATES_PATH}" ] && \
     cp "${CA_CERTIFICATES_PATH}" /usr/local/share/ca-certificates/ca.crt
   update-ca-certificates --fresh >/dev/null 2>&1
-fi
-
-# start mysql server if ${DB_HOST} is localhost
-if [ "${DB_HOST}" == "localhost" ]; then
-  if [ "${DB_TYPE}" == "postgres" ]; then
-    echo "DB_TYPE 'postgres' is not supported internally. Please provide DB_HOST."
-    exit 1
-  fi
-
-  # fix permissions and ownership of /var/lib/mysql
-  chown -R mysql:mysql /var/lib/mysql
-  chmod 700 /var/lib/mysql
-
-  # initialize MySQL data directory
-  if [ ! -d /var/lib/mysql/mysql ]; then
-    mysql_install_db --user=mysql
-  fi
-
-  echo "Starting mysql server..."
-  supervisorctl start mysqld >/dev/null
-
-  # wait for mysql server to start (max 120 seconds)
-  timeout=120
-  while ! mysqladmin -uroot ${DB_PASS:+-p$DB_PASS} status >/dev/null 2>&1
-  do
-    timeout=$(expr $timeout - 1)
-    if [ $timeout -eq 0 ]; then
-      echo "Failed to start mysql server"
-      exit 1
-    fi
-    sleep 1
-  done
-
-  if ! echo "USE ${DB_NAME}" | mysql -uroot ${DB_PASS:+-p$DB_PASS} >/dev/null 2>&1; then
-    DB_INIT="yes"
-    echo "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` DEFAULT CHARACTER SET \`utf8\` COLLATE \`utf8_unicode_ci\`;" | mysql -uroot ${DB_PASS:+-p$DB_PASS}
-    echo "GRANT SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON \`${DB_NAME}\`.* TO 'root'@'localhost';" | mysql -uroot ${DB_PASS:+-p$DB_PASS}
-  fi
 fi
 
 # configure nginx
@@ -421,8 +429,6 @@ appStop() {
   supervisorctl stop cron >/dev/null
   echo "Stopping nginx..."
   supervisorctl stop nginx >/dev/null
-  echo "Stopping mysqld..."
-  supervisorctl stop mysqld >/dev/null
   echo "Stopping supervisord..."
   kill -15 $(cat /var/run/supervisord.pid)
   exit
