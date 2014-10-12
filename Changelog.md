@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- start unicorn and sidekiq using supervisord
 - automatically run the `db:setup` rake task for new installs
 - removed internal mysql server
 - update to sameersbn/ubuntu:14.04.20141001 base image
