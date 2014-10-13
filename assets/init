@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-trap appStop SIGINT SIGTERM
-
 INSTALL_DIR="/home/gitlab_ci/gitlab-ci"
 DATA_DIR="/home/gitlab_ci/data"
 SETUP_DIR="/app/setup"
@@ -211,9 +209,6 @@ case "${GITLAB_CI_HTTPS}" in
     ;;
 esac
 
-# start supervisord
-/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
-
 cd ${INSTALL_DIR}
 
 # copy configuration templates
@@ -405,33 +400,15 @@ appStart () {
     sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > ${DATA_DIR}/VERSION
   fi
 
-  echo "Starting cron..."
-  supervisorctl start cron >/dev/null
-
-  echo "Starting nginx..."
-  supervisorctl start nginx >/dev/null
-
   # remove stale unicorn and sidekiq pid's if they exist.
   rm -rf tmp/pids/unicorn.pid
   rm -rf tmp/pids/sidekiq.pid
 
-  # start the gitlab application
-  /etc/init.d/gitlab_ci start
+  # remove state unicorn socket if it exists
+  rm -rf tmp/sockets/gitlab_ci.socket
 
-  # watch the access logs
-  tail -F /var/log/nginx/gitlab_ci_access.log
-}
-
-appStop() {
-  echo ""
-  /etc/init.d/gitlab_ci stop
-  echo "Stopping crond..."
-  supervisorctl stop cron >/dev/null
-  echo "Stopping nginx..."
-  supervisorctl stop nginx >/dev/null
-  echo "Stopping supervisord..."
-  kill -15 $(cat /var/run/supervisord.pid)
-  exit
+  # start supervisord
+  exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 }
 
 appRake () {
