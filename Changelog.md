@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- autolaunch all daemons via supervisord
 - start unicorn and sidekiq using supervisord
 - automatically run the `db:setup` rake task for new installs
 - removed internal mysql server
