@@ -193,7 +193,7 @@ Before you start the GitLab CI image create user and database for GitLab CI.
 ```sql
 CREATE USER 'gitlab_ci'@'%.%.%.%' IDENTIFIED BY 'password';
 CREATE DATABASE IF NOT EXISTS `gitlab_ci_production` DEFAULT CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`;
-GRANT SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON `gitlab_ci_production`.* TO 'gitlab_ci'@'%.%.%.%';
+GRANT ALL PRIVILEGES ON `gitlab_ci_production`.* TO 'gitlab_ci'@'%.%.%.%';
 ```
 
 To make sure the database is initialized start the container with `app:rake db:setup` option.
