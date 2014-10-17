@@ -4,6 +4,7 @@
   - [Version](#version)
   - [Changelog](Changelog.md)
 - [Supported Web Browsers](#supported-web-browsers)
+- [Contributing](#contributing)
 - [Reporting Issues](#reporting-issues)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -54,6 +55,14 @@ Current Version: **5.0.1-1**
 - Safari 7+ (Know problem: required fields in html5 do not work)
 - Opera (Latest released version)
 - IE 10+
+
+# Contributing
+
+If you find this image useful here's how you can help:
+
+- Send a Pull Request with your awesome new features and bug fixes
+- Help new users with [Issues](https://github.com/sameersbn/docker-gitlab-ci/issues) they may encounter
+- Send me a tip on [Gittip](https://gittip.com/sameersbn/) or using Bitcoin at **16rDxVqJPyYAFYPLduTaSiwe7ZiY1hHqKM**
 
 # Reporting Issues
 
