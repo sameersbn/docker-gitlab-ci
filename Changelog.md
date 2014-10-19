@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- added SMTP_OPENSSL_VERIFY_MODE configuration option
 - autolaunch all daemons via supervisord
 - start unicorn and sidekiq using supervisord
 - automatically run the `db:setup` rake task for new installs
