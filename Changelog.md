@@ -1,6 +1,7 @@
 # Changelog
 
 **latest**
+- gitlab-ci: upgrade to v.5.1.0
 - added SMTP_OPENSSL_VERIFY_MODE configuration option
 - autolaunch all daemons via supervisord
 - start unicorn and sidekiq using supervisord

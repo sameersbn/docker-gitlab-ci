@@ -46,7 +46,7 @@ Dockerfile to build a GitLab CI container image.
 
 ## Version
 
-Current Version: **5.0.1-1**
+Current Version: **5.1.0**
 
 # Supported Web Browsers
 
