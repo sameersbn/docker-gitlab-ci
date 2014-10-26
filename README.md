@@ -205,21 +205,9 @@ CREATE DATABASE IF NOT EXISTS `gitlab_ci_production` DEFAULT CHARACTER SET `utf8
 GRANT ALL PRIVILEGES ON `gitlab_ci_production`.* TO 'gitlab_ci'@'%.%.%.%';
 ```
 
-To make sure the database is initialized start the container with `app:rake db:setup` option.
+We are now ready to start the container.
 
 *Assuming that the mysql server host is 192.168.1.100*
-
-```bash
-docker run --name=gitlab-ci -it --rm \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'DB_HOST=192.168.1.100' -e 'DB_NAME=gitlab_ci_production' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  sameersbn/gitlab-ci:5.0.1-1 app:rake db:setup
-```
-
-**NOTE: The above setup is performed only for the first run**.
-
-This will initialize the GitLab CI database. Now that the database is initialized, start the container normally.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
@@ -252,50 +240,30 @@ mkdir -p /opt/mysql/data
 sudo chcon -Rt svirt_sandbox_file_t /opt/mysql/data
 ```
 
-The updated run command looks like this.
+The run command looks like this.
 
 ```bash
-docker run --name mysql -d \
+docker run --name=mysql -d \
+  -e 'DB_NAME=gitlab_ci_production' \
+  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
   -v /opt/mysql/data:/var/lib/mysql \
   sameersbn/mysql:latest
 ```
 
-You should now have the mysql server running. By default the sameersbn/mysql image does not assign a password for the root user and allows remote connections for the root user from the `172.17.%.%` address space. This means you can login to the mysql server from the host as the root user.
+The above command will create a database named `gitlab_ci_production` and also create a user named `gitlab_ci` with the password `password` with full/remote access to the `gitlab_ci_production` database.
 
-Now, lets login to the mysql server and create a user and database for the GitLab application.
-
-```bash
-docker run -it --rm sameersbn/mysql:latest mysql -uroot -h$(docker inspect --format {{.NetworkSettings.IPAddress}} mysql)
-```
-
-```sql
-CREATE USER 'gitlab_ci'@'%.%.%.%' IDENTIFIED BY 'password';
-CREATE DATABASE IF NOT EXISTS `gitlab_ci_production` DEFAULT CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`;
-GRANT SELECT, LOCK TABLES, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON `gitlab_ci_production`.* TO 'gitlab_ci'@'%.%.%.%';
-FLUSH PRIVILEGES;
-```
-
-Now that we have the database created for GitLab CI, lets install the database schema. This is done by starting the gitlab container with the `app:rake db:setup` command.
+We are now ready to start the GitLab CI application.
 
 ```bash
 docker run --name=gitlab-ci -it --rm --link mysql:mysql \
   -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -e 'DB_NAME=gitlab_ci_production' \
-  sameersbn/gitlab-ci:5.0.1-1 app:rake db:setup
-```
-
-**NOTE: The above setup is performed only for the first run**.
-
-We are now ready to start the GitLab application.
-
-```bash
-docker run --name=gitlab-ci -it --rm --link mysql:mysql \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -e 'DB_NAME=gitlab_ci_production' \
   sameersbn/gitlab-ci:5.0.1-1
 ```
+
+The image will automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the mysql container using the magic of docker links and works with the following images:
+ - [sameersbn/mysql](https://registry.hub.docker.com/u/sameersbn/mysql/)
+ - [centurylink/mysql](https://registry.hub.docker.com/u/centurylink/mysql/)
+ - [orchardup/mysql](https://registry.hub.docker.com/u/orchardup/mysql/)
 
 ### PostgreSQL
 
@@ -309,22 +277,9 @@ CREATE DATABASE gitlab_ci_production;
 GRANT ALL PRIVILEGES ON DATABASE gitlab_ci_production to gitlab_ci;
 ```
 
-To make sure the database is initialized start the container with `app:rake db:setup` option.
+We are now ready to start the container.
 
 *Assuming that the PostgreSQL server host is 192.168.1.100*
-
-```bash
-docker run --name=gitlab-ci -it --rm \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'DB_TYPE=postgres' -e 'DB_HOST=192.168.1.100' \
-  -e 'DB_NAME=gitlab_ci_production' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  sameersbn/gitlab-ci:5.0.1-1 app:rake db:setup
-```
-
-**NOTE: The above setup is performed only for the first run**.
-
-This will initialize the GitLab CI database. Now that the database is initialized, start the container normally.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
@@ -358,53 +313,30 @@ mkdir -p /opt/postgresql/data
 sudo chcon -Rt svirt_sandbox_file_t /opt/postgresql/data
 ```
 
-The updated run command looks like this.
+The run command looks like this.
 
 ```bash
-docker run --name postgresql -d \
+docker run --name=postgresql -d \
+  -e 'DB_NAME=gitlab_ci_production' \
+  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
   -v /opt/postgresql/data:/var/lib/postgresql \
   sameersbn/postgresql:latest
 ```
 
-You should now have the postgresql server running. The password for the postgres user can be found in the logs of the postgresql image.
-
-```bash
-docker logs postgresql
-```
-
-Now, lets login to the postgresql server and create a user and database for the GitLab application.
-
-```bash
-docker run -it --rm sameersbn/postgresql:latest psql -U postgres -h $(docker inspect --format {{.NetworkSettings.IPAddress}} postgresql)
-```
-
-```sql
-CREATE ROLE gitlab_ci with LOGIN CREATEDB PASSWORD 'password';
-CREATE DATABASE gitlab_ci_production;
-GRANT ALL PRIVILEGES ON DATABASE gitlab_ci_production to gitlab_ci;
-```
-
-Now that we have the database created for gitlab ci, lets install the database schema. This is done by starting the gitlab container with the `app:rake db:setup` command.
-
-```bash
-docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -e 'DB_NAME=gitlab_ci_production' \
-  sameersbn/gitlab-ci:5.0.1-1 app:rake db:setup
-```
-
-**NOTE: The above setup is performed only for the first run**.
+The above command will create a database named `gitlab_ci_production` and also create a user named `gitlab_ci` with the password `password` with access to the `gitlab_ci_production` database.
 
 We are now ready to start the GitLab CI application.
 
 ```bash
 docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
   -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -e 'DB_NAME=gitlab_ci_production' \
   sameersbn/gitlab-ci:5.0.1-1
 ```
+
+The image will automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the postgresql container using the magic of docker links and works with the following images:
+ - [sameersbn/postgresql](https://registry.hub.docker.com/u/sameersbn/postgresql/)
+ - [orchardup/postgresql](https://registry.hub.docker.com/u/orchardup/postgresql/)
+ - [paintedfox/postgresql](https://registry.hub.docker.com/u/paintedfox/postgresql/)
 
 ## Redis
 
