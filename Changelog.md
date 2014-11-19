@@ -1,5 +1,8 @@
 # Changelog
 
+**latest**
+- added `NGINX_WORKERS` configuration option
+
 **5.1.0**
 - gitlab-ci: upgrade to v.5.1.0
 - added SMTP_OPENSSL_VERIFY_MODE configuration option
