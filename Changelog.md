@@ -1,6 +1,9 @@
 # Changelog
 
-**latest**
+**5.2.0**
+- upgrade to gitlab-ci 5.2.0
+
+**5.1.0-1**
 - added `NGINX_WORKERS` configuration option
 
 **5.1.0**
