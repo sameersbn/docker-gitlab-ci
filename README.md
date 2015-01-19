@@ -140,7 +140,16 @@ docker run --name=gitlab-ci -it --rm \
 sameersbn/gitlab-ci:5.3.0
 ```
 
+You can also use use [fig](http://www.fig.sh/) to configure and launch the image.
+
+```bash
+wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/fig.yml
+fig up
+```
+
 Point your browser to `http://localhost:10080` and login using your GitLab credentials.
+
+*The rest of the document will use the docker command line. You can quite simply adapt your configuration into a fig.yml file if you wish to do so.*
 
 You should now have the GitLab CI ready for testing. If you want to use this image in production the please read on.
 
@@ -580,7 +589,7 @@ docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
 
 ### Available Configuration Parameters
 
-*Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command.*
+*Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command. Alternately you can use fig.*
 
 Below is the complete list of available options that can be used to customize your GitLab CI installation.
 
