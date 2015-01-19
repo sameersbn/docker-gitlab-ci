@@ -213,6 +213,7 @@ case "${GITLAB_CI_HTTPS}" in
 esac
 
 # populate ${LOG_DIR}
+mkdir -m 0755 -p ${LOG_DIR}/nginx       && chown -R gitlab_ci:gitlab_ci ${LOG_DIR}/nginx
 mkdir -m 0755 -p ${LOG_DIR}/gitlab-ci   && chown -R gitlab_ci:gitlab_ci ${LOG_DIR}/gitlab-ci
 
 cd ${INSTALL_DIR}

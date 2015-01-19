@@ -70,9 +70,26 @@ rm -f /etc/nginx/sites-enabled/default
 # create the /var/run/sshd directory (required for sshd to start)
 mkdir -p /var/run/sshd
 
+# move nginx logs to ${LOG_DIR}/nginx
+sed 's|access_log /var/log/nginx/access.log;|access_log '"${LOG_DIR}"'/nginx/access.log;|' -i /etc/nginx/nginx.conf
+sed 's|error_log /var/log/nginx/error.log;|error_log '"${LOG_DIR}"'/nginx/error.log;|' -i /etc/nginx/nginx.conf
+
 # configure gitlab-ci log rotation
 cat > /etc/logrotate.d/gitlab-ci <<EOF
 ${LOG_DIR}/gitlab-ci/*.log {
+  weekly
+  missingok
+  rotate 52
+  compress
+  delaycompress
+  notifempty
+  copytruncate
+}
+EOF
+
+# configure gitlab-ci vhost log rotation
+cat > /etc/logrotate.d/gitlab-ci-vhost <<EOF
+${LOG_DIR}/nginx/*.log {
   weekly
   missingok
   rotate 52
