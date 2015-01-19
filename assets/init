@@ -18,6 +18,7 @@ GITLAB_CI_RELATIVE_URL_ROOT=${GITLAB_CI_RELATIVE_URL_ROOT:-}
 SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-$DATA_DIR/certs/gitlab_ci.crt}
 SSL_KEY_PATH=${SSL_KEY_PATH:-$DATA_DIR/certs/gitlab_ci.key}
 SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-$DATA_DIR/certs/dhparam.pem}
+SSL_VERIFY_CLIENT=${SSL_VERIFY_CLIENT:-off}
 
 CA_CERTIFICATES_PATH=${CA_CERTIFICATES_PATH:-$DATA_DIR/certs/ca.crt}
 
@@ -278,6 +279,13 @@ sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /etc/nginx/sites-enabled/gi
 sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's,{{SSL_VERIFY_CLIENT}},'"${SSL_VERIFY_CLIENT}"',' -i /etc/nginx/sites-enabled/gitlab_ci
+if [ -f /usr/local/share/ca-certificates/ca.crt ]; then
+  sed 's,{{CA_CERTIFICATES_PATH}},'"${CA_CERTIFICATES_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
+else
+  sed '/{{CA_CERTIFICATES_PATH}}/d' -i /etc/nginx/sites-enabled/gitlab_ci
+fi
+
 sed 's/worker_processes .*/worker_processes '"${NGINX_WORKERS}"';/' -i /etc/nginx/nginx.conf
 sed 's/{{NGINX_MAX_UPLOAD_SIZE}}/'"${NGINX_MAX_UPLOAD_SIZE}"'/g' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's,{{NGINX_X_FORWARDED_PROTO}},'"${NGINX_X_FORWARDED_PROTO}"',g' -i /etc/nginx/sites-enabled/gitlab_ci

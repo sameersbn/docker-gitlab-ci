@@ -598,6 +598,7 @@ Below is the complete list of available options that can be used to customize yo
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to `/home/gitlab_ci/data/certs/gitlab.crt`
 - **SSL_KEY_PATH**: Location of the ssl private key. Defaults to `/home/gitlab_ci/data/certs/gitlab.key`
 - **SSL_DHPARAM_PATH**: Location of the dhparam file. Defaults to `/home/gitlab_ci/data/certs/dhparam.pem`
+- **SSL_VERIFY_CLIENT**: Enable verification of client certificates using the `CA_CERTIFICATES_PATH` file. Defaults to `false`
 - **NGINX_WORKERS**: The number of nginx workers to start. Defaults to `1`.
 - **NGINX_MAX_UPLOAD_SIZE**: Maximum acceptable upload size. Defaults to `20m`.
 - **NGINX_X_FORWARDED_PROTO**: Advanced configuration option for the `proxy_set_header X-Forwarded-Proto` setting in the gitlab-ci nginx vHost configuration. Defaults to `https` when `GITLAB_CI_HTTPS` is `true`, else defaults to `$scheme`.
