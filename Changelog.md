@@ -1,5 +1,8 @@
 # Changelog
 
+**latest**
+- feature: gitlab-ci logs volume
+
 **5.3.0**
 - upgrade to gitlab-ci 5.3.0
 
