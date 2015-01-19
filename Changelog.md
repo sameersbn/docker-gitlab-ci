@@ -3,6 +3,7 @@
 **latest**
 - feature: gitlab-ci logs volume
 - added SSL_VERIFY_CLIENT configuration option
+- added `SIDEKIQ_CONCURRENCY` configuration option
 
 **5.3.0**
 - upgrade to gitlab-ci 5.3.0
