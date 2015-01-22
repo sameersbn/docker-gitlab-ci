@@ -7,12 +7,14 @@ postgresql:
 redis:
   image: sameersbn/redis:latest
 ci:
-  image: sameersbn/gitlab-ci:5.3.0
+  image: sameersbn/gitlab-ci:5.4.0
   links:
    - redis:redisio
    - postgresql:postgresql
   ports:
     - "10080:80"
   environment:
-   - GITLAB_CI_HOST=ci.example.com
-   - GITLAB_URL=https://git.example.com
+   - GITLAB_CI_HOST=ci.damagehead.com
+   - GITLAB_URL=https://git.damagehead.com
+   - GITLAB_APP_ID=''
+   - GITLAB_APP_SECRET=''
