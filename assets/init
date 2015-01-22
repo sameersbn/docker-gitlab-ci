@@ -57,6 +57,8 @@ fi
 SMTP_ENABLED=${SMTP_ENABLED:-false}
 
 GITLAB_URL=${GITLAB_URL:-}
+GITLAB_APP_ID=${GITLAB_APP_ID:-}
+GITLAB_APP_SECRET=${GITLAB_APP_SECRET:-}
 
 # use docker link feature to figure out gitlab url
 [[ -z "${GITLAB_URL}" && -n "${GITLAB_PORT_80_TCP_ADDR}" ]] && \
@@ -315,6 +317,8 @@ fi
 
 # configure server url
 sudo -u gitlab_ci -H sed 's/{{GITLAB_URL}}/'"${GITLAB_URL}"'/' -i config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_APP_ID}}/'"${GITLAB_APP_ID}"'/' -i config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_APP_SECRET}}/'"${GITLAB_APP_SECRET}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HOST}}/'"${GITLAB_CI_HOST}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HTTPS}}/'"${GITLAB_CI_HTTPS}"'/' -i config/application.yml

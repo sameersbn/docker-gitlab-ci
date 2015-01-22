@@ -120,11 +120,12 @@ docker build --tag="$USER/gitlab-ci" .
 
 Before you can start the GitLab CI image you need to make sure you have a [GitLab](https://www.gitlab.com/) server running. Checkout the [docker-gitlab](https://github.com/sameersbn/docker-gitlab) project for getting a GitLab server up and running.
 
-You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. For example if the location of the GitLab server is `172.17.0.2`
+You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. Additionally, since version `5.4.0` you need to provide the `GITLAB_APP_ID` and `GITLAB_APP_SECRET`. For example if the location of the GitLab server is `172.17.0.2`,
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
  -p 10080:80 -e 'GITLAB_URL=http://172.17.0.2' \
+ -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
  -v /var/run/docker.sock:/run/docker.sock \
  -v $(which docker):/bin/docker \
   sameersbn/gitlab-ci:5.3.0
@@ -135,6 +136,7 @@ Alternately, if the GitLab and GitLab CI servers are running on the same host, y
 ```bash
 docker run --name=gitlab-ci -it --rm \
 -p 10080:80 --link gitlab:gitlab \
+-e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
 -v /var/run/docker.sock:/run/docker.sock \
 -v $(which docker):/bin/docker \
 sameersbn/gitlab-ci:5.3.0
@@ -223,6 +225,7 @@ We are now ready to start the container.
 ```bash
 docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_URL=http://172.17.0.2' \
+  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
   -e 'DB_HOST=192.168.1.100' -e 'DB_NAME=gitlab_ci_production' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
   sameersbn/gitlab-ci:5.3.0
@@ -268,6 +271,7 @@ We are now ready to start the GitLab CI application.
 ```bash
 docker run --name=gitlab-ci -it --rm --link mysql:mysql \
   -e 'GITLAB_URL=http://172.17.0.2' \
+  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
   sameersbn/gitlab-ci:5.3.0
 ```
 
@@ -295,6 +299,7 @@ We are now ready to start the container.
 ```bash
 docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_URL=http://172.17.0.2' \
+  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
   -e 'DB_TYPE=postgres' -e 'DB_HOST=192.168.1.100' \
   -e 'DB_NAME=gitlab_ci_production' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
@@ -341,6 +346,7 @@ We are now ready to start the GitLab CI application.
 ```bash
 docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
   -e 'GITLAB_URL=http://172.17.0.2' \
+  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
   sameersbn/gitlab-ci:5.3.0
 ```
 
@@ -565,6 +571,7 @@ docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
   -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
   -v /opt/gitlab-ci/mysql:/var/lib/mysql \
   -e 'GITLAB_URL=http://172.17.0.2' \
+  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
   -e 'GITLAB_CI_HOST=gitlab-ci.local.host' \
   -e 'GITLAB_CI_EMAIL=gitlab@local.host' \
   -e 'GITLAB_CI_SUPPORT=support@local.host' \
@@ -580,6 +587,7 @@ docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
   -e 'DB_HOST=192.168.1.100' -e 'DB_NAME=gitlab_ci_production' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
   -e 'GITLAB_URL=http://172.17.0.2' \
+  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
   -e 'GITLAB_CI_HOST=gitlab-ci.local.host' \
   -e 'GITLAB_CI_EMAIL=gitlab@local.host' \
   -e 'GITLAB_CI_SUPPORT=support@local.host' \
@@ -594,6 +602,8 @@ docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
 Below is the complete list of available options that can be used to customize your GitLab CI installation.
 
 - **GITLAB_URL**: Url of the GitLab server to allow connections from. No defaults. Automatically configured when a GitLab server is linked using docker links feature.
+- **GITLAB_APP_ID**: Application ID used to connect to the gitlab server.
+- **GITLAB_APP_SECRET**: Secret key used to connect to the gitlab server.
 - **GITLAB_CI_HOST**: The hostname of the GitLab CI server. Defaults to `localhost`.
 - **GITLAB_CI_PORT**: The port number of the GitLab CI server. Defaults to `80` for plain http and `443` when https is enabled.
 - **GITLAB_CI_EMAIL**: The email address for the GitLab CI server. Defaults to `gitlab@localhost`.

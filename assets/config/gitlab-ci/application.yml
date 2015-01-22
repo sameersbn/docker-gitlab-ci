@@ -1,8 +1,8 @@
 defaults: &defaults
   gitlab_server:
     url: '{{GITLAB_URL}}' # Replace with your gitlab server url
-    app_id: ''
-    app_secret: ''
+    app_id: '{{GITLAB_APP_ID}}'
+    app_secret: '{{GITLAB_APP_SECRET}}'
 
   ## Gitlab CI settings  
   gitlab_ci:
@@ -39,8 +39,8 @@ test:
   <<: *defaults
   gitlab_server:
     url: '{{GITLAB_URL}}' 
-    app_id: ''
-    app_secret: ''
+    app_id: '{{GITLAB_APP_ID}}'
+    app_secret: '{{GITLAB_APP_SECRET}}'
 
 production:
   <<: *defaults
