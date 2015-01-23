@@ -1,5 +1,8 @@
 # Changelog
 
+**latest**
+- gitlab-ci: upgrade to v.5.4.1
+
 **5.4.0**
 - feature: gitlab-ci logs volume
 - added `SSL_VERIFY_CLIENT` configuration option
