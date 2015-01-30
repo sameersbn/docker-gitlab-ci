@@ -1,6 +1,6 @@
 # Changelog
 
-**latest**
+**5.4.2**
 - gitlab-ci: upgrade to v.5.4.2
 
 **5.4.1**
