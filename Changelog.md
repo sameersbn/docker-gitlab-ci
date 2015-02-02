@@ -1,5 +1,8 @@
 # Changelog
 
+**latest**
+- update postgresql client to the latest version
+
 **5.4.2**
 - gitlab-ci: upgrade to v.5.4.2
 
