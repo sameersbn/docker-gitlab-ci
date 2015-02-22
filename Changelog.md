@@ -2,6 +2,7 @@
 
 **latest**
 - update postgresql client to the latest version
+- gitlab-ci: upgrade to v.7.8.0
 
 **5.4.2**
 - gitlab-ci: upgrade to v.5.4.2

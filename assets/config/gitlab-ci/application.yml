@@ -41,6 +41,10 @@ test:
     url: '{{GITLAB_URL}}' 
     app_id: '{{GITLAB_APP_ID}}'
     app_secret: '{{GITLAB_APP_SECRET}}'
+  gitlab_ci:
+    host: "{{GITLAB_CI_HOST}}"
+    port: {{GITLAB_CI_PORT}}
+    https: {{GITLAB_CI_HTTPS}}
 
 production:
   <<: *defaults
