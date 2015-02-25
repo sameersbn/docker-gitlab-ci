@@ -1,5 +1,8 @@
 # Changelog
 
+**latest**
+- gitlab-ci: upgrade to v.7.8.1
+
 **7.8.0**
 - update postgresql client to the latest version
 - gitlab-ci: upgrade to v.7.8.0
