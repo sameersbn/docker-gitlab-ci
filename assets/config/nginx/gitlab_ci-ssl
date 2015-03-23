@@ -19,7 +19,7 @@ server {
 
 ## HTTPS host
 server {
-  listen 443 ssl spdy;
+  listen {{GITLAB_CI_PORT}} ssl spdy;
   server_name {{YOUR_SERVER_FQDN}};
   server_tokens off;
   root {{INSTALL_DIR}}/public;
