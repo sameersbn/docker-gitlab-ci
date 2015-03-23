@@ -53,7 +53,7 @@ if [ -d "${GEM_CACHE_DIR}" ]; then
   mv ${GEM_CACHE_DIR} vendor/
   chown -R gitlab_ci:gitlab_ci vendor/cache
 fi
-sudo -u gitlab_ci -H bundle install --deployment --without development test
+sudo -u gitlab_ci -H bundle install -j$(nproc) --deployment --without development test
 
 # install cronjob
 bundle exec whenever -w -u gitlab_ci RAILS_ENV=production
