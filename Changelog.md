@@ -1,6 +1,6 @@
 # Changelog
 
-**latest**
+**7.9.0**
 - gitlab-ci: upgrade to v.7.9.0
 - init: renamed `GITLAB_CI_NOTIFY_ADD_COMMITTER` option to `GITLAB_CI_NOTIFY_PUSHER`, backward compatible.
 
