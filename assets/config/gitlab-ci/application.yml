@@ -24,7 +24,7 @@ defaults: &defaults
     all_broken_builds: {{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}
     # 
     # Add pusher to recipients list (default: false)
-    add_pusher: {{GITLAB_CI_NOTIFY_ADD_COMMITTER}}
+    add_pusher: {{GITLAB_CI_NOTIFY_PUSHER}}
     
   gravatar:
     enabled: true
