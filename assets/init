@@ -12,9 +12,8 @@ GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}
 GITLAB_CI_EMAIL=${GITLAB_CI_EMAIL:-gitlab@localhost}
 GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
 GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS:-true}
-GITLAB_CI_NOTIFY_ADD_COMMITTER=${GITLAB_CI_NOTIFY_ADD_COMMITTER:-false}
-GITLAB_CI_RELATIVE_URL_ROOT=${GITLAB_CI_RELATIVE_URL_ROOT:-}
-
+GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-$GITLAB_CI_NOTIFY_ADD_COMMITTER}
+GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-false}
 SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-$DATA_DIR/certs/gitlab_ci.crt}
 SSL_KEY_PATH=${SSL_KEY_PATH:-$DATA_DIR/certs/gitlab_ci.key}
 SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-$DATA_DIR/certs/dhparam.pem}
@@ -325,7 +324,7 @@ sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_HTTPS}}/'"${GITLAB_CI_HTTPS}"'/' -i conf
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_EMAIL}}/'"${GITLAB_CI_EMAIL}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_SUPPORT}}/'"${GITLAB_CI_SUPPORT}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}/'"${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}"'/' -i config/application.yml
-sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_ADD_COMMITTER}}/'"${GITLAB_CI_NOTIFY_ADD_COMMITTER}"'/' -i config/application.yml
+sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_PUSHER}}/'"${GITLAB_CI_NOTIFY_PUSHER}"'/' -i config/application.yml
 
 # configure database
 if [ "${DB_TYPE}" == "postgres" ]; then

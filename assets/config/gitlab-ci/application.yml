@@ -22,10 +22,10 @@ defaults: &defaults
     #
     # Send emails only on broken builds (default: true)
     all_broken_builds: {{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}
-    #
-    # Add committer to recipients list (default: false)
-    add_committer: {{GITLAB_CI_NOTIFY_ADD_COMMITTER}}
-
+    # 
+    # Add pusher to recipients list (default: false)
+    add_pusher: {{GITLAB_CI_NOTIFY_PUSHER}}
+    
   gravatar:
     enabled: true
     plain_url: "http://www.gravatar.com/avatar/%{hash}?s=%{size}&d=mm"
