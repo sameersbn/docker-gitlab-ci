@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-GITLAB_CI_VERSION=7.9.0
+GITLAB_CI_VERSION=7.9.1
 
 INSTALL_DIR="/home/gitlab_ci/gitlab-ci"
 DATA_DIR="/home/gitlab_ci/data"
