@@ -120,7 +120,7 @@ docker build --tag="$USER/gitlab-ci" .
 
 Before you can start the GitLab CI image you need to make sure you have a [GitLab](https://www.gitlab.com/) server running. Checkout the [docker-gitlab](https://github.com/sameersbn/docker-gitlab) project for getting a GitLab server up and running.
 
-You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. Additionally, since version `7.9.3` you need to provide the `GITLAB_APP_ID` and `GITLAB_APP_SECRET`. For example if the location of the GitLab server is `172.17.0.2`,
+You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. Additionally, since version `5.4.0` you need to provide the `GITLAB_APP_ID` and `GITLAB_APP_SECRET`. For example if the location of the GitLab server is `172.17.0.2`,
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
