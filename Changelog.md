@@ -1,6 +1,6 @@
 # Changelog
 
-**latest**
+**7.9.4**
 - gitlab-ci: upgrade to v.7.9.4
 
 **7.9.3**
