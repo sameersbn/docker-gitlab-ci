@@ -142,16 +142,16 @@ docker run --name=gitlab-ci -it --rm \
 sameersbn/gitlab-ci:7.9.4
 ```
 
-You can also use use [fig](http://www.fig.sh/) to configure and launch the image.
+You can also use use [docker-compose](https://docs.docker.com/compose/) to configure and launch the image.
 
 ```bash
-wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/fig.yml
-fig up
+wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/docker-compose.yml
+docker-compose up
 ```
 
 Point your browser to `http://localhost:10080` and login using your GitLab credentials.
 
-*The rest of the document will use the docker command line. You can quite simply adapt your configuration into a fig.yml file if you wish to do so.*
+*The rest of the document will use the docker command line. You can quite simply adapt your configuration into a `docker-compose.yml` file if you wish to do so.*
 
 You should now have the GitLab CI ready for testing. If you want to use this image in production the please read on.
 
@@ -599,7 +599,7 @@ docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
 
 ### Available Configuration Parameters
 
-*Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command. Alternately you can use fig.*
+*Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command. Alternately you can use docker-compose.*
 
 Below is the complete list of available options that can be used to customize your GitLab CI installation.
 
