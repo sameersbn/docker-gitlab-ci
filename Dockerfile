@@ -36,5 +36,6 @@ EXPOSE 443
 VOLUME ["/home/gitlab_ci/data"]
 VOLUME ["/var/log/gitlab-ci"]
 
+WORKDIR /home/gitlab_ci/gitlab-ci
 ENTRYPOINT ["/app/init"]
 CMD ["app:start"]
