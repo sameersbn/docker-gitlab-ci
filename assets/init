@@ -391,7 +391,7 @@ fi
 # take ownership of ${DATA_DIR}
 chown gitlab_ci:gitlab_ci ${DATA_DIR}
 
-appStart () {
+appInit () {
   # due to the nature of docker and its use cases, we allow some time
   # for the database server to come online.
   case "${DB_TYPE}" in
@@ -449,7 +449,10 @@ appStart () {
 
   # remove state unicorn socket if it exists
   rm -rf tmp/sockets/gitlab_ci.socket
+}
 
+appStart () {
+  appInit
   # start supervisord
   exec /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
 }
@@ -466,6 +469,7 @@ appRake () {
 appHelp () {
   echo "Available options:"
   echo " app:start          - Starts the gitlab-ci server (default)"
+  echo " app:init           - Initialize the gitlab-ci server (e.g. create databases, compile assets), but don't start it."
   echo " app:rake <task>    - Execute a rake task."
   echo " app:help           - Displays the help"
   echo " [command]          - Execute the specified linux command eg. bash."
@@ -474,6 +478,9 @@ appHelp () {
 case "$1" in
   app:start)
     appStart
+    ;;
+  app:init)
+    appInit
     ;;
   app:rake)
     shift 1
