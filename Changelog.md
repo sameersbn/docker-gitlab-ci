@@ -1,5 +1,8 @@
 # Changelog
 
+**latest**
+- gitlab-ci: upgrade to v.7.10.1
+
 **7.10.0**
 - gitlab-ci: upgrade to v.7.10.0
 
