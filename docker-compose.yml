@@ -16,5 +16,5 @@ ci:
   environment:
    - GITLAB_CI_HOST=ci.damagehead.com
    - GITLAB_URL=https://git.damagehead.com
-   - GITLAB_APP_ID=''
-   - GITLAB_APP_SECRET=''
+   - GITLAB_APP_ID=XXXX
+   - GITLAB_APP_SECRET=YYYY
