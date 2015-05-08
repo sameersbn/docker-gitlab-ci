@@ -7,7 +7,7 @@ postgresql:
 redis:
   image: sameersbn/redis:latest
 ci:
-  image: sameersbn/gitlab-ci:7.10.1
+  image: sameersbn/gitlab-ci:7.10.2
   links:
    - redis:redisio
    - postgresql:postgresql
