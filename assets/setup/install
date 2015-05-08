@@ -3,8 +3,9 @@ set -e
 
 GITLAB_CI_VERSION=7.10.1
 
-INSTALL_DIR="/home/gitlab_ci/gitlab-ci"
-DATA_DIR="/home/gitlab_ci/data"
+GITLAB_CI_HOME="/home/gitlab_ci"
+INSTALL_DIR="${GITLAB_CI_HOME}/gitlab-ci"
+DATA_DIR="${GITLAB_CI_HOME}/data"
 LOG_DIR="/var/log/gitlab-ci"
 
 SETUP_DIR="/app/setup"
@@ -58,8 +59,8 @@ sudo -u gitlab_ci -H bundle install -j$(nproc) --deployment --without developmen
 # install cronjob
 bundle exec whenever -w -u gitlab_ci RAILS_ENV=production
 
-# make sure everything in /home/gitlab_ci is owned by the gitlab_ci user
-chown -R gitlab_ci:gitlab_ci /home/gitlab_ci/
+# make sure everything in ${GITLAB_CI_HOME} is owned by the gitlab_ci user
+chown -R gitlab_ci:gitlab_ci ${GITLAB_CI_HOME}/
 
 # install gitlab bootscript
 cp lib/support/init.d/gitlab_ci /etc/init.d/gitlab_ci
@@ -121,7 +122,7 @@ cat > /etc/supervisor/conf.d/unicorn.conf <<EOF
 [program:unicorn]
 priority=10
 directory=${INSTALL_DIR}
-environment=HOME=/home/gitlab_ci
+environment=HOME=${GITLAB_CI_HOME}
 command=bundle exec unicorn_rails -c ${INSTALL_DIR}/config/unicorn.rb -E production
 user=gitlab_ci
 autostart=true
@@ -136,7 +137,7 @@ cat > /etc/supervisor/conf.d/sidekiq.conf <<EOF
 [program:sidekiq]
 priority=10
 directory=${INSTALL_DIR}
-environment=HOME=/home/gitlab_ci
+environment=HOME=${GITLAB_CI_HOME}
 command=bundle exec sidekiq -c {{SIDEKIQ_CONCURRENCY}}
   -q runner
   -q common
