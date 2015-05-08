@@ -14,6 +14,7 @@ ci:
   ports:
     - "10080:80"
   environment:
+    - GITLAB_CI_PORT=10080
    - GITLAB_CI_HOST=ci.damagehead.com
    - GITLAB_URL=https://git.damagehead.com
    - GITLAB_APP_ID=XXXX
