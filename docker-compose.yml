@@ -13,15 +13,15 @@ redis:
 ci:
   image: sameersbn/gitlab-ci:7.10.2
   links:
-   - redis:redisio
-   - postgresql:postgresql
+    - redis:redisio
+    - postgresql:postgresql
   ports:
     - "10080:80"
   environment:
     - GITLAB_CI_PORT=10080
-   - GITLAB_CI_HOST=ci.damagehead.com
-   - GITLAB_URL=https://git.damagehead.com
-   - GITLAB_APP_ID=XXXX
-   - GITLAB_APP_SECRET=YYYY
+    - GITLAB_CI_HOST=ci.damagehead.com
+    - GITLAB_URL=https://git.damagehead.com
+    - GITLAB_APP_ID=XXXX
+    - GITLAB_APP_SECRET=YYYY
   volumes:
     - /srv/docker/gitlab/gitlab:/home/git/data
