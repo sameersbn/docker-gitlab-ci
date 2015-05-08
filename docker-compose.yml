@@ -4,8 +4,12 @@ postgresql:
     - DB_USER=gitlab_ci
     - DB_PASS=password
     - DB_NAME=gitlab_ci_production
+  volumes:
+    - /srv/docker/gitlab-ci/postgresql:/var/lib/postgresql
 redis:
   image: sameersbn/redis:latest
+  volumes:
+    - /srv/docker/gitlab-ci/redis:/var/lib/redis
 ci:
   image: sameersbn/gitlab-ci:7.10.2
   links:
@@ -19,3 +23,5 @@ ci:
    - GITLAB_URL=https://git.damagehead.com
    - GITLAB_APP_ID=XXXX
    - GITLAB_APP_SECRET=YYYY
+  volumes:
+    - /srv/docker/gitlab/gitlab:/home/git/data
