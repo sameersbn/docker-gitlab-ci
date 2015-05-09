@@ -124,10 +124,10 @@ You need to provide the URL of the GitLab server while running GitLab CI using t
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
- -p 10080:80 -e 'GITLAB_URL=http://172.17.0.2' \
- -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
- -v /var/run/docker.sock:/run/docker.sock \
- -v $(which docker):/bin/docker \
+  --publish=10080:80 --env='GITLAB_URL=http://172.17.0.2' \
+  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+  --volume=/var/run/docker.sock:/run/docker.sock \
+  --volume=$(which docker):/bin/docker \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -135,11 +135,11 @@ Alternately, if the GitLab and GitLab CI servers are running on the same host, y
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
--p 10080:80 --link gitlab:gitlab \
--e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
--v /var/run/docker.sock:/run/docker.sock \
--v $(which docker):/bin/docker \
-sameersbn/gitlab-ci:7.10.2
+  --publish=10080:80 --link gitlab:gitlab \
+  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+  --volume=/var/run/docker.sock:/run/docker.sock \
+  --volume=$(which docker):/bin/docker \
+  sameersbn/gitlab-ci:7.10.2
 ```
 
 You can also use use [docker-compose](https://docs.docker.com/compose/) to configure and launch the image.
@@ -176,7 +176,7 @@ Volumes can be mounted in docker by specifying the **'-v'** option in the docker
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -196,7 +196,7 @@ Assuming that your mysql data is available at `/srv/docker/gitlab-ci/mysql`
 
 ```bash
 docker run --name=mysql -d \
-  -v /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
+  --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
   sameersbn/mysql:latest
 ```
 
@@ -224,10 +224,10 @@ We are now ready to start the container.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
-  -e 'DB_HOST=192.168.1.100' -e 'DB_NAME=gitlab_ci_production' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
+  --env='GITLAB_URL=http://172.17.0.2' \
+  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+  --env='DB_HOST=192.168.1.100' --env='DB_NAME=gitlab_ci_production' \
+  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -258,9 +258,9 @@ The run command looks like this.
 
 ```bash
 docker run --name=mysql -d \
-  -e 'DB_NAME=gitlab_ci_production' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -v /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
+  --env='DB_NAME=gitlab_ci_production' \
+  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
+  --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
   sameersbn/mysql:latest
 ```
 
@@ -270,8 +270,8 @@ We are now ready to start the GitLab CI application.
 
 ```bash
 docker run --name=gitlab-ci -it --rm --link mysql:mysql \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
+  --env='GITLAB_URL=http://172.17.0.2' \
+  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -299,11 +299,11 @@ We are now ready to start the container.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
-  -e 'DB_TYPE=postgres' -e 'DB_HOST=192.168.1.100' \
-  -e 'DB_NAME=gitlab_ci_production' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
+  --env='GITLAB_URL=http://172.17.0.2' \
+  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+  --env='DB_TYPE=postgres' --env='DB_HOST=192.168.1.100' \
+  --env='DB_NAME=gitlab_ci_production' \
+  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -334,9 +334,9 @@ The run command looks like this.
 
 ```bash
 docker run --name=postgresql -d \
-  -e 'DB_NAME=gitlab_ci_production' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -v /srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
+  --env='DB_NAME=gitlab_ci_production' \
+  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
+  --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
   sameersbn/postgresql:latest
 ```
 
@@ -346,8 +346,8 @@ We are now ready to start the GitLab CI application.
 
 ```bash
 docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
+  --env='GITLAB_URL=http://172.17.0.2' \
+  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -374,7 +374,7 @@ The image can be configured to use an external redis server instead of starting 
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -e 'REDIS_HOST=192.168.1.100' -e 'REDIS_PORT=6379' \
+  --env='REDIS_HOST=192.168.1.100' --env='REDIS_PORT=6379' \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -411,7 +411,7 @@ Please refer the [Available Configuration Parameters](#available-configuration-p
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -e 'SMTP_USER=USER@gmail.com' -e 'SMTP_PASS=PASSWORD' \
+  --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -485,8 +485,8 @@ HTTPS support can be enabled by setting the `GITLAB_CI_HTTPS` option to `true`.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -e 'GITLAB_CI_HTTPS=true' \
-  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+  --env='GITLAB_CI_HTTPS=true' \
+  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -500,9 +500,9 @@ With `GITLAB_CI_HTTPS_HSTS_MAXAGE` you can configure that value. The default val
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -e 'GITLAB_CI_HTTPS=true' \
-  -e 'GITLAB_CI_HTTPS_HSTS_MAXAGE=2592000'
-  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+  --env='GITLAB_CI_HTTPS=true' \
+  --env='GITLAB_CI_HTTPS_HSTS_MAXAGE=2592000'
+  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -520,8 +520,8 @@ In summation, when using a load balancer, the docker command would look for the 
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -e 'GITLAB_CI_HTTPS=true' \
-  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+  --env='GITLAB_CI_HTTPS=true' \
+  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -557,8 +557,8 @@ Let's assume we want to deploy our application to '/ci'. GitLab CI needs to know
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -e 'GITLAB_CI_RELATIVE_URL_ROOT=/ci' \
-  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+  --env='GITLAB_CI_RELATIVE_URL_ROOT=/ci' \
+  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -570,14 +570,14 @@ GitLab CI will now be accessible at the `/ci` path, e.g. `http://www.example.com
 
 ```bash
 docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
-  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  -v /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
-  -e 'GITLAB_CI_HOST=gitlab-ci.local.host' \
-  -e 'GITLAB_CI_EMAIL=gitlab@local.host' \
-  -e 'GITLAB_CI_SUPPORT=support@local.host' \
-  -e 'SMTP_USER=USER@gmail.com' -e 'SMTP_PASS=PASSWORD' \
+  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+  --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
+  --env='GITLAB_URL=http://172.17.0.2' \
+  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+  --env='GITLAB_CI_HOST=gitlab-ci.local.host' \
+  --env='GITLAB_CI_EMAIL=gitlab@local.host' \
+  --env='GITLAB_CI_SUPPORT=support@local.host' \
+  --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -585,15 +585,15 @@ If you are using an external mysql database
 
 ```bash
 docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
-  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  -e 'DB_HOST=192.168.1.100' -e 'DB_NAME=gitlab_ci_production' \
-  -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -e 'GITLAB_URL=http://172.17.0.2' \
-  -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
-  -e 'GITLAB_CI_HOST=gitlab-ci.local.host' \
-  -e 'GITLAB_CI_EMAIL=gitlab@local.host' \
-  -e 'GITLAB_CI_SUPPORT=support@local.host' \
-  -e 'SMTP_USER=USER@gmail.com' -e 'SMTP_PASS=PASSWORD' \
+  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+  --env='DB_HOST=192.168.1.100' --env='DB_NAME=gitlab_ci_production' \
+  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
+  --env='GITLAB_URL=http://172.17.0.2' \
+  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+  --env='GITLAB_CI_HOST=gitlab-ci.local.host' \
+  --env='GITLAB_CI_EMAIL=gitlab@local.host' \
+  --env='GITLAB_CI_SUPPORT=support@local.host' \
+  --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -660,7 +660,7 @@ Some linux distros (e.g. ubuntu) use older versions of the util-linux which do n
 To install `nsenter` execute the following command on your host,
 
 ```bash
-docker run --rm -v /usr/local/bin:/target jpetazzo/nsenter
+docker run --rm --volume=/usr/local/bin:/target jpetazzo/nsenter
 ```
 
 Now you can access the container shell using the command
