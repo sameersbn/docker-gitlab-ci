@@ -318,7 +318,7 @@ To illustrate linking with a postgresql container, we will use the [sameersbn/po
 First, lets pull the postgresql image from the docker index.
 
 ```bash
-docker pull sameersbn/postgresql:latest
+docker pull sameersbn/postgresql:9.4
 ```
 
 For data persistence lets create a store for the postgresql and start the container.
@@ -337,7 +337,7 @@ docker run --name=postgresql -d \
   --env='DB_NAME=gitlab_ci_production' \
   --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
   --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
-  sameersbn/postgresql:latest
+  sameersbn/postgresql:9.4
 ```
 
 The above command will create a database named `gitlab_ci_production` and also create a user named `gitlab_ci` with the password `password` with access to the `gitlab_ci_production` database.
