@@ -168,15 +168,15 @@ For storage of the application data, you should mount a volume at
 SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
 
 ```bash
-mkdir -p /opt/gitlab-ci/data
-sudo chcon -Rt svirt_sandbox_file_t /opt/gitlab-ci/data
+mkdir -p /srv/docker/gitlab-ci/gitlab-ci
+sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab-ci/gitlab-ci
 ```
 
 Volumes can be mounted in docker by specifying the **'-v'** option in the docker run command.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
+  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -192,11 +192,11 @@ The internal mysql server has been removed from the image. Please use a [linked 
 
 If you have been using the internal mysql server follow these instructions to migrate to a linked mysql container:
 
-Assuming that your mysql data is available at `/opt/gitlab-ci/mysql`
+Assuming that your mysql data is available at `/srv/docker/gitlab-ci/mysql`
 
 ```bash
 docker run --name=mysql -d \
-  -v /opt/gitlab-ci/mysql:/var/lib/mysql \
+  -v /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
   sameersbn/mysql:latest
 ```
 
@@ -250,8 +250,8 @@ For data persistence lets create a store for the mysql and start the container.
 SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
 
 ```bash
-mkdir -p /opt/mysql/data
-sudo chcon -Rt svirt_sandbox_file_t /opt/mysql/data
+mkdir -p /srv/docker/gitlab-ci/mysql
+sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab-ci/mysql
 ```
 
 The run command looks like this.
@@ -260,7 +260,7 @@ The run command looks like this.
 docker run --name=mysql -d \
   -e 'DB_NAME=gitlab_ci_production' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -v /opt/mysql/data:/var/lib/mysql \
+  -v /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
   sameersbn/mysql:latest
 ```
 
@@ -326,8 +326,8 @@ For data persistence lets create a store for the postgresql and start the contai
 SELinux users are also required to change the security context of the mount point so that it plays nicely with selinux.
 
 ```bash
-mkdir -p /opt/postgresql/data
-sudo chcon -Rt svirt_sandbox_file_t /opt/postgresql/data
+mkdir -p /srv/docker/gitlab-ci/postgresql
+sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab-ci/postgresql
 ```
 
 The run command looks like this.
@@ -336,7 +336,7 @@ The run command looks like this.
 docker run --name=postgresql -d \
   -e 'DB_NAME=gitlab_ci_production' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
-  -v /opt/postgresql/data:/var/lib/postgresql \
+  -v /srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
   sameersbn/postgresql:latest
 ```
 
@@ -467,14 +467,14 @@ Out of the four files generated above, we need to install the `gitlab_ci.key`, `
 
 The default path that the gitlab ci application is configured to look for the SSL certificates is at `/home/gitlab_ci/data/certs`, this can however be changed using the `SSL_KEY_PATH`, `SSL_CERTIFICATE_PATH` and `SSL_DHPARAM_PATH` configuration options.
 
-If you remember from above, the `/home/gitlab_ci/data` path is the path of the [data store](#data-store), which means that we have to create a folder named `certs` inside `/opt/gitlab-ci/data` and copy the files into it and as a measure of security we will update the permission on the `gitlab_ci.key` file to only be readable by the owner.
+If you remember from above, the `/home/gitlab_ci/data` path is the path of the [data store](#data-store), which means that we have to create a folder named `certs` inside `/srv/docker/gitlab-ci/gitlab-ci` and copy the files into it and as a measure of security we will update the permission on the `gitlab_ci.key` file to only be readable by the owner.
 
 ```bash
-mkdir -p /opt/gitlab-ci/data/certs
-cp gitlab_ci.key /opt/gitlab-ci/data/certs/
-cp gitlab_ci.crt /opt/gitlab-ci/data/certs/
-cp dhparam.pem /opt/gitlab-ci/data/certs/
-chmod 400 /opt/gitlab-ci/data/certs/gitlab_ci.key
+mkdir -p /srv/docker/gitlab-ci/gitlab-ci/certs
+cp gitlab_ci.key /srv/docker/gitlab-ci/gitlab-ci/certs/
+cp gitlab_ci.crt /srv/docker/gitlab-ci/gitlab-ci/certs/
+cp dhparam.pem /srv/docker/gitlab-ci/gitlab-ci/certs/
+chmod 400 /srv/docker/gitlab-ci/gitlab-ci/certs/gitlab_ci.key
 ```
 
 Great! we are now just one step away from having our application secured.
@@ -486,7 +486,7 @@ HTTPS support can be enabled by setting the `GITLAB_CI_HTTPS` option to `true`.
 ```bash
 docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_CI_HTTPS=true' \
-  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
+  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -502,7 +502,7 @@ With `GITLAB_CI_HTTPS_HSTS_MAXAGE` you can configure that value. The default val
 docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_CI_HTTPS=true' \
   -e 'GITLAB_CI_HTTPS_HSTS_MAXAGE=2592000'
-  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
+  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -521,7 +521,7 @@ In summation, when using a load balancer, the docker command would look for the 
 ```bash
 docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_CI_HTTPS=true' \
-  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
+  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -558,7 +558,7 @@ Let's assume we want to deploy our application to '/ci'. GitLab CI needs to know
 ```bash
 docker run --name=gitlab-ci -it --rm \
   -e 'GITLAB_CI_RELATIVE_URL_ROOT=/ci' \
-  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
+  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
@@ -570,8 +570,8 @@ GitLab CI will now be accessible at the `/ci` path, e.g. `http://www.example.com
 
 ```bash
 docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
-  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
-  -v /opt/gitlab-ci/mysql:/var/lib/mysql \
+  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+  -v /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
   -e 'GITLAB_URL=http://172.17.0.2' \
   -e 'GITLAB_APP_ID=xxx' -e 'GITLAB_APP_SECRET=yyy' \
   -e 'GITLAB_CI_HOST=gitlab-ci.local.host' \
@@ -585,7 +585,7 @@ If you are using an external mysql database
 
 ```bash
 docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
-  -v /opt/gitlab-ci/data:/home/gitlab_ci/data \
+  -v /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   -e 'DB_HOST=192.168.1.100' -e 'DB_NAME=gitlab_ci_production' \
   -e 'DB_USER=gitlab_ci' -e 'DB_PASS=password' \
   -e 'GITLAB_URL=http://172.17.0.2' \
