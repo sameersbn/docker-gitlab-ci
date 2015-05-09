@@ -24,4 +24,4 @@ ci:
     - GITLAB_APP_ID=XXXX
     - GITLAB_APP_SECRET=YYYY
   volumes:
-    - /srv/docker/gitlab/gitlab:/home/git/data
+    - /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data
