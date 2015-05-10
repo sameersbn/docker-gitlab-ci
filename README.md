@@ -120,27 +120,43 @@ docker build --tag="$USER/gitlab-ci" .
 
 Before you can start the GitLab CI image you need to make sure you have a [GitLab](https://www.gitlab.com/) server running. Checkout the [docker-gitlab](https://github.com/sameersbn/docker-gitlab) project for getting a GitLab server up and running.
 
-You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. Additionally, since version `5.4.0` you need to provide the `GITLAB_APP_ID` and `GITLAB_APP_SECRET`. For example if the location of the GitLab server is `172.17.0.2`,
+You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. Since version `5.4.0` you need to provide the `GITLAB_APP_ID` and `GITLAB_APP_SECRET`. For example if the location of the GitLab server is `172.17.0.2`,
+
+Follow this simple 3 step procedure to get started.
+
+Step 1. Launch a postgresql container
 
 ```bash
-docker run --name=gitlab-ci -it --rm \
-  --publish=10080:80 --env='GITLAB_URL=http://172.17.0.2' \
+docker run --name=postgresql -d \
+  --env='DB_NAME=gitlabhq_production' \
+  --env='DB_USER=gitlab' --env='DB_PASS=password' \
+  --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
+  sameersbn/postgresql:9.4
+```
+
+Step 2. Launch a redis container
+
+```bash
+docker run --name=redis -d \
+  --volume=/srv/docker/gitlab-ci/redis:/var/lib/redis \
+  sameersbn/redis:latest
+```
+
+Step 3. Launch the gitlab-ci container
+
+```bash
+docker run --name=gitlab-ci -d \
+  --link=postgresql:postgresql --link=redis:redisio \
+  --env='GITLAB_CI_PORT=10080'
+  --publish=10080:80 --env='GITLAB_URL=http://localhost:10080' \
   --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  --volume=/var/run/docker.sock:/run/docker.sock \
-  --volume=$(which docker):/bin/docker \
+  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
-Alternately, if the GitLab and GitLab CI servers are running on the same host, you can take advantage of docker links. Lets consider that the GitLab server is running on the same host and has the name **gitlab**, then using docker links:
+Point your browser to `http://localhost:10080` and login using your GitLab credentials.
 
-```bash
-docker run --name=gitlab-ci -it --rm \
-  --publish=10080:80 --link gitlab:gitlab \
-  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  --volume=/var/run/docker.sock:/run/docker.sock \
-  --volume=$(which docker):/bin/docker \
-  sameersbn/gitlab-ci:7.10.2
-```
+You should now have the GitLab CI ready for testing. If you want to use this image in production the please read on.
 
 You can also use use [docker-compose](https://docs.docker.com/compose/) to configure and launch the image.
 
@@ -149,11 +165,7 @@ wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/docker-
 docker-compose up
 ```
 
-Point your browser to `http://localhost:10080` and login using your GitLab credentials.
-
 *The rest of the document will use the docker command line. You can quite simply adapt your configuration into a `docker-compose.yml` file if you wish to do so.*
-
-You should now have the GitLab CI ready for testing. If you want to use this image in production the please read on.
 
 **NOTE:** You need to install [GitLab CI Runner](https://gitlab.com/gitlab-org/gitlab-ci-runner/blob/master/README.md) if you want to do anything worth while with the GitLab CI server. Please take a look at [docker-gitlab-ci-runner](https://github.com/sameersbn/docker-gitlab-ci-runner) for a base runner image.
 
