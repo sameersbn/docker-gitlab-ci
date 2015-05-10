@@ -16,9 +16,9 @@ ci:
     - redis:redisio
     - postgresql:postgresql
   ports:
-    - "10080:80"
+    - "10081:80"
   environment:
-    - GITLAB_CI_PORT=10080
+    - GITLAB_CI_PORT=10081
     - GITLAB_CI_HOST=ci.damagehead.com
     - GITLAB_URL=https://git.damagehead.com
     - GITLAB_APP_ID=XXXX

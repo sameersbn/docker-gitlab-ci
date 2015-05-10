@@ -147,14 +147,14 @@ Step 3. Launch the gitlab-ci container
 ```bash
 docker run --name=gitlab-ci -d \
   --link=postgresql:postgresql --link=redis:redisio \
-  --env='GITLAB_CI_PORT=10080'
-  --publish=10080:80 --env='GITLAB_URL=http://localhost:10080' \
+  --env='GITLAB_CI_PORT=10081'
+  --publish=10081:80 --env='GITLAB_URL=http://localhost:10081' \
   --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
   --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.2
 ```
 
-Point your browser to `http://localhost:10080` and login using your GitLab credentials.
+Point your browser to `http://localhost:10081` and login using your GitLab credentials.
 
 You should now have the GitLab CI ready for testing. If you want to use this image in production the please read on.
 
