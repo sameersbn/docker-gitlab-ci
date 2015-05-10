@@ -127,7 +127,7 @@ Follow this simple 3 step procedure to get started.
 Step 1. Launch a postgresql container
 
 ```bash
-docker run --name=postgresql -d \
+docker run --name=postgresql-gitlab-ci -d \
   --env='DB_NAME=gitlabhq_production' \
   --env='DB_USER=gitlab' --env='DB_PASS=password' \
   --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
@@ -137,7 +137,7 @@ docker run --name=postgresql -d \
 Step 2. Launch a redis container
 
 ```bash
-docker run --name=redis -d \
+docker run --name=redis-gitlab-ci -d \
   --volume=/srv/docker/gitlab-ci/redis:/var/lib/redis \
   sameersbn/redis:latest
 ```
@@ -146,7 +146,7 @@ Step 3. Launch the gitlab-ci container
 
 ```bash
 docker run --name=gitlab-ci -d \
-  --link=postgresql:postgresql --link=redis:redisio \
+  --link=postgresql-gitlab-ci:postgresql --link=redis-gitlab-ci:redisio \
   --env='GITLAB_CI_PORT=10081'
   --publish=10081:80 --env='GITLAB_URL=http://localhost:10081' \
   --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
@@ -207,14 +207,14 @@ If you have been using the internal mysql server follow these instructions to mi
 Assuming that your mysql data is available at `/srv/docker/gitlab-ci/mysql`
 
 ```bash
-docker run --name=mysql -d \
+docker run --name=mysql-gitlab-ci -d \
   --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
   sameersbn/mysql:latest
 ```
 
 This will start a mysql container with your existing mysql data. Now login to the mysql container and create a user for the existing `gitlab_ci_production` database.
 
-All you need to do now is link this mysql container to the gitlab ci container using the `--link mysql:mysql` option and provide the `DB_NAME`, `DB_USER` and `DB_PASS` parameters.
+All you need to do now is link this mysql container to the gitlab ci container using the `--link=mysql-gitlab-ci:mysql` option and provide the `DB_NAME`, `DB_USER` and `DB_PASS` parameters.
 
 Refer to [Linking to MySQL Container](#linking-to-mysql-container) for more information.
 
@@ -269,7 +269,7 @@ sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab-ci/mysql
 The run command looks like this.
 
 ```bash
-docker run --name=mysql -d \
+docker run --name=mysql-gitlab-ci -d \
   --env='DB_NAME=gitlab_ci_production' \
   --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
   --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
@@ -281,7 +281,7 @@ The above command will create a database named `gitlab_ci_production` and also c
 We are now ready to start the GitLab CI application.
 
 ```bash
-docker run --name=gitlab-ci -it --rm --link mysql:mysql \
+docker run --name=gitlab-ci -it --rm --link=mysql-gitlab-ci:mysql \
   --env='GITLAB_URL=http://172.17.0.2' \
   --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
   sameersbn/gitlab-ci:7.10.2
@@ -345,7 +345,7 @@ sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab-ci/postgresql
 The run command looks like this.
 
 ```bash
-docker run --name=postgresql -d \
+docker run --name=postgresql-gitlab-ci -d \
   --env='DB_NAME=gitlab_ci_production' \
   --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
   --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
@@ -357,7 +357,7 @@ The above command will create a database named `gitlab_ci_production` and also c
 We are now ready to start the GitLab CI application.
 
 ```bash
-docker run --name=gitlab-ci -it --rm --link postgresql:postgresql \
+docker run --name=gitlab-ci -it --rm --link=postgresql-gitlab-ci:postgresql \
   --env='GITLAB_URL=http://172.17.0.2' \
   --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
   sameersbn/gitlab-ci:7.10.2
@@ -405,13 +405,13 @@ docker pull sameersbn/redis:latest
 Lets start the redis container
 
 ```bash
-docker run --name=redis -d sameersbn/redis:latest
+docker run --name=redis-gitlab-ci -d sameersbn/redis:latest
 ```
 
 We are now ready to start the GitLab CI application.
 
 ```bash
-docker run --name=gitlab-ci -it --rm --link redis:redisio \
+docker run --name=gitlab-ci -it --rm --link=redis-gitlab-ci:redisio \
   sameersbn/gitlab:latest
 ```
 

@@ -1,4 +1,4 @@
-postgresql:
+postgresql-gitlab-ci:
   image: sameersbn/postgresql:9.4
   environment:
     - DB_USER=gitlab_ci
@@ -6,15 +6,15 @@ postgresql:
     - DB_NAME=gitlab_ci_production
   volumes:
     - /srv/docker/gitlab-ci/postgresql:/var/lib/postgresql
-redis:
+redis-gitlab-ci:
   image: sameersbn/redis:latest
   volumes:
     - /srv/docker/gitlab-ci/redis:/var/lib/redis
-ci:
+gitlab-ci:
   image: sameersbn/gitlab-ci:7.10.2
   links:
-    - redis:redisio
-    - postgresql:postgresql
+    - redis-gitlab-ci:redisio
+    - postgresql-gitlab-ci:postgresql
   ports:
     - "10081:80"
   environment:
