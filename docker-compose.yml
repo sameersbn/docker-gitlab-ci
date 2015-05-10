@@ -20,7 +20,7 @@ gitlab-ci:
   environment:
     - GITLAB_CI_PORT=10081
     - GITLAB_CI_HOST=ci.damagehead.com
-    - GITLAB_URL=https://git.damagehead.com
+    - GITLAB_URL=http://localhost:10080
     - GITLAB_APP_ID=XXXX
     - GITLAB_APP_SECRET=YYYY
   volumes:
