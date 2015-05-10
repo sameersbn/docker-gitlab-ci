@@ -11,7 +11,7 @@ redis-gitlab-ci:
   volumes:
     - /srv/docker/gitlab-ci/redis:/var/lib/redis
 gitlab-ci:
-  image: sameersbn/gitlab-ci:7.10.2
+  image: sameersbn/gitlab-ci:7.10.3
   links:
     - redis-gitlab-ci:redisio
     - postgresql-gitlab-ci:postgresql
