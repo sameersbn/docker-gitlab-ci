@@ -1,5 +1,7 @@
 # Changelog
 
+This file only reflects the changes that are made in the the docker image. Please refer to the upstream GitLab CI [CHANGELOG](https://github.com/gitlabhq/gitlab-ci/blob/master/CHANGELOG) for the list of changes in GitLab CI.
+
 **7.10.3**
 - gitlab-ci: upgrade to v.7.10.3
 
