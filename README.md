@@ -147,8 +147,8 @@ Step 3. Launch the gitlab-ci container
 ```bash
 docker run --name=gitlab-ci -d \
   --link=postgresql-gitlab-ci:postgresql --link=redis-gitlab-ci:redisio \
-  --env='GITLAB_CI_PORT=10081'
-  --publish=10081:80 --env='GITLAB_URL=http://localhost:10080' \
+  --publish=10081:80 \
+  --env='GITLAB_CI_PORT=10081' --env='GITLAB_URL=http://localhost:10080' \
   --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
   --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
   sameersbn/gitlab-ci:7.10.3
