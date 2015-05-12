@@ -30,7 +30,12 @@
         <h1>
 <a id="zero-to-gitlab-ci-in-5-seconds-or-less" class="anchor" href="#zero-to-gitlab-ci-in-5-seconds-or-less" aria-hidden="true"><span class="octicon octicon-link"></span></a>Zero to GitLab CI in 5 seconds or less*</h1>
 
-<p>Follow this simple 3 step procedure to get started.</p>
+<p>The quickest way to get started is using <a href="https://docs.docker.com/compose/">docker-compose</a>.</p>
+
+<div class="highlight highlight-bash"><pre>wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/docker-compose.yml
+docker-compose up</pre></div>
+
+<p>Alternately, you can manually launch the <code>gitlab-ci</code> container and the supporting <code>postgresql</code> and <code>redis</code> containers by following three step guide.</p>
 
 <p>Step 1. Launch a postgresql container</p>
 
@@ -46,24 +51,19 @@
   --volume=/srv/docker/gitlab-ci/redis:/var/lib/redis \
   sameersbn/redis:latest</pre></div>
 
-<p>Step 3. Launch the GitLab CI container</p>
+<p>Step 3. Launch the gitlab-ci container</p>
 
 <div class="highlight highlight-bash"><pre>docker run --name=gitlab-ci -d \
   --link=postgresql-gitlab-ci:postgresql --link=redis-gitlab-ci:redisio \
-  --env=<span class="pl-s"><span class="pl-pds">'</span>GITLAB_CI_PORT=10081<span class="pl-pds">'</span></span>
-  --publish=10081:80 --env=<span class="pl-s"><span class="pl-pds">'</span>GITLAB_URL=http://localhost:10080<span class="pl-pds">'</span></span> \
+  --publish=10081:80 \
+  --env=<span class="pl-s"><span class="pl-pds">'</span>GITLAB_CI_PORT=10081<span class="pl-pds">'</span></span> --env=<span class="pl-s"><span class="pl-pds">'</span>GITLAB_URL=http://localhost:10080<span class="pl-pds">'</span></span> \
   --env=<span class="pl-s"><span class="pl-pds">'</span>GITLAB_APP_ID=xxx<span class="pl-pds">'</span></span> --env=<span class="pl-s"><span class="pl-pds">'</span>GITLAB_APP_SECRET=yyy<span class="pl-pds">'</span></span> \
   --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:7.10.2</pre></div>
+  sameersbn/gitlab-ci:7.10.4</pre></div>
 
 <p>Point your browser to <code>http://localhost:10081</code> and login using your GitLab credentials.</p>
 
 <p>You should now have the GitLab CI ready for testing. Please refer the <a href="https://github.com/sameersbn/docker-gitlab-ci/blob/master/README.md">docs</a> for customization options.</p>
-
-<p>You can also use use <a href="https://docs.docker.com/compose/">docker-compose</a> to configure and launch the image.</p>
-
-<div class="highlight highlight-bash"><pre>wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/docker-compose.yml
-docker-compose up</pre></div>
 
 <p>* <em>download and start up times not included</em></p>
       </section>
