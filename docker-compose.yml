@@ -18,10 +18,23 @@ ci:
   ports:
     - "10081:80"
   environment:
-    - GITLAB_CI_PORT=10081
-    - GITLAB_CI_HOST=ci.damagehead.com
+    - TZ=Asia/Kolkata
     - GITLAB_URL=http://localhost:10080
-    - GITLAB_APP_ID=XXXX
-    - GITLAB_APP_SECRET=YYYY
+    - GITLAB_APP_ID=
+    - GITLAB_APP_SECRET=
+    - GITLAB_CI_HOST=localhost
+    - GITLAB_CI_PORT=10081
+    - GITLAB_CI_EMAIL=ci@example.com
+    - GITLAB_CI_SUPPORT=support@example.com
+    - GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=true
+    - GITLAB_CI_NOTIFY_PUSHER=false
+    - SMTP_ENABLED=false
+    - SMTP_DOMAIN=www.example.com
+    - SMTP_HOST=smtp.gmail.com
+    - SMTP_PORT=587
+    - SMTP_USER=mailer@example.com
+    - SMTP_PASS=password
+    - SMTP_STARTTLS=true
+    - SMTP_AUTHENTICATION=login
   volumes:
     - /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data
