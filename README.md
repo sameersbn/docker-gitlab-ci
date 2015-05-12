@@ -122,7 +122,14 @@ Before you can start the GitLab CI image you need to make sure you have a [GitLa
 
 You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. Since version `5.4.0` you need to provide the `GITLAB_APP_ID` and `GITLAB_APP_SECRET`. For example if the location of the GitLab server is `http://localhost:10080`,
 
-Follow this simple 3 step procedure to get started.
+The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/).
+
+```bash
+wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/docker-compose.yml
+docker-compose up
+```
+
+Alternately, you can manually launch the `gitlab-ci` container and the supporting `postgresql` and `redis` containers by following three step guide.
 
 Step 1. Launch a postgresql container
 
@@ -157,13 +164,6 @@ docker run --name=gitlab-ci -d \
 Point your browser to `http://localhost:10081` and login using your GitLab credentials.
 
 You should now have the GitLab CI ready for testing. If you want to use this image in production the please read on.
-
-You can also use use [docker-compose](https://docs.docker.com/compose/) to configure and launch the image.
-
-```bash
-wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/docker-compose.yml
-docker-compose up
-```
 
 *The rest of the document will use the docker command line. You can quite simply adapt your configuration into a `docker-compose.yml` file if you wish to do so.*
 
