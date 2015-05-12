@@ -129,7 +129,7 @@ wget https://raw.githubusercontent.com/sameersbn/docker-gitlab-ci/master/docker-
 docker-compose up
 ```
 
-Alternately, you can manually launch the `gitlab-ci` container and the supporting `postgresql` and `redis` containers by following three step guide.
+Alternately, you can manually launch the `gitlab-ci` container and the supporting `postgresql` and `redis` containers by following this three step guide.
 
 Step 1. Launch a postgresql container
 
