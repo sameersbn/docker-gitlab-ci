@@ -42,7 +42,7 @@
 
 # Introduction
 
-Dockerfile to build a GitLab CI container image.
+Dockerfile to build a [GitLab CI](https://about.gitlab.com/gitlab-ci/) container image.
 
 ## Version
 
