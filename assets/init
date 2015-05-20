@@ -11,6 +11,7 @@ GITLAB_CI_PORT=${GITLAB_CI_PORT:-}
 GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}
 GITLAB_CI_EMAIL=${GITLAB_CI_EMAIL:-gitlab@localhost}
 GITLAB_CI_SUPPORT=${GITLAB_CI_SUPPORT:-support@localhost}
+GITLAB_CI_TIMEZONE=${GITLAB_CI_TIMEZONE:-UTC}
 GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS:-true}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-$GITLAB_CI_NOTIFY_ADD_COMMITTER}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-false}
@@ -268,9 +269,7 @@ sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}/'"${GITLAB_CI_
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_PUSHER}}/'"${GITLAB_CI_NOTIFY_PUSHER}"'/' -i config/application.yml
 
 # configure timezone
-if [ -n "${GITLAB_CI_TIMEZONE}" ]; then
-  sudo -u gitlab_ci -H sed "s/# config.time_zone.*/config.time_zone = '${GITLAB_CI_TIMEZONE}'/" -i config/application.rb
-fi
+sudo -u gitlab_ci -H sed "s/# config.time_zone.*/config.time_zone = '${GITLAB_CI_TIMEZONE}'/" -i config/application.rb
 
 # configure database
 if [ "${DB_TYPE}" == "postgres" ]; then
