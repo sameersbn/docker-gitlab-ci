@@ -621,6 +621,7 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_APP_SECRET**: Secret key used to connect to the gitlab server.
 - **GITLAB_CI_HOST**: The hostname of the GitLab CI server. Defaults to `localhost`.
 - **GITLAB_CI_PORT**: The port number of the GitLab CI server. Defaults to `80` for plain http and `443` when https is enabled.
+- **GITLAB_CI_TIMEZONE**: Configure the timezone for the GitLab CI application. Defaults to `UTC`.
 - **GITLAB_CI_EMAIL**: The email address for the GitLab CI server. Defaults to `gitlab@localhost`.
 - **GITLAB_CI_SUPPORT**: The support email address for the GitLab CI server. Defaults to `support@localhost`.
 - **GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS**: Enable or disable broken build notification emails. Defaults to `true`
