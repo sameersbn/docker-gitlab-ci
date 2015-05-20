@@ -267,6 +267,11 @@ sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_SUPPORT}}/'"${GITLAB_CI_SUPPORT}"'/' -i 
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}/'"${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_PUSHER}}/'"${GITLAB_CI_NOTIFY_PUSHER}"'/' -i config/application.yml
 
+# configure timezone
+if [ -n "${GITLAB_CI_TIMEZONE}" ]; then
+  sudo -u gitlab_ci -H sed "s/# config.time_zone.*/config.time_zone = '${GITLAB_CI_TIMEZONE}'/" -i config/application.rb
+fi
+
 # configure database
 if [ "${DB_TYPE}" == "postgres" ]; then
   sudo -u gitlab_ci -H sed 's/{{DB_ADAPTER}}/postgresql/' -i config/database.yml
