@@ -135,7 +135,7 @@ Step 1. Launch a postgresql container
 
 ```bash
 docker run --name=postgresql-gitlab-ci -d \
-  --env='DB_NAME=gitlabhq_production' \
+  --env='DB_NAME=gitlab_ci_production' \
   --env='DB_USER=gitlab' --env='DB_PASS=password' \
   --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
   sameersbn/postgresql:9.4
