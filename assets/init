@@ -415,8 +415,43 @@ appRake () {
     echo "Please specify the rake task to execute."
     return 1
   fi
-  echo "Running gitlab rake task..."
-  sudo -u gitlab_ci -H bundle exec rake $@ RAILS_ENV=production
+
+  echo "Running gitlab ci rake task..."
+
+  if [ "$1" == "backup:restore" ]; then
+    # check if the BACKUP argument is specified
+    for a in $@
+    do
+      if [[ $a == BACKUP=* ]]; then
+        timestamp=${a:7}
+        break
+      fi
+    done
+
+    if [ -z ${timestamp} ]; then
+      # user needs to select the backup to restore
+      nBackups=$(ls ${GITLAB_CI_BACKUP_DIR}/*_gitlab_ci_backup.tar.gz | wc -l)
+      if [ $nBackups -eq 0 ]; then
+        echo "No backup present. Cannot continue restore process.".
+        return 1
+      fi
+
+      for b in `ls ${GITLAB_CI_BACKUP_DIR} | sort -r`
+      do
+        echo " ├ $b"
+      done
+      read -p "Select a backup to restore: " file
+
+      if [ ! -f "${GITLAB_CI_BACKUP_DIR}/${file}" ]; then
+        echo "Specified backup does not exist. Aborting..."
+        return 1
+      fi
+      timestamp=$(echo $file | cut -d'_' -f1)
+    fi
+    sudo -u gitlab_ci -H bundle exec rake backup:restore BACKUP=$timestamp RAILS_ENV=production
+  else
+    sudo -u gitlab_ci -H bundle exec rake $@ RAILS_ENV=production
+  fi
 }
 
 appHelp () {
