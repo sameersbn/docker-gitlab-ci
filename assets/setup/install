@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-GITLAB_CI_VERSION=7.10.4
+GITLAB_CI_VERSION=7.11.3
 
 GITLAB_CI_HOME="/home/gitlab_ci"
 INSTALL_DIR="${GITLAB_CI_HOME}/gitlab-ci"

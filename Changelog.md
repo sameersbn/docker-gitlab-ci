@@ -4,6 +4,7 @@ This file only reflects the changes that are made in the the docker image. Pleas
 
 **latest**
 - added `GITLAB_CI_TIMEZONE` configuration option
+- gitlab-ci: upgrade to v.7.11.3
 
 **7.10.4**
 - gitlab-ci: upgrade to v.7.10.4
