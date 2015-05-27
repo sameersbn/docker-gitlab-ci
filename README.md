@@ -630,6 +630,7 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_HTTPS_HSTS_ENABLED**: Advanced configuration option for turning off the HSTS configuration. Applicable only when SSL is in use. Defaults to `true`. See [#138](https://github.com/sameersbn/docker-gitlab/issues/138) for use case scenario.
 - **GITLAB_CI_HTTPS_HSTS_MAXAGE**: Advanced configuration option for setting the HSTS max-age in the gitlab-ci nginx vHost configuration. Applicable only when SSL is in use. Defaults to `31536000`.
 - **GITLAB_CI_RELATIVE_URL_ROOT**: The sub URI of the GitLab CI server, e.g. `/ci`. No default.
+- **GITLAB_CI_BACKUP_DIR**: The backup folder in the container. Defaults to `/home/gitlab_ci/data/backups`
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to `/home/gitlab_ci/data/certs/gitlab.crt`
 - **SSL_KEY_PATH**: Location of the ssl private key. Defaults to `/home/gitlab_ci/data/certs/gitlab.key`
 - **SSL_DHPARAM_PATH**: Location of the dhparam file. Defaults to `/home/gitlab_ci/data/certs/dhparam.pem`
