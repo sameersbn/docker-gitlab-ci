@@ -7,6 +7,7 @@ This file only reflects the changes that are made in the the docker image. Pleas
 - gitlab-ci: upgrade to v.7.11.3
 - added `GITLAB_CI_BACKUP_DIR` configuration option
 - added `GITLAB_CI_BACKUP_EXPIRY` configuration option
+- added support for automated backups
 
 **7.10.4**
 - gitlab-ci: upgrade to v.7.10.4

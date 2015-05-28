@@ -16,7 +16,10 @@ GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS:-true}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-$GITLAB_CI_NOTIFY_ADD_COMMITTER}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-false}
 GITLAB_CI_BACKUP_DIR="${GITLAB_CI_BACKUP_DIR:-$DATA_DIR/backups}"
-GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-0}
+GITLAB_CI_BACKUPS=${GITLAB_CI_BACKUPS:-disable}
+GITLAB_CI_BACKUP_TIME=${GITLAB_CI_BACKUP_TIME:-04:00}
+GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-}
+
 SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-$DATA_DIR/certs/gitlab_ci.crt}
 SSL_KEY_PATH=${SSL_KEY_PATH:-$DATA_DIR/certs/gitlab_ci.key}
 SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-$DATA_DIR/certs/dhparam.pem}
@@ -162,6 +165,11 @@ case "${GITLAB_CI_HTTPS}" in
     GITLAB_CI_PORT=${GITLAB_CI_PORT:-80}
     NGINX_X_FORWARDED_PROTO=${NGINX_X_FORWARDED_PROTO:-\$scheme}
     ;;
+esac
+
+case "${GITLAB_CI_BACKUPS}" in
+  daily|weekly|monthly) GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-604800} ;;
+  disable|*) GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-0} ;;
 esac
 
 # populate ${LOG_DIR}
@@ -396,6 +404,33 @@ appInit () {
     echo "Migrating database..."
     sudo -u gitlab_ci -H bundle exec rake db:migrate RAILS_ENV=production >/dev/null
     sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > ${DATA_DIR}/VERSION
+  fi
+
+  if [ "${GITLAB_CI_BACKUPS}" != "disable" ]; then
+    # setup cron job for automatic backups
+    read hour min <<< ${GITLAB_CI_BACKUP_TIME//[:]/ }
+    crontab -u gitlab_ci -l > /tmp/cron.gitlab_ci
+    case "${GITLAB_CI_BACKUPS}" in
+      daily)
+        sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
+# Automatic Backups: daily
+$min $hour * * * cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production
+EOF
+        ;;
+      weekly)
+        sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
+# Automatic Backups: weekly
+$min $hour * * 0 cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production
+EOF
+        ;;
+      monthly)
+        sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
+# Automatic Backups: monthly
+$min $hour 01 * * cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production
+EOF
+        ;;
+    esac
+    crontab -u gitlab_ci /tmp/cron.gitlab_ci && rm -rf /tmp/cron.gitlab_ci
   fi
 
   # remove stale unicorn and sidekiq pid's if they exist.
