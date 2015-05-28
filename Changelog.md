@@ -2,6 +2,9 @@
 
 This file only reflects the changes that are made in the the docker image. Please refer to the upstream GitLab CI [CHANGELOG](https://github.com/gitlabhq/gitlab-ci/blob/master/CHANGELOG) for the list of changes in GitLab CI.
 
+**latest**
+- gitlab-ci: upgrade to v.7.11.4
+
 **7.11.3**
 - added `GITLAB_CI_TIMEZONE` configuration option
 - gitlab-ci: upgrade to v.7.11.3
