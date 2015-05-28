@@ -414,19 +414,19 @@ appInit () {
       daily)
         sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
 # Automatic Backups: daily
-$min $hour * * * cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production
+$min $hour * * * /bin/bash -l -c 'cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
         ;;
       weekly)
         sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
 # Automatic Backups: weekly
-$min $hour * * 0 cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production
+$min $hour * * 0 /bin/bash -l -c 'cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
         ;;
       monthly)
         sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
 # Automatic Backups: monthly
-$min $hour 01 * * cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production
+$min $hour 01 * * /bin/bash -l -c 'cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
         ;;
     esac

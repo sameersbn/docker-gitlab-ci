@@ -35,7 +35,11 @@
   - [Deploy to a subdirectory (relative url root)](#deploy-to-a-subdirectory-relative-url-root)
   - [Putting it all together](#putting-it-all-together)
   - [Available Configuration Parameters](#available-configuration-parameters)
-- [Shell Access](#shell-access)
+- [Maintenance](#maintenance)
+  - [Creating Backups](#creating-backups)
+  - [Restoring Backups](#restoring-backups)
+  - [Automated Backups](#automated-backups)
+  - [Shell Access](#shell-access)
 - [Upgrading](#upgrading)
 - [Announcements](https://github.com/sameersbn/docker-gitlab-ci/issues/1)
 - [References](#references)
@@ -631,6 +635,9 @@ Below is the complete list of available options that can be used to customize yo
 - **GITLAB_CI_HTTPS_HSTS_MAXAGE**: Advanced configuration option for setting the HSTS max-age in the gitlab-ci nginx vHost configuration. Applicable only when SSL is in use. Defaults to `31536000`.
 - **GITLAB_CI_RELATIVE_URL_ROOT**: The sub URI of the GitLab CI server, e.g. `/ci`. No default.
 - **GITLAB_CI_BACKUP_DIR**: The backup folder in the container. Defaults to `/home/gitlab_ci/data/backups`
+- **GITLAB_CI_BACKUPS**: Setup cron job to automatic backups. Possible values `disable`, `daily`, `weekly` or `monthly`. Disabled by default
+- **GITLAB_CI_BACKUP_EXPIRY**: Configure how long (in seconds) to keep backups before they are deleted. By default when automated backups are disabled backups are kept forever (0 seconds), else the backups expire in 7 days (604800 seconds).
+- **GITLAB_CI_BACKUP_TIME**: Set a time for the automatic backups in `HH:MM` format. Defaults to `04:00`.
 - **SSL_CERTIFICATE_PATH**: Location of the ssl certificate. Defaults to `/home/gitlab_ci/data/certs/gitlab.crt`
 - **SSL_KEY_PATH**: Location of the ssl private key. Defaults to `/home/gitlab_ci/data/certs/gitlab.key`
 - **SSL_DHPARAM_PATH**: Location of the dhparam file. Defaults to `/home/gitlab_ci/data/certs/dhparam.pem`
@@ -660,7 +667,64 @@ Below is the complete list of available options that can be used to customize yo
 - **SMTP_STARTTLS**: Enable STARTTLS. Defaults to `true`.
 - **SMTP_AUTHENTICATION**: Specify the SMTP authentication method. Defaults to `login` if `SMTP_USER` is set.
 
-# Shell Access
+# Maintenance
+
+## Creating Backups
+
+Since release `7.11.0`, Gitlab CI defines a rake task to take a backup of your gitlab ci installation. The resulting backup primarily consists of the sql database.
+
+Before taking a backup make sure the container is stopped and removed to avoid container name conflicts.
+
+```bash
+docker stop gitlab-ci && docker rm gitlab-ci
+```
+
+Execute the rake task to create a backup.
+
+```bash
+docker run --name=gitlab-ci -it --rm [OPTIONS] \
+  sameersbn/gitlab-ci:7.11.3 app:rake backup:create
+```
+
+A backup will be created in the backups folder of the [Data Store](#data-store). You can change the location of the backups using the `GITLAB_CI_BACKUP_DIR` configuration parameter.
+
+*P.S. Backups can also be generated on a running instance using `docker exec` as described in the [Rake Tasks](#rake-tasks) section. However, to avoid undesired side-effects, I advice against running backup and restore operations on a running instance.*
+
+## Restoring Backups
+
+Since release `7.11.0`, Gitlab CI also defines a rake task to restore a backup.
+
+Before performing a restore make sure the container is stopped and removed to avoid container name conflicts.
+
+```bash
+docker stop gitlab-ci && docker rm gitlab-ci
+```
+
+Execute the rake task to restore a backup. Make sure you run the container in interactive mode `-it`.
+
+```bash
+docker run --name=gitlab-ci -it --rm [OPTIONS] \
+  sameersbn/gitlab-ci:7.11.3 app:rake backup:restore
+```
+
+The list of all available backups will be displayed in reverse chronological order. Select the backup you want to restore and continue.
+
+To avoid user interaction in the restore operation, specify the timestamp of the backup using the `BACKUP` argument to the rake task.
+
+```bash
+docker run --name=gitlab-ci -it --rm [OPTIONS] \
+  sameersbn/gitlab-ci:7.11.3 app:rake backup:restore BACKUP=1417624827
+```
+
+## Automated Backups
+
+The image can be configured to automatically take backups `daily`, `weekly` or `monthly` using the `GITLAB_CI_BACKUPS` configuration option.
+
+Daily backups are created at `GITLAB_CI_BACKUP_TIME` which defaults to `04:00` everyday. Weekly backups are created every Sunday at the same time as the daily backups. Monthly backups are created on the 1st of every month at the same time as the daily backups.
+
+By default, when automated backups are enabled, backups are held for a period of 7 days. While when automated backups are disabled, the backups are held for an infinite period of time. This can behavior can be configured via the `GITLAB_CI_BACKUP_EXPIRY` option.
+
+## Shell Access
 
 For debugging and maintenance purposes you may want access the containers shell. If you are using docker version `1.3.0` or higher you can access a running containers shell using `docker exec` command.
 
