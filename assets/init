@@ -16,6 +16,7 @@ GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS:-true}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-$GITLAB_CI_NOTIFY_ADD_COMMITTER}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-false}
 GITLAB_CI_BACKUP_DIR="${GITLAB_CI_BACKUP_DIR:-$DATA_DIR/backups}"
+GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-0}
 SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-$DATA_DIR/certs/gitlab_ci.crt}
 SSL_KEY_PATH=${SSL_KEY_PATH:-$DATA_DIR/certs/gitlab_ci.key}
 SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-$DATA_DIR/certs/dhparam.pem}
@@ -273,8 +274,9 @@ sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_PUSHER}}/'"${GITLAB_CI_NOTIFY_PUS
 sudo -u gitlab_ci -H mkdir -p ${GITLAB_CI_BACKUP_DIR}
 chown gitlab_ci:gitlab_ci ${GITLAB_CI_BACKUP_DIR}
 
-# configure backup directory
+# configure backups
 sudo -u gitlab_ci -H sed 's,{{GITLAB_CI_BACKUP_DIR}},'"${GITLAB_CI_BACKUP_DIR}"',g' -i config/application.yml
+sudo -u gitlab_ci -H sed 's,{{GITLAB_CI_BACKUP_EXPIRY}},'"${GITLAB_CI_BACKUP_EXPIRY}"',g' -i config/application.yml
 
 # configure timezone
 sudo -u gitlab_ci -H sed "s/# config.time_zone.*/config.time_zone = '${GITLAB_CI_TIMEZONE}'/" -i config/application.rb
