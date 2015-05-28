@@ -11,7 +11,7 @@ redis:
   volumes:
     - /srv/docker/gitlab-ci/redis:/var/lib/redis
 ci:
-  image: sameersbn/gitlab-ci:7.10.4
+  image: sameersbn/gitlab-ci:7.11.3
   links:
     - redis:redisio
     - postgresql:postgresql
@@ -28,6 +28,8 @@ ci:
     - GITLAB_CI_SUPPORT=support@example.com
     - GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=true
     - GITLAB_CI_NOTIFY_PUSHER=false
+    - GITLAB_CI_BACKUPS=daily
+    - GITLAB_CI_BACKUP_TIME=01:00
     - SMTP_ENABLED=false
     - SMTP_DOMAIN=www.example.com
     - SMTP_HOST=smtp.gmail.com
