@@ -278,10 +278,6 @@ sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_SUPPORT}}/'"${GITLAB_CI_SUPPORT}"'/' -i 
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}/'"${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}"'/' -i config/application.yml
 sudo -u gitlab_ci -H sed 's/{{GITLAB_CI_NOTIFY_PUSHER}}/'"${GITLAB_CI_NOTIFY_PUSHER}"'/' -i config/application.yml
 
-# create the backups directory
-sudo -u gitlab_ci -H mkdir -p ${GITLAB_CI_BACKUP_DIR}
-chown gitlab_ci:gitlab_ci ${GITLAB_CI_BACKUP_DIR}
-
 # configure backups
 sudo -u gitlab_ci -H sed 's,{{GITLAB_CI_BACKUP_DIR}},'"${GITLAB_CI_BACKUP_DIR}"',g' -i config/application.yml
 sudo -u gitlab_ci -H sed 's,{{GITLAB_CI_BACKUP_EXPIRY}},'"${GITLAB_CI_BACKUP_EXPIRY}"',g' -i config/application.yml
@@ -353,6 +349,10 @@ fi
 
 # take ownership of ${DATA_DIR}
 chown gitlab_ci:gitlab_ci ${DATA_DIR}
+
+# create the backups directory
+sudo -u gitlab_ci -H mkdir -p ${GITLAB_CI_BACKUP_DIR}
+chown gitlab_ci:gitlab_ci ${GITLAB_CI_BACKUP_DIR}
 
 appInit () {
   # due to the nature of docker and its use cases, we allow some time
