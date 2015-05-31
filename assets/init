@@ -351,7 +351,7 @@ fi
 chown gitlab_ci:gitlab_ci ${DATA_DIR}
 
 # create the backups directory
-sudo -u gitlab_ci -H mkdir -p ${GITLAB_CI_BACKUP_DIR}
+mkdir -p ${GITLAB_CI_BACKUP_DIR}
 chown gitlab_ci:gitlab_ci ${GITLAB_CI_BACKUP_DIR}
 
 appInit () {
