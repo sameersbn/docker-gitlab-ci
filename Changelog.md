@@ -2,6 +2,9 @@
 
 This file only reflects the changes that are made in the the docker image. Please refer to the upstream GitLab CI [CHANGELOG](https://github.com/gitlabhq/gitlab-ci/blob/master/CHANGELOG) for the list of changes in GitLab CI.
 
+**7.11.4-2**
+- base image update to fix SSL vulnerability
+
 **7.11.4-1**
 - fixed backups directory permissions setting
 
