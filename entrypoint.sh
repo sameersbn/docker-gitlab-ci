@@ -10,17 +10,17 @@ GITLAB_CI_TIMEZONE=${GITLAB_CI_TIMEZONE:-UTC}
 GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS:-true}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-$GITLAB_CI_NOTIFY_ADD_COMMITTER}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-false}
-GITLAB_CI_BACKUP_DIR="${GITLAB_CI_BACKUP_DIR:-$DATA_DIR/backups}"
+GITLAB_CI_BACKUP_DIR="${GITLAB_CI_BACKUP_DIR:-$GITLAB_CI_DATA_DIR/backups}"
 GITLAB_CI_BACKUPS=${GITLAB_CI_BACKUPS:-disable}
 GITLAB_CI_BACKUP_TIME=${GITLAB_CI_BACKUP_TIME:-04:00}
 GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-}
 
-SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-$DATA_DIR/certs/gitlab_ci.crt}
-SSL_KEY_PATH=${SSL_KEY_PATH:-$DATA_DIR/certs/gitlab_ci.key}
-SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-$DATA_DIR/certs/dhparam.pem}
+SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-$GITLAB_CI_DATA_DIR/certs/gitlab_ci.crt}
+SSL_KEY_PATH=${SSL_KEY_PATH:-$GITLAB_CI_DATA_DIR/certs/gitlab_ci.key}
+SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-$GITLAB_CI_DATA_DIR/certs/dhparam.pem}
 SSL_VERIFY_CLIENT=${SSL_VERIFY_CLIENT:-off}
 
-CA_CERTIFICATES_PATH=${CA_CERTIFICATES_PATH:-$DATA_DIR/certs/ca.crt}
+CA_CERTIFICATES_PATH=${CA_CERTIFICATES_PATH:-$GITLAB_CI_DATA_DIR/certs/ca.crt}
 
 GITLAB_CI_HTTPS_HSTS_ENABLED=${GITLAB_CI_HTTPS_HSTS_ENABLED:-true}
 GITLAB_CI_HTTPS_HSTS_MAX_AGE=${GITLAB_CI_HTTPS_HSTS_MAX_AGE:-31536000}
@@ -168,12 +168,12 @@ case "${GITLAB_CI_BACKUPS}" in
   disable|*) GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-0} ;;
 esac
 
-# populate ${LOG_DIR}
-mkdir -m 0755 -p ${LOG_DIR}/supervisor  && chown -R root:root ${LOG_DIR}/supervisor
-mkdir -m 0755 -p ${LOG_DIR}/nginx       && chown -R gitlab_ci:gitlab_ci ${LOG_DIR}/nginx
-mkdir -m 0755 -p ${LOG_DIR}/gitlab-ci   && chown -R gitlab_ci:gitlab_ci ${LOG_DIR}/gitlab-ci
+# populate ${GITLAB_CI_LOG_DIR}
+mkdir -m 0755 -p ${GITLAB_CI_LOG_DIR}/supervisor  && chown -R root:root ${GITLAB_CI_LOG_DIR}/supervisor
+mkdir -m 0755 -p ${GITLAB_CI_LOG_DIR}/nginx       && chown -R gitlab_ci:gitlab_ci ${GITLAB_CI_LOG_DIR}/nginx
+mkdir -m 0755 -p ${GITLAB_CI_LOG_DIR}/gitlab-ci   && chown -R gitlab_ci:gitlab_ci ${GITLAB_CI_LOG_DIR}/gitlab-ci
 
-cd ${INSTALL_DIR}
+cd ${GITLAB_CI_INSTALL_DIR}
 
 # copy configuration templates
 case "${GITLAB_CI_HTTPS}" in
@@ -199,19 +199,19 @@ sudo -u gitlab_ci -H cp ${SETUP_DIR}/config/gitlab-ci/smtp_settings.rb config/in
 case "${GITLAB_CI_HTTPS}" in
   true)
     if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
-      [ -f ${DATA_DIR}/config/nginx/gitlab_ci-ssl ] && cp ${DATA_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-enabled/gitlab_ci
+      [ -f ${GITLAB_CI_DATA_DIR}/config/nginx/gitlab_ci-ssl ] && cp ${GITLAB_CI_DATA_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-enabled/gitlab_ci
     else
-      [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci
+      [ -f ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci ] && cp ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci
     fi
     ;;
-  *) [ -f ${DATA_DIR}/nginx/gitlab_ci ] && cp ${DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
+  *) [ -f ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci ] && cp ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
 esac
-[ -f ${DATA_DIR}/config/gitlab-ci/application.yml ]  && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/application.yml  config/application.yml
-[ -f ${DATA_DIR}/config/gitlab-ci/resque.yml ]       && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
-[ -f ${DATA_DIR}/config/gitlab-ci/database.yml ]     && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/database.yml     config/database.yml
-[ -f ${DATA_DIR}/config/gitlab-ci/unicorn.rb ]       && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/unicorn.rb       config/unicorn.rb
+[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml ]  && sudo -u gitlab_ci -H cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml  config/application.yml
+[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml ]       && sudo -u gitlab_ci -H cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
+[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml ]     && sudo -u gitlab_ci -H cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml     config/database.yml
+[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb ]       && sudo -u gitlab_ci -H cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb       config/unicorn.rb
 [ "${SMTP_ENABLED}" == "true" ] && \
-[ -f ${DATA_DIR}/config/gitlab-ci/smtp_settings.rb ] && sudo -u gitlab_ci -H cp ${DATA_DIR}/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
+[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/smtp_settings.rb ] && sudo -u gitlab_ci -H cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
 
 if [ -f "${SSL_CERTIFICATE_PATH}" -o -f "${CA_CERTIFICATES_PATH}" ]; then
   echo "Updating CA certificates..."
@@ -223,7 +223,8 @@ if [ -f "${SSL_CERTIFICATE_PATH}" -o -f "${CA_CERTIFICATES_PATH}" ]; then
 fi
 
 # configure nginx
-sed 's,{{INSTALL_DIR}},'"${INSTALL_DIR}"',g' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's,{{GITLAB_CI_INSTALL_DIR}},'"${GITLAB_CI_INSTALL_DIR}"',g' -i /etc/nginx/sites-enabled/gitlab_ci
+sed 's,{{GITLAB_CI_LOG_DIR}},'"${GITLAB_CI_LOG_DIR}"',g' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's/{{YOUR_SERVER_FQDN}}/'"${GITLAB_CI_HOST}"'/g' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's/{{GITLAB_CI_PORT}}/'"${GITLAB_CI_PORT}"'/' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
@@ -249,7 +250,7 @@ fi
 # configure relative_url_root
 if [ -n "${GITLAB_CI_RELATIVE_URL_ROOT}" ]; then
   sed 's,{{GITLAB_CI_RELATIVE_URL_ROOT}},'"${GITLAB_CI_RELATIVE_URL_ROOT}"',' -i /etc/nginx/sites-enabled/gitlab_ci
-  sed 's,# alias '"${INSTALL_DIR}"'/public,alias '"${INSTALL_DIR}"'/public,' -i /etc/nginx/sites-enabled/gitlab_ci
+  sed 's,# alias '"${GITLAB_CI_INSTALL_DIR}"'/public,alias '"${GITLAB_CI_INSTALL_DIR}"'/public,' -i /etc/nginx/sites-enabled/gitlab_ci
   sudo -u gitlab_ci -H sed 's,{{GITLAB_CI_RELATIVE_URL_ROOT}},'"${GITLAB_CI_RELATIVE_URL_ROOT}"',' -i config/unicorn.rb
 else
   sed 's,{{GITLAB_CI_RELATIVE_URL_ROOT}},/,' -i /etc/nginx/sites-enabled/gitlab_ci
@@ -309,7 +310,7 @@ sudo -u gitlab_ci -H sed 's/{{REDIS_HOST}}/'"${REDIS_HOST}"'/g' -i config/resque
 sudo -u gitlab_ci -H sed 's/{{REDIS_PORT}}/'"${REDIS_PORT}"'/g' -i config/resque.yml
 
 # configure unicorn
-sudo -u gitlab_ci -H sed 's,{{INSTALL_DIR}},'"${INSTALL_DIR}"',g' -i config/unicorn.rb
+sudo -u gitlab_ci -H sed 's,{{GITLAB_CI_INSTALL_DIR}},'"${GITLAB_CI_INSTALL_DIR}"',g' -i config/unicorn.rb
 sudo -u gitlab_ci -H sed 's/{{UNICORN_WORKERS}}/'"${UNICORN_WORKERS}"'/' -i config/unicorn.rb
 sudo -u gitlab_ci -H sed 's/{{UNICORN_TIMEOUT}}/'"${UNICORN_TIMEOUT}"'/' -i config/unicorn.rb
 
@@ -344,8 +345,8 @@ if [ "${SMTP_ENABLED}" == "true" ]; then
   esac
 fi
 
-# take ownership of ${DATA_DIR}
-chown gitlab_ci:gitlab_ci ${DATA_DIR}
+# take ownership of ${GITLAB_CI_DATA_DIR}
+chown gitlab_ci:gitlab_ci ${GITLAB_CI_DATA_DIR}
 
 # create the backups directory
 mkdir -p ${GITLAB_CI_BACKUP_DIR}
@@ -396,11 +397,11 @@ appInit () {
   # migrate database if the gitlab-ci version has changed.
   CURRENT_VERSION=
   GITLAB_CI_VERSION=$(cat VERSION)
-  [ -f ${DATA_DIR}/VERSION ] && CURRENT_VERSION=$(cat ${DATA_DIR}/VERSION)
+  [ -f ${GITLAB_CI_DATA_DIR}/VERSION ] && CURRENT_VERSION=$(cat ${GITLAB_CI_DATA_DIR}/VERSION)
   if [ "${GITLAB_CI_VERSION}" != "${CURRENT_VERSION}" ]; then
     echo "Migrating database..."
     sudo -u gitlab_ci -H bundle exec rake db:migrate RAILS_ENV=production >/dev/null
-    sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > ${DATA_DIR}/VERSION
+    sudo -u gitlab_ci -H echo "${GITLAB_CI_VERSION}" > ${GITLAB_CI_DATA_DIR}/VERSION
   fi
 
   if [ "${GITLAB_CI_BACKUPS}" != "disable" ]; then
@@ -411,19 +412,19 @@ appInit () {
       daily)
         sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
 # Automatic Backups: daily
-$min $hour * * * /bin/bash -l -c 'cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
+$min $hour * * * /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
         ;;
       weekly)
         sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
 # Automatic Backups: weekly
-$min $hour * * 0 /bin/bash -l -c 'cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
+$min $hour * * 0 /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
         ;;
       monthly)
         sudo -u gitlab_ci -H cat >> /tmp/cron.gitlab_ci <<EOF
 # Automatic Backups: monthly
-$min $hour 01 * * /bin/bash -l -c 'cd ${INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
+$min $hour 01 * * /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
         ;;
     esac

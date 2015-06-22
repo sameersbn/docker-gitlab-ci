@@ -3,7 +3,7 @@
 # App Version: 2.0
 
 upstream gitlab_ci {
-  server unix:{{INSTALL_DIR}}/tmp/sockets/gitlab-ci.socket fail_timeout=0;
+  server unix:{{GITLAB_CI_INSTALL_DIR}}/tmp/sockets/gitlab-ci.socket fail_timeout=0;
 }
 
 ## Normal HTTP host
@@ -11,18 +11,18 @@ server {
   listen *:80 default_server;
   server_name {{YOUR_SERVER_FQDN}};
   server_tokens off;
-  root {{INSTALL_DIR}}/public;
+  root {{GITLAB_CI_INSTALL_DIR}}/public;
 
   ## Increase this if you want to upload large attachments
   ## Or if you want to accept large git objects over http
   client_max_body_size {{NGINX_MAX_UPLOAD_SIZE}};
 
   ## Individual nginx logs for this GitLab-CI vhost
-  access_log  /var/log/gitlab-ci/nginx/gitlab_ci_access.log;
-  error_log   /var/log/gitlab-ci/nginx/gitlab_ci_error.log;
+  access_log  {{GITLAB_CI_LOG_DIR}}/nginx/gitlab_ci_access.log;
+  error_log   {{GITLAB_CI_LOG_DIR}}/nginx/gitlab_ci_error.log;
 
   location {{GITLAB_CI_RELATIVE_URL_ROOT}} {
-    # alias {{INSTALL_DIR}}/public;
+    # alias {{GITLAB_CI_INSTALL_DIR}}/public;
     ## Serve static files from defined root folder.
     ## @gitlab_ci is a named location for the upstream fallback, see below.
     try_files $uri $uri/index.html $uri.html @gitlab_ci;

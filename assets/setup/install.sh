@@ -21,14 +21,14 @@ PATH=/usr/local/sbin:/usr/local/bin:\$PATH
 EOF
 
 # create the data store
-sudo -u gitlab_ci -H mkdir -p ${DATA_DIR}
+sudo -u gitlab_ci -H mkdir -p ${GITLAB_CI_DATA_DIR}
 
 # shallow clone gitlab-ci
 echo "Cloning gitlab-ci v.${GITLAB_CI_VERSION}..."
 sudo -u gitlab_ci -H git clone -q -b v${GITLAB_CI_VERSION} --depth 1 \
-  https://github.com/gitlabhq/gitlab-ci.git ${INSTALL_DIR}
+  https://github.com/gitlabhq/gitlab-ci.git ${GITLAB_CI_INSTALL_DIR}
 
-cd ${INSTALL_DIR}
+cd ${GITLAB_CI_INSTALL_DIR}
 
 # copy default configurations
 cp lib/support/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
@@ -38,9 +38,9 @@ sudo -u gitlab_ci -H cp config/database.yml.mysql config/database.yml
 sudo -u gitlab_ci -H cp config/unicorn.rb.example config/unicorn.rb
 sudo -u gitlab_ci -H cp config/initializers/smtp_settings.rb.sample config/initializers/smtp_settings.rb
 
-# symlink log -> ${LOG_DIR}/gitlab-ci
+# symlink log -> ${GITLAB_CI_LOG_DIR}/gitlab-ci
 rm -rf log
-ln -sf ${LOG_DIR}/gitlab-ci log
+ln -sf ${GITLAB_CI_LOG_DIR}/gitlab-ci log
 
 # create required tmp directories
 sudo -u gitlab_ci -H mkdir -p tmp/pids/ tmp/sockets/
@@ -68,16 +68,16 @@ rm -f /etc/nginx/sites-enabled/default
 # create the /var/run/sshd directory (required for sshd to start)
 mkdir -p /var/run/sshd
 
-# move supervisord.log file to ${LOG_DIR}/supervisor/
-sed 's|^logfile=.*|logfile='"${LOG_DIR}"'/supervisor/supervisord.log ;|' -i /etc/supervisor/supervisord.conf
+# move supervisord.log file to ${GITLAB_CI_LOG_DIR}/supervisor/
+sed 's|^logfile=.*|logfile='"${GITLAB_CI_LOG_DIR}"'/supervisor/supervisord.log ;|' -i /etc/supervisor/supervisord.conf
 
-# move nginx logs to ${LOG_DIR}/nginx
-sed 's|access_log /var/log/nginx/access.log;|access_log '"${LOG_DIR}"'/nginx/access.log;|' -i /etc/nginx/nginx.conf
-sed 's|error_log /var/log/nginx/error.log;|error_log '"${LOG_DIR}"'/nginx/error.log;|' -i /etc/nginx/nginx.conf
+# move nginx logs to ${GITLAB_CI_LOG_DIR}/nginx
+sed 's|access_log /var/log/nginx/access.log;|access_log '"${GITLAB_CI_LOG_DIR}"'/nginx/access.log;|' -i /etc/nginx/nginx.conf
+sed 's|error_log /var/log/nginx/error.log;|error_log '"${GITLAB_CI_LOG_DIR}"'/nginx/error.log;|' -i /etc/nginx/nginx.conf
 
 # configure supervisord log rotation
 cat > /etc/logrotate.d/supervisord <<EOF
-${LOG_DIR}/supervisor/*.log {
+${GITLAB_CI_LOG_DIR}/supervisor/*.log {
   weekly
   missingok
   rotate 52
@@ -90,7 +90,7 @@ EOF
 
 # configure gitlab-ci log rotation
 cat > /etc/logrotate.d/gitlab-ci <<EOF
-${LOG_DIR}/gitlab-ci/*.log {
+${GITLAB_CI_LOG_DIR}/gitlab-ci/*.log {
   weekly
   missingok
   rotate 52
@@ -103,7 +103,7 @@ EOF
 
 # configure gitlab-ci vhost log rotation
 cat > /etc/logrotate.d/gitlab-ci-vhost <<EOF
-${LOG_DIR}/nginx/*.log {
+${GITLAB_CI_LOG_DIR}/nginx/*.log {
   weekly
   missingok
   rotate 52
@@ -118,35 +118,35 @@ EOF
 cat > /etc/supervisor/conf.d/unicorn.conf <<EOF
 [program:unicorn]
 priority=10
-directory=${INSTALL_DIR}
+directory=${GITLAB_CI_INSTALL_DIR}
 environment=HOME=${GITLAB_CI_HOME}
-command=bundle exec unicorn_rails -c ${INSTALL_DIR}/config/unicorn.rb -E production
+command=bundle exec unicorn_rails -c ${GITLAB_CI_INSTALL_DIR}/config/unicorn.rb -E production
 user=gitlab_ci
 autostart=true
 autorestart=true
 stopsignal=QUIT
-stdout_logfile=${LOG_DIR}/supervisor/%(program_name)s.log
-stderr_logfile=${LOG_DIR}/supervisor/%(program_name)s.log
+stdout_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
+stderr_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
 EOF
 
 # configure supervisord to start sidekiq
 cat > /etc/supervisor/conf.d/sidekiq.conf <<EOF
 [program:sidekiq]
 priority=10
-directory=${INSTALL_DIR}
+directory=${GITLAB_CI_INSTALL_DIR}
 environment=HOME=${GITLAB_CI_HOME}
 command=bundle exec sidekiq -c {{SIDEKIQ_CONCURRENCY}}
   -q runner
   -q common
   -q default
   -e production
-  -P ${INSTALL_DIR}/tmp/pids/sidekiq.pid
-  -L ${INSTALL_DIR}/log/sidekiq.log
+  -P ${GITLAB_CI_INSTALL_DIR}/tmp/pids/sidekiq.pid
+  -L ${GITLAB_CI_INSTALL_DIR}/log/sidekiq.log
 user=gitlab_ci
 autostart=true
 autorestart=true
-stdout_logfile=${LOG_DIR}/supervisor/%(program_name)s.log
-stderr_logfile=${LOG_DIR}/supervisor/%(program_name)s.log
+stdout_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
+stderr_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
 EOF
 
 # configure supervisord to start nginx
@@ -158,8 +158,8 @@ command=/usr/sbin/nginx -g "daemon off;"
 user=root
 autostart=true
 autorestart=true
-stdout_logfile=${LOG_DIR}/supervisor/%(program_name)s.log
-stderr_logfile=${LOG_DIR}/supervisor/%(program_name)s.log
+stdout_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
+stderr_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
 EOF
 
 # configure supervisord to start crond
@@ -171,8 +171,8 @@ command=/usr/sbin/cron -f
 user=root
 autostart=true
 autorestart=true
-stdout_logfile=${LOG_DIR}/supervisor/%(program_name)s.log
-stderr_logfile=${LOG_DIR}/supervisor/%(program_name)s.log
+stdout_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
+stderr_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
 EOF
 
 # purge build dependencies
