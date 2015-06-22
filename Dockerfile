@@ -31,9 +31,7 @@ RUN chmod 755 /app/init
 
 EXPOSE 80/tcp 443/tcp
 
-VOLUME ["/home/gitlab_ci/data"]
-VOLUME ["/var/log/gitlab-ci"]
-
+VOLUME ["/home/gitlab_ci/data", "/var/log/gitlab-ci"]
 WORKDIR /home/gitlab_ci/gitlab-ci
 ENTRYPOINT ["/app/init"]
 CMD ["app:start"]
