@@ -26,7 +26,7 @@ COPY assets/setup/ /app/setup/
 RUN bash /app/setup/install.sh
 
 COPY assets/config/ /app/setup/config/
-COPY assets/entrypoint.sh /app/entrypoint.sh
+COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod 755 /app/entrypoint.sh
 
 EXPOSE 80/tcp 443/tcp
