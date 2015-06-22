@@ -13,7 +13,7 @@ apt-get install -y gcc g++ make libc6-dev ruby2.1-dev \
   libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev
 
 # add git user
-adduser --disabled-login --gecos 'GitLab CI' gitlab_ci
+adduser --disabled-login --gecos 'GitLab CI' ${GITLAB_CI_USER}
 
 # set PATH (fixes cron job PATH issues)
 cat >> ${GITLAB_CI_HOME}/.profile <<EOF
@@ -21,43 +21,43 @@ PATH=/usr/local/sbin:/usr/local/bin:\$PATH
 EOF
 
 # create the data store
-sudo -u gitlab_ci -H mkdir -p ${GITLAB_CI_DATA_DIR}
+sudo -u ${GITLAB_CI_USER} -H mkdir -p ${GITLAB_CI_DATA_DIR}
 
 # shallow clone gitlab-ci
 echo "Cloning gitlab-ci v.${GITLAB_CI_VERSION}..."
-sudo -u gitlab_ci -H git clone -q -b v${GITLAB_CI_VERSION} --depth 1 \
+sudo -u ${GITLAB_CI_USER} -H git clone -q -b v${GITLAB_CI_VERSION} --depth 1 \
   https://github.com/gitlabhq/gitlab-ci.git ${GITLAB_CI_INSTALL_DIR}
 
 cd ${GITLAB_CI_INSTALL_DIR}
 
 # copy default configurations
 cp lib/support/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
-sudo -u gitlab_ci -H cp config/application.yml.example config/application.yml
-sudo -u gitlab_ci -H cp config/resque.yml.example config/resque.yml
-sudo -u gitlab_ci -H cp config/database.yml.mysql config/database.yml
-sudo -u gitlab_ci -H cp config/unicorn.rb.example config/unicorn.rb
-sudo -u gitlab_ci -H cp config/initializers/smtp_settings.rb.sample config/initializers/smtp_settings.rb
+sudo -u ${GITLAB_CI_USER} -H cp config/application.yml.example config/application.yml
+sudo -u ${GITLAB_CI_USER} -H cp config/resque.yml.example config/resque.yml
+sudo -u ${GITLAB_CI_USER} -H cp config/database.yml.mysql config/database.yml
+sudo -u ${GITLAB_CI_USER} -H cp config/unicorn.rb.example config/unicorn.rb
+sudo -u ${GITLAB_CI_USER} -H cp config/initializers/smtp_settings.rb.sample config/initializers/smtp_settings.rb
 
 # symlink log -> ${GITLAB_CI_LOG_DIR}/gitlab-ci
 rm -rf log
 ln -sf ${GITLAB_CI_LOG_DIR}/gitlab-ci log
 
 # create required tmp directories
-sudo -u gitlab_ci -H mkdir -p tmp/pids/ tmp/sockets/
+sudo -u ${GITLAB_CI_USER} -H mkdir -p tmp/pids/ tmp/sockets/
 chmod -R u+rwX tmp
 
 # install gems required by gitlab-ci, use cache if available
 if [ -d "${GEM_CACHE_DIR}" ]; then
   mv ${GEM_CACHE_DIR} vendor/
-  chown -R gitlab_ci:gitlab_ci vendor/cache
+  chown -R ${GITLAB_CI_USER}:${GITLAB_CI_USER} vendor/cache
 fi
-sudo -u gitlab_ci -H bundle install -j$(nproc) --deployment --without development test
+sudo -u ${GITLAB_CI_USER} -H bundle install -j$(nproc) --deployment --without development test
 
 # install cronjob
-bundle exec whenever -w -u gitlab_ci RAILS_ENV=production
+bundle exec whenever -w -u ${GITLAB_CI_USER} RAILS_ENV=production
 
-# make sure everything in ${GITLAB_CI_HOME} is owned by the gitlab_ci user
-chown -R gitlab_ci:gitlab_ci ${GITLAB_CI_HOME}/
+# make sure everything in ${GITLAB_CI_HOME} is owned by the ${GITLAB_CI_USER} user
+chown -R ${GITLAB_CI_USER}:${GITLAB_CI_USER} ${GITLAB_CI_HOME}/
 
 # install gitlab bootscript
 cp lib/support/init.d/gitlab_ci /etc/init.d/gitlab_ci
@@ -121,7 +121,7 @@ priority=10
 directory=${GITLAB_CI_INSTALL_DIR}
 environment=HOME=${GITLAB_CI_HOME}
 command=bundle exec unicorn_rails -c ${GITLAB_CI_INSTALL_DIR}/config/unicorn.rb -E production
-user=gitlab_ci
+user=${GITLAB_CI_USER}
 autostart=true
 autorestart=true
 stopsignal=QUIT
@@ -142,7 +142,7 @@ command=bundle exec sidekiq -c {{SIDEKIQ_CONCURRENCY}}
   -e production
   -P ${GITLAB_CI_INSTALL_DIR}/tmp/pids/sidekiq.pid
   -L ${GITLAB_CI_INSTALL_DIR}/log/sidekiq.log
-user=gitlab_ci
+user=${GITLAB_CI_USER}
 autostart=true
 autorestart=true
 stdout_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
