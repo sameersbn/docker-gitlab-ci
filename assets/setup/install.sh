@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-GITLAB_CI_VERSION=7.12.0
-
-GITLAB_CI_HOME="/home/gitlab_ci"
-INSTALL_DIR="${GITLAB_CI_HOME}/gitlab-ci"
-DATA_DIR="${GITLAB_CI_HOME}/data"
-LOG_DIR="/var/log/gitlab-ci"
-
-SETUP_DIR="/app/setup"
 GEM_CACHE_DIR="${SETUP_DIR}/cache"
 
 # rebuild apt cache

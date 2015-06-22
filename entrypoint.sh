@@ -1,11 +1,6 @@
 #!/bin/bash
 set -e
 
-INSTALL_DIR="/home/gitlab_ci/gitlab-ci"
-DATA_DIR="/home/gitlab_ci/data"
-LOG_DIR="/var/log/gitlab-ci"
-SETUP_DIR="/app/setup"
-
 GITLAB_CI_HOST=${GITLAB_CI_HOST:-localhost}
 GITLAB_CI_PORT=${GITLAB_CI_PORT:-}
 GITLAB_CI_HTTPS=${GITLAB_CI_HTTPS:-false}

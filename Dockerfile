@@ -1,6 +1,14 @@
 FROM sameersbn/ubuntu:14.04.20150613
 MAINTAINER sameer@damagehead.com
 
+ENV GITLAB_CI_VERSION=7.12.0 \
+    GITLAB_CI_HOME="/home/gitlab_ci" \
+    LOG_DIR="/var/log/gitlab-ci" \
+    SETUP_DIR="/app/setup"
+
+ENV INSTALL_DIR="${GITLAB_CI_HOME}/gitlab-ci" \
+    DATA_DIR="${GITLAB_CI_HOME}/data"
+
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E1DD270288B4E6030699E45FA1715D88E1DF1F24 \
  && echo "deb http://ppa.launchpad.net/git-core/ppa/ubuntu trusty main" >> /etc/apt/sources.list \
  && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 80F70E11F0F0D5F10CB20E62F5DA5F09C3173AA6 \
