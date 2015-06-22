@@ -14,11 +14,20 @@ build:
 	@docker build --tag=${USER}/gitlab-ci .
 
 quickstart:
+	@echo "Starting postgresql..."
+	@docker run --name=gitlab-ci-postgresql -d \
+		--env='DB_NAME=gitlab_ci_production' \
+		--env='DB_USER=gitlab' --env='DB_PASS=password' \
+		sameersbn/postgresql:latest >/dev/null
+	@echo "Starting redis..."
+	@docker run --name=gitlab-ci-redis -d \
+		sameersbn/redis:latest >/dev/null
 	@echo "Starting gitlab-ci..."
-	@docker run --name='gitlab-ci-demo' -d \
-		-p 10080:80 --link gitlab:gitlab \
-		-v /var/run/docker.sock:/run/docker.sock \
-		-v $(shell which docker):/bin/docker \
+	@docker run --name=gitlab-ci-demo -d \
+		--link=gitlab-ci-postgresql:postgresql --link=gitlab-ci-redis:redisio \
+		--publish=10081:80 \
+		--env='GITLAB_CI_PORT=10081' --env='GITLAB_URL=http://localhost:10080' \
+		--env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
 		${USER}/gitlab-ci:latest >/dev/null
 	@echo "Please be patient. This could take a while..."
 	@echo "GitLab CI will be available at http://localhost:10080"
@@ -27,10 +36,17 @@ quickstart:
 stop:
 	@echo "Stopping gitlab-ci..."
 	@docker stop gitlab-ci-demo >/dev/null
+	@echo "Stopping redis..."
+	@docker stop gitlab-ci-redis >/dev/null
+	@echo "Stopping postgresql..."
+	@docker stop gitlab-ci-postgresql >/dev/null
+	@echo "Type 'make purge' to remove stopped containers"
 
 purge: stop
 	@echo "Removing stopped container..."
-	@docker rm gitlab-ci-demo >/dev/null
+	@docker rm -v gitlab-ci-demo >/dev/null
+	@docker rm -v gitlab-ci-redis >/dev/null
+	@docker rm -v gitlab-ci-postgresql >/dev/null
 
 logs:
 	@docker logs -f gitlab-ci-demo
