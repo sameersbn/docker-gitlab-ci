@@ -26,12 +26,12 @@ COPY assets/setup/ /app/setup/
 RUN bash /app/setup/install.sh
 
 COPY assets/config/ /app/setup/config/
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod 755 /app/entrypoint.sh
+COPY entrypoint.sh /sbin/entrypoint.sh
+RUN chmod 755 /sbin/entrypoint.sh
 
 EXPOSE 80/tcp 443/tcp
 
 VOLUME ["/home/gitlab_ci/data", "/var/log/gitlab-ci"]
 WORKDIR /home/gitlab_ci/gitlab-ci
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["app:start"]
