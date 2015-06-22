@@ -23,8 +23,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E1DD270288B4E60
  && rm -rf /var/lib/apt/lists/* # 20150613
 
 COPY assets/setup/ /app/setup/
-RUN chmod 755 /app/setup/install
-RUN /app/setup/install
+RUN bash /app/setup/install
 
 COPY assets/config/ /app/setup/config/
 COPY assets/init /app/init
