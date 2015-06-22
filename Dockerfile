@@ -29,8 +29,7 @@ COPY assets/config/ /app/setup/config/
 COPY assets/init /app/init
 RUN chmod 755 /app/init
 
-EXPOSE 80
-EXPOSE 443
+EXPOSE 80/tcp 443/tcp
 
 VOLUME ["/home/gitlab_ci/data"]
 VOLUME ["/var/log/gitlab-ci"]
