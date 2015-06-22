@@ -4,6 +4,7 @@ This file only reflects the changes that are made in the the docker image. Pleas
 
 **latest**
 - added `SMTP_TLS` configuration parameter
+- gitlab-ci: upgrade to v.7.12.0
 
 **7.11.4-2**
 - base image update to fix SSL vulnerability

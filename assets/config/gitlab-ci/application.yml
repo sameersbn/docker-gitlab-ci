@@ -1,10 +1,13 @@
+# If you change this file in a Merge Request, please also create
+# a MR on https://gitlab.com/gitlab-org/omnibus-gitlab/merge_requests
+
 defaults: &defaults
   gitlab_server:
     url: '{{GITLAB_URL}}' # Replace with your gitlab server url
     app_id: '{{GITLAB_APP_ID}}'
     app_secret: '{{GITLAB_APP_SECRET}}'
 
-  ## Gitlab CI settings  
+  ## Gitlab CI settings
   gitlab_ci:
     ## Web server settings
     host: "{{GITLAB_CI_HOST}}"
@@ -22,10 +25,10 @@ defaults: &defaults
     #
     # Send emails only on broken builds (default: true)
     all_broken_builds: {{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}
-    # 
+    #
     # Add pusher to recipients list (default: false)
     add_pusher: {{GITLAB_CI_NOTIFY_PUSHER}}
-    
+
   gravatar:
     enabled: true
     plain_url: "http://www.gravatar.com/avatar/%{hash}?s=%{size}&d=mm"
@@ -44,6 +47,9 @@ defaults: &defaults
     #     aws_secret_access_key: 'secret123'
     #   # The remote 'directory' to store your backups. For S3, this would be the bucket name.
     #   remote_directory: 'my.s3.bucket'
+    #   # Use multipart uploads when file size reaches 100MB, see
+    #   #  http://docs.aws.amazon.com/AmazonS3/latest/dev/uploadobjusingmpu.html
+    #   multipart_chunk_size: 104857600
 
 
 development:
@@ -52,7 +58,7 @@ development:
 test:
   <<: *defaults
   gitlab_server:
-    url: '{{GITLAB_URL}}' 
+    url: '{{GITLAB_URL}}'
     app_id: '{{GITLAB_APP_ID}}'
     app_secret: '{{GITLAB_APP_SECRET}}'
   gitlab_ci:
