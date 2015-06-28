@@ -5,7 +5,7 @@ ENV GITLAB_CI_VERSION=7.12.0 \
     GITLAB_CI_USER="gitlab_ci" \
     GITLAB_CI_HOME="/home/gitlab_ci" \
     GITLAB_CI_LOG_DIR="/var/log/gitlab-ci" \
-    SETUP_DIR="/app/setup"
+    SETUP_DIR="/var/cache/gitlab-ci"
 
 ENV GITLAB_CI_INSTALL_DIR="${GITLAB_CI_HOME}/gitlab-ci" \
     GITLAB_CI_DATA_DIR="${GITLAB_CI_HOME}/data"
