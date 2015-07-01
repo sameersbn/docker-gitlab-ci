@@ -27,16 +27,16 @@ ci:
     - GITLAB_CI_EMAIL=ci@example.com
     - GITLAB_CI_SUPPORT=support@example.com
     - GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS="true"
-    - GITLAB_CI_NOTIFY_PUSHER="false"
+    - GITLAB_CI_NOTIFY_PUSHER=false
     - GITLAB_CI_BACKUPS=daily
     - GITLAB_CI_BACKUP_TIME=01:00
-    - SMTP_ENABLED="false"
+    - SMTP_ENABLED=false
     - SMTP_DOMAIN=www.example.com
     - SMTP_HOST=smtp.gmail.com
     - SMTP_PORT=587
     - SMTP_USER=mailer@example.com
     - SMTP_PASS=password
-    - SMTP_STARTTLS="true"
+    - SMTP_STARTTLS=true
     - SMTP_AUTHENTICATION=login
   volumes:
     - /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data
