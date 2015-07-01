@@ -51,7 +51,7 @@ SMTP_PASS=${SMTP_PASS:-}
 SMTP_OPENSSL_VERIFY_MODE=${SMTP_OPENSSL_VERIFY_MODE:-}
 SMTP_STARTTLS=${SMTP_STARTTLS:-true}
 SMTP_TLS=${SMTP_TLS:-false}
-if [ -n "${SMTP_USER}" ]; then
+if [[ -n ${SMTP_USER} ]]; then
   SMTP_ENABLED=${SMTP_ENABLED:-true}
   SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-login}
 fi
@@ -62,7 +62,7 @@ GITLAB_APP_ID=${GITLAB_APP_ID:-}
 GITLAB_APP_SECRET=${GITLAB_APP_SECRET:-}
 
 # use docker link feature to figure out gitlab url
-[[ -z "${GITLAB_URL}" && -n "${GITLAB_PORT_80_TCP_ADDR}" ]] && \
+[[ -z ${GITLAB_URL} && -n ${GITLAB_PORT_80_TCP_ADDR} ]] && \
   GITLAB_URL="http://${GITLAB_PORT_80_TCP_ADDR}"
 
 GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
@@ -70,7 +70,7 @@ GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
 # is a mysql or postgresql database linked?
 # requires that the mysql or postgresql containers have exposed
 # port 3306 and 5432 respectively.
-if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
+if [[ -n ${MYSQL_PORT_3306_TCP_ADDR} ]]; then
   DB_TYPE=mysql
   DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
   DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
@@ -85,7 +85,7 @@ if [ -n "${MYSQL_PORT_3306_TCP_ADDR}" ]; then
   DB_USER=${DB_USER:-${MYSQL_ENV_MYSQL_USER}}
   DB_PASS=${DB_PASS:-${MYSQL_ENV_MYSQL_PASSWORD}}
   DB_NAME=${DB_NAME:-${MYSQL_ENV_MYSQL_DATABASE}}
-elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
+elif [[ -n ${POSTGRESQL_PORT_5432_TCP_ADDR} ]]; then
   DB_TYPE=postgres
   DB_HOST=${DB_HOST:-${POSTGRESQL_PORT_5432_TCP_ADDR}}
   DB_PORT=${DB_PORT:-${POSTGRESQL_PORT_5432_TCP_PORT}}
@@ -111,7 +111,7 @@ elif [ -n "${POSTGRESQL_PORT_5432_TCP_ADDR}" ]; then
   DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB}}
 fi
 
-if [ -z "${DB_HOST}" ]; then
+if [[ -z ${DB_HOST} ]]; then
   echo "ERROR: "
   echo "  Please configure the database connection."
   echo "  Refer http://git.io/kD0ndg for more information."
@@ -120,7 +120,7 @@ if [ -z "${DB_HOST}" ]; then
 fi
 
 # use default port number if it is still not set
-case "${DB_TYPE}" in
+case ${DB_TYPE} in
   mysql) DB_PORT=${DB_PORT:-3306} ;;
   postgres) DB_PORT=${DB_PORT:-5432} ;;
   *)
@@ -136,7 +136,7 @@ DB_USER=${DB_USER:-root}
 DB_NAME=${DB_NAME:-gitlab_ci_production}
 
 # is a redis container linked?
-if [ -n "${REDISIO_PORT_6379_TCP_ADDR}" ]; then
+if [[ -n ${REDISIO_PORT_6379_TCP_ADDR} ]]; then
   REDIS_HOST=${REDIS_HOST:-${REDISIO_PORT_6379_TCP_ADDR}}
   REDIS_PORT=${REDIS_PORT:-${REDISIO_PORT_6379_TCP_PORT}}
 fi
@@ -144,7 +144,7 @@ fi
 # fallback to default redis port
 REDIS_PORT=${REDIS_PORT:-6379}
 
-if [ -z "${REDIS_HOST}" ]; then
+if [[ -z ${REDIS_HOST} ]]; then
   echo "ERROR: "
   echo "  Please configure the redis connection."
   echo "  Refer http://git.io/PMnRSw for more information."
@@ -152,7 +152,7 @@ if [ -z "${REDIS_HOST}" ]; then
   exit 1
 fi
 
-case "${GITLAB_CI_HTTPS}" in
+case ${GITLAB_CI_HTTPS} in
   true)
     GITLAB_CI_PORT=${GITLAB_CI_PORT:-443}
     NGINX_X_FORWARDED_PROTO=${NGINX_X_FORWARDED_PROTO:-https}
@@ -163,7 +163,7 @@ case "${GITLAB_CI_HTTPS}" in
     ;;
 esac
 
-case "${GITLAB_CI_BACKUPS}" in
+case ${GITLAB_CI_BACKUPS} in
   daily|weekly|monthly) GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-604800} ;;
   disable|*) GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-0} ;;
 esac
@@ -176,9 +176,9 @@ mkdir -m 0755 -p ${GITLAB_CI_LOG_DIR}/gitlab-ci   && chown -R ${GITLAB_CI_USER}:
 cd ${GITLAB_CI_INSTALL_DIR}
 
 # copy configuration templates
-case "${GITLAB_CI_HTTPS}" in
+case ${GITLAB_CI_HTTPS} in
   true)
-    if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
+    if [[ -f ${SSL_CERTIFICATE_PATH} && -f ${SSL_KEY_PATH} && -f ${SSL_DHPARAM_PATH} ]]; then
       cp ${SETUP_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-enabled/gitlab_ci
     else
       echo "SSL keys and certificates were not found."
@@ -192,32 +192,32 @@ sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/application.yml con
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/resque.yml config/resque.yml
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/database.yml config/database.yml
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/unicorn.rb config/unicorn.rb
-[ "${SMTP_ENABLED}" == "true" ] && \
+[[ ${SMTP_ENABLED} == true ]] && \
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
 
 # override default configuration templates with user templates
-case "${GITLAB_CI_HTTPS}" in
+case ${GITLAB_CI_HTTPS} in
   true)
-    if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" -a -f "${SSL_DHPARAM_PATH}" ]; then
-      [ -f ${GITLAB_CI_DATA_DIR}/config/nginx/gitlab_ci-ssl ] && cp ${GITLAB_CI_DATA_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-enabled/gitlab_ci
+    if [[ -f ${SSL_CERTIFICATE_PATH} && -f ${SSL_KEY_PATH} && -f ${SSL_DHPARAM_PATH} ]]; then
+      [[ -f ${GITLAB_CI_DATA_DIR}/config/nginx/gitlab_ci-ssl ]] && cp ${GITLAB_CI_DATA_DIR}/config/nginx/gitlab_ci-ssl /etc/nginx/sites-enabled/gitlab_ci
     else
-      [ -f ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci ] && cp ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci
+      [[ -f ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci ]] && cp ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci
     fi
     ;;
-  *) [ -f ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci ] && cp ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
+  *) [[ -f ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci ]] && cp ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
 esac
-[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml ]  && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml  config/application.yml
-[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml ]       && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
-[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml ]     && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml     config/database.yml
-[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb ]       && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb       config/unicorn.rb
-[ "${SMTP_ENABLED}" == "true" ] && \
-[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/smtp_settings.rb ] && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
+[[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml ]]  && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml  config/application.yml
+[[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml ]]       && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
+[[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml ]]     && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml     config/database.yml
+[[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb ]]       && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb       config/unicorn.rb
+[[ ${SMTP_ENABLED} == true ]] && \
+[[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/smtp_settings.rb ]] && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
 
-if [ -f "${SSL_CERTIFICATE_PATH}" -o -f "${CA_CERTIFICATES_PATH}" ]; then
+if [[ -f ${SSL_CERTIFICATE_PATH} || -f ${CA_CERTIFICATES_PATH} ]]; then
   echo "Updating CA certificates..."
-  [ -f "${SSL_CERTIFICATE_PATH}" ] && \
+  [[ -f ${SSL_CERTIFICATE_PATH} ]] && \
     cp "${SSL_CERTIFICATE_PATH}" /usr/local/share/ca-certificates/gitlab_ci.crt
-  [ -f "${CA_CERTIFICATES_PATH}" ] && \
+  [[ -f ${CA_CERTIFICATES_PATH} ]] && \
     cp "${CA_CERTIFICATES_PATH}" /usr/local/share/ca-certificates/ca.crt
   update-ca-certificates --fresh >/dev/null
 fi
@@ -231,7 +231,7 @@ sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i /etc/nginx/site
 sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's,{{SSL_DHPARAM_PATH}},'"${SSL_DHPARAM_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's,{{SSL_VERIFY_CLIENT}},'"${SSL_VERIFY_CLIENT}"',' -i /etc/nginx/sites-enabled/gitlab_ci
-if [ -f /usr/local/share/ca-certificates/ca.crt ]; then
+if [[ -f ${CA_CERTIFICATES_PATH} ]]; then
   sed 's,{{CA_CERTIFICATES_PATH}},'"${CA_CERTIFICATES_PATH}"',' -i /etc/nginx/sites-enabled/gitlab_ci
 else
   sed '/{{CA_CERTIFICATES_PATH}}/d' -i /etc/nginx/sites-enabled/gitlab_ci
@@ -241,14 +241,14 @@ sed 's/worker_processes .*/worker_processes '"${NGINX_WORKERS}"';/' -i /etc/ngin
 sed 's/{{NGINX_MAX_UPLOAD_SIZE}}/'"${NGINX_MAX_UPLOAD_SIZE}"'/g' -i /etc/nginx/sites-enabled/gitlab_ci
 sed 's,{{NGINX_X_FORWARDED_PROTO}},'"${NGINX_X_FORWARDED_PROTO}"',g' -i /etc/nginx/sites-enabled/gitlab_ci
 
-if [ "${GITLAB_CI_HTTPS_HSTS_ENABLED}" == "true" ]; then
+if [[ ${GITLAB_CI_HTTPS_HSTS_ENABLED} == true ]]; then
   sed 's/{{GITLAB_CI_HTTPS_HSTS_MAX_AGE}}/'"${GITLAB_CI_HTTPS_HSTS_MAX_AGE}"'/' -i /etc/nginx/sites-enabled/gitlab_ci
 else
   sed '/{{GITLAB_CI_HTTPS_HSTS_MAX_AGE}}/d' -i /etc/nginx/sites-enabled/gitlab_ci
 fi
 
 # configure relative_url_root
-if [ -n "${GITLAB_CI_RELATIVE_URL_ROOT}" ]; then
+if [[ -n ${GITLAB_CI_RELATIVE_URL_ROOT} ]]; then
   sed 's,{{GITLAB_CI_RELATIVE_URL_ROOT}},'"${GITLAB_CI_RELATIVE_URL_ROOT}"',' -i /etc/nginx/sites-enabled/gitlab_ci
   sed 's,# alias '"${GITLAB_CI_INSTALL_DIR}"'/public,alias '"${GITLAB_CI_INSTALL_DIR}"'/public,' -i /etc/nginx/sites-enabled/gitlab_ci
   sudo -HEu ${GITLAB_CI_USER} sed 's,{{GITLAB_CI_RELATIVE_URL_ROOT}},'"${GITLAB_CI_RELATIVE_URL_ROOT}"',' -i config/unicorn.rb
@@ -258,7 +258,7 @@ else
 fi
 
 # disable ipv6 support
-if [ ! -f /proc/net/if_inet6 ]; then
+if [[ ! -f /proc/net/if_inet6 ]]; then
   sed -e '/listen \[::\]:80/ s/^#*/#/' -i /etc/nginx/sites-enabled/gitlab_ci
   sed -e '/listen \[::\]:443/ s/^#*/#/' -i /etc/nginx/sites-enabled/gitlab_ci
 fi
@@ -283,11 +283,11 @@ sudo -HEu ${GITLAB_CI_USER} sed 's,{{GITLAB_CI_BACKUP_EXPIRY}},'"${GITLAB_CI_BAC
 sudo -HEu ${GITLAB_CI_USER} sed "s/# config.time_zone.*/config.time_zone = '${GITLAB_CI_TIMEZONE}'/" -i config/application.rb
 
 # configure database
-if [ "${DB_TYPE}" == "postgres" ]; then
+if [[ ${DB_TYPE} == postgres ]]; then
   sudo -HEu ${GITLAB_CI_USER} sed 's/{{DB_ADAPTER}}/postgresql/' -i config/database.yml
   sudo -HEu ${GITLAB_CI_USER} sed 's/{{DB_ENCODING}}/unicode/' -i config/database.yml
   sudo -HEu ${GITLAB_CI_USER} sed 's/reconnect: false/#reconnect: false/' -i config/database.yml
-elif [ "${DB_TYPE}" == "mysql" ]; then
+elif [[ ${DB_TYPE} == mysql ]]; then
   sudo -HEu ${GITLAB_CI_USER} sed 's/{{DB_ADAPTER}}/mysql2/' -i config/database.yml
   sudo -HEu ${GITLAB_CI_USER} sed 's/{{DB_ENCODING}}/utf8/' -i config/database.yml
   sudo -HEu ${GITLAB_CI_USER} sed 's/#reconnect: false/reconnect: false/' -i config/database.yml
@@ -318,13 +318,13 @@ sudo -HEu ${GITLAB_CI_USER} sed 's/{{UNICORN_TIMEOUT}}/'"${UNICORN_TIMEOUT}"'/' 
 sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_HOST}}/'"${SMTP_HOST}"'/' -i config/initializers/smtp_settings.rb
 sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_PORT}}/'"${SMTP_PORT}"'/' -i config/initializers/smtp_settings.rb
 
-if [ "${SMTP_ENABLED}" == "true" ]; then
-  case "${SMTP_USER}" in
+if [[ ${SMTP_ENABLED} == true ]]; then
+  case ${SMTP_USER} in
     "") sudo -HEu ${GITLAB_CI_USER} sed '/{{SMTP_USER}}/d' -i config/initializers/smtp_settings.rb ;;
     *) sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i config/initializers/smtp_settings.rb ;;
   esac
 
-  case "${SMTP_PASS}" in
+  case ${SMTP_PASS} in
     "") sudo -HEu ${GITLAB_CI_USER} sed '/{{SMTP_PASS}}/d' -i config/initializers/smtp_settings.rb ;;
     *) sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_PASS}}/'"${SMTP_PASS}"'/' -i config/initializers/smtp_settings.rb ;;
   esac
@@ -333,13 +333,13 @@ if [ "${SMTP_ENABLED}" == "true" ]; then
   sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_STARTTLS}}/'"${SMTP_STARTTLS}"'/' -i config/initializers/smtp_settings.rb
   sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_TLS}}/'"${SMTP_TLS}"'/' -i config/initializers/smtp_settings.rb
 
-  if [ -n "${SMTP_OPENSSL_VERIFY_MODE}" ]; then
+  if [[ -n ${SMTP_OPENSSL_VERIFY_MODE} ]]; then
     sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_OPENSSL_VERIFY_MODE}}/'"${SMTP_OPENSSL_VERIFY_MODE}"'/' -i config/initializers/smtp_settings.rb
   else
     sudo -HEu ${GITLAB_CI_USER} sed '/{{SMTP_OPENSSL_VERIFY_MODE}}/d' -i config/initializers/smtp_settings.rb
   fi
 
-  case "${SMTP_AUTHENTICATION}" in
+  case ${SMTP_AUTHENTICATION} in
     "") sudo -HEu ${GITLAB_CI_USER} sed '/{{SMTP_AUTHENTICATION}}/d' -i config/initializers/smtp_settings.rb ;;
     *) sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_AUTHENTICATION}}/'"${SMTP_AUTHENTICATION}"'/' -i config/initializers/smtp_settings.rb ;;
   esac
@@ -355,7 +355,7 @@ chown ${GITLAB_CI_USER}:${GITLAB_CI_USER} ${GITLAB_CI_BACKUP_DIR}
 appInit () {
   # due to the nature of docker and its use cases, we allow some time
   # for the database server to come online.
-  case "${DB_TYPE}" in
+  case ${DB_TYPE} in
     mysql)
       prog="mysqladmin -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} status"
       ;;
@@ -369,7 +369,7 @@ appInit () {
   while ! ${prog} >/dev/null 2>&1
   do
     timeout=$(expr $timeout - 1)
-    if [ $timeout -eq 0 ]; then
+    if [[ $timeout -eq 0 ]]; then
       echo -e "\nCould not connect to database server. Aborting..."
       exit 1
     fi
@@ -379,7 +379,7 @@ appInit () {
   echo
 
   # run the `db:setup` rake task if required
-  case "${DB_TYPE}" in
+  case ${DB_TYPE} in
     mysql)
       QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = '${DB_NAME}';"
       COUNT=$(mysql -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} -ss -e "${QUERY}")
@@ -389,7 +389,7 @@ appInit () {
       COUNT=$(PGPASSWORD="${DB_PASS}" psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -Atw -c "${QUERY}")
       ;;
   esac
-  if [ -z "${COUNT}" -o ${COUNT} -eq 0 ]; then
+  if [[ -z ${COUNT} || ${COUNT} -eq 0 ]]; then
     echo "Setting up GitLab CI for firstrun. Please be patient, this could take a while..."
     sudo -HEu ${GITLAB_CI_USER} bundle exec rake db:setup RAILS_ENV=production >/dev/null
   fi
@@ -397,18 +397,18 @@ appInit () {
   # migrate database if the gitlab-ci version has changed.
   CURRENT_VERSION=
   GITLAB_CI_VERSION=$(cat VERSION)
-  [ -f ${GITLAB_CI_DATA_DIR}/VERSION ] && CURRENT_VERSION=$(cat ${GITLAB_CI_DATA_DIR}/VERSION)
-  if [ "${GITLAB_CI_VERSION}" != "${CURRENT_VERSION}" ]; then
+  [[ -f ${GITLAB_CI_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${GITLAB_CI_DATA_DIR}/VERSION)
+  if [[ ${GITLAB_CI_VERSION} != ${CURRENT_VERSION} ]]; then
     echo "Migrating database..."
     sudo -HEu ${GITLAB_CI_USER} bundle exec rake db:migrate RAILS_ENV=production >/dev/null
     sudo -HEu ${GITLAB_CI_USER} echo "${GITLAB_CI_VERSION}" > ${GITLAB_CI_DATA_DIR}/VERSION
   fi
 
-  if [ "${GITLAB_CI_BACKUPS}" != "disable" ]; then
+  if [[ ${GITLAB_CI_BACKUPS} != disable ]]; then
     # setup cron job for automatic backups
     read hour min <<< ${GITLAB_CI_BACKUP_TIME//[:]/ }
     crontab -u ${GITLAB_CI_USER} -l > /tmp/cron.${GITLAB_CI_USER}
-    case "${GITLAB_CI_BACKUPS}" in
+    case ${GITLAB_CI_BACKUPS} in
       daily)
         sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
 # Automatic Backups: daily
@@ -446,14 +446,14 @@ appStart () {
 }
 
 appRake () {
-  if [ -z ${1} ]; then
+  if [[ -z ${1} ]]; then
     echo "Please specify the rake task to execute."
     return 1
   fi
 
   echo "Running gitlab ci rake task..."
 
-  if [ "$1" == "backup:restore" ]; then
+  if [[ ${1} == backup:restore ]]; then
     # check if the BACKUP argument is specified
     for a in $@
     do
@@ -463,10 +463,10 @@ appRake () {
       fi
     done
 
-    if [ -z ${timestamp} ]; then
+    if [[ -z ${timestamp} ]]; then
       # user needs to select the backup to restore
       nBackups=$(ls ${GITLAB_CI_BACKUP_DIR}/*_gitlab_ci_backup.tar.gz | wc -l)
-      if [ $nBackups -eq 0 ]; then
+      if [[ $nBackups -eq 0 ]]; then
         echo "No backup present. Cannot continue restore process.".
         return 1
       fi
@@ -477,7 +477,7 @@ appRake () {
       done
       read -p "Select a backup to restore: " file
 
-      if [ ! -f "${GITLAB_CI_BACKUP_DIR}/${file}" ]; then
+      if [[ ! -f ${GITLAB_CI_BACKUP_DIR}/${file} ]]; then
         echo "Specified backup does not exist. Aborting..."
         return 1
       fi
@@ -498,7 +498,7 @@ appHelp () {
   echo " [command]          - Execute the specified linux command eg. bash."
 }
 
-case "$1" in
+case ${1} in
   app:start)
     appStart
     ;;
@@ -513,11 +513,11 @@ case "$1" in
     appHelp
     ;;
   *)
-    if [ -x $1 ]; then
-      $1
+    if [[ -x ${1} ]]; then
+      ${1}
     else
-      prog=$(which $1)
-      if [ -n "${prog}" ] ; then
+      prog=$(which ${1})
+      if [[ -n ${prog} ]] ; then
         shift 1
         $prog $@
       else

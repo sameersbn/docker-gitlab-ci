@@ -47,7 +47,7 @@ sudo -HEu ${GITLAB_CI_USER} mkdir -p tmp/pids/ tmp/sockets/
 chmod -R u+rwX tmp
 
 # install gems required by gitlab-ci, use cache if available
-if [ -d "${GEM_CACHE_DIR}" ]; then
+if [[ -d ${GEM_CACHE_DIR} ]]; then
   mv ${GEM_CACHE_DIR} vendor/
   chown -R ${GITLAB_CI_USER}:${GITLAB_CI_USER} vendor/cache
 fi
