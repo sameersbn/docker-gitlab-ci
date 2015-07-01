@@ -396,7 +396,6 @@ appInit () {
 
   # migrate database if the gitlab-ci version has changed.
   CURRENT_VERSION=
-  GITLAB_CI_VERSION=$(cat VERSION)
   [[ -f ${GITLAB_CI_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${GITLAB_CI_DATA_DIR}/VERSION)
   if [[ ${GITLAB_CI_VERSION} != ${CURRENT_VERSION} ]]; then
     echo "Migrating database..."
