@@ -315,10 +315,10 @@ sudo -HEu ${GITLAB_CI_USER} sed 's/{{UNICORN_WORKERS}}/'"${UNICORN_WORKERS}"'/' 
 sudo -HEu ${GITLAB_CI_USER} sed 's/{{UNICORN_TIMEOUT}}/'"${UNICORN_TIMEOUT}"'/' -i config/unicorn.rb
 
 # configure mail delivery
-sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_HOST}}/'"${SMTP_HOST}"'/' -i config/initializers/smtp_settings.rb
-sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_PORT}}/'"${SMTP_PORT}"'/' -i config/initializers/smtp_settings.rb
-
 if [[ ${SMTP_ENABLED} == true ]]; then
+  sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_HOST}}/'"${SMTP_HOST}"'/' -i config/initializers/smtp_settings.rb
+  sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_PORT}}/'"${SMTP_PORT}"'/' -i config/initializers/smtp_settings.rb
+
   case ${SMTP_USER} in
     "") sudo -HEu ${GITLAB_CI_USER} sed '/{{SMTP_USER}}/d' -i config/initializers/smtp_settings.rb ;;
     *) sudo -HEu ${GITLAB_CI_USER} sed 's/{{SMTP_USER}}/'"${SMTP_USER}"'/' -i config/initializers/smtp_settings.rb ;;
