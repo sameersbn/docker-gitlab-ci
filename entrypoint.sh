@@ -404,32 +404,34 @@ appInit () {
     sudo -HEu ${GITLAB_CI_USER} echo "${GITLAB_CI_VERSION}" > ${GITLAB_CI_DATA_DIR}/VERSION
   fi
 
-  if [[ ${GITLAB_CI_BACKUPS} != disable ]]; then
-    # setup cron job for automatic backups
-    read hour min <<< ${GITLAB_CI_BACKUP_TIME//[:]/ }
-    crontab -u ${GITLAB_CI_USER} -l > /tmp/cron.${GITLAB_CI_USER}
-    case ${GITLAB_CI_BACKUPS} in
-      daily)
-        sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
+  # setup cron job for automatic backups
+  case ${GITLAB_CI_BACKUPS} in
+    daily|weekly|monthly)
+      read hour min <<< ${GITLAB_CI_BACKUP_TIME//[:]/ }
+      crontab -u ${GITLAB_CI_USER} -l > /tmp/cron.${GITLAB_CI_USER}
+      case ${GITLAB_CI_BACKUPS} in
+        daily)
+          sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
 # Automatic Backups: daily
 $min $hour * * * /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
-        ;;
-      weekly)
-        sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
+          ;;
+        weekly)
+          sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
 # Automatic Backups: weekly
 $min $hour * * 0 /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
-        ;;
-      monthly)
-        sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
+          ;;
+        monthly)
+          sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
 # Automatic Backups: monthly
 $min $hour 01 * * /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
 EOF
-        ;;
+          ;;
     esac
     crontab -u ${GITLAB_CI_USER} /tmp/cron.${GITLAB_CI_USER} && rm -rf /tmp/cron.${GITLAB_CI_USER}
-  fi
+    ;;
+  esac
 
   # remove stale unicorn and sidekiq pid's if they exist.
   rm -rf tmp/pids/unicorn.pid
