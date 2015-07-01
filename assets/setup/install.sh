@@ -36,7 +36,6 @@ sudo -HEu ${GITLAB_CI_USER} cp config/application.yml.example config/application
 sudo -HEu ${GITLAB_CI_USER} cp config/resque.yml.example config/resque.yml
 sudo -HEu ${GITLAB_CI_USER} cp config/database.yml.mysql config/database.yml
 sudo -HEu ${GITLAB_CI_USER} cp config/unicorn.rb.example config/unicorn.rb
-sudo -HEu ${GITLAB_CI_USER} cp config/initializers/smtp_settings.rb.sample config/initializers/smtp_settings.rb
 
 # symlink log -> ${GITLAB_CI_LOG_DIR}/gitlab-ci
 rm -rf log
