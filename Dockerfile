@@ -1,7 +1,7 @@
 FROM sameersbn/ubuntu:14.04.20150613
 MAINTAINER sameer@damagehead.com
 
-ENV GITLAB_CI_VERSION=7.12.0 \
+ENV GITLAB_CI_VERSION=7.12.1 \
     GITLAB_CI_USER="gitlab_ci" \
     GITLAB_CI_HOME="/home/gitlab_ci" \
     GITLAB_CI_LOG_DIR="/var/log/gitlab-ci" \
