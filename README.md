@@ -39,6 +39,7 @@
   - [Creating Backups](#creating-backups)
   - [Restoring Backups](#restoring-backups)
   - [Automated Backups](#automated-backups)
+    + [Amazon Web Services (AWS) Remote Backups](#amazon-web-services-aws-remote-backups)
   - [Shell Access](#shell-access)
 - [Upgrading](#upgrading)
 - [Announcements](https://github.com/sameersbn/docker-gitlab-ci/issues/1)
@@ -667,6 +668,11 @@ Below is the complete list of available options that can be used to customize yo
 - **SMTP_STARTTLS**: Enable STARTTLS. Defaults to `true`.
 - **SMTP_TLS**: Enable SSL/TLS. Defaults to `false`.
 - **SMTP_AUTHENTICATION**: Specify the SMTP authentication method. Defaults to `login` if `SMTP_USER` is set.
+- **AWS_BACKUPS**: Enables automatic uploads to an Amazon S3 instance. Defaults to `false`.
+- **AWS_BACKUP_REGION**: AWS region. No defaults.
+- **AWS_BACKUP_ACCESS_KEY_ID**: AWS access key id. No defaults.
+- **AWS_BACKUP_SECRET_ACCESS_KEY**: AWS secret access key. No defaults.
+- **AWS_BACKUP_BUCKET**: AWS bucket for backup uploads. No defaults.
 
 # Maintenance
 
@@ -724,6 +730,14 @@ The image can be configured to automatically take backups `daily`, `weekly` or `
 Daily backups are created at `GITLAB_CI_BACKUP_TIME` which defaults to `04:00` everyday. Weekly backups are created every Sunday at the same time as the daily backups. Monthly backups are created on the 1st of every month at the same time as the daily backups.
 
 By default, when automated backups are enabled, backups are held for a period of 7 days. While when automated backups are disabled, the backups are held for an infinite period of time. This can behavior can be configured via the `GITLAB_CI_BACKUP_EXPIRY` option.
+
+### Amazon Web Services (AWS) Remote Backups
+
+The image can be configured to automatically upload the backups to an AWS S3 bucket. To enable automatic AWS backups first add `--env='AWS_BACKUPS=true'` to the docker run command. In addition `AWS_BACKUP_REGION` and `AWS_BACKUP_BUCKET` must be properly configured to point to the desired AWS location. Finally an IAM user must be configured with appropriate access permission and their AWS keys exposed through `AWS_BACKUP_ACCESS_KEY_ID` and `AWS_BACKUP_SECRET_ACCESS_KEY`.
+
+More details about the appropriate IAM user properties can found on [gitlab.com](https://gitlab.com/gitlab-org/gitlab-ci/blob/master/doc/raketasks/backup_restore.md#upload-backups-to-remote-cloud-storage)
+
+AWS uploads are performed alongside normal backups, both through the appropriate `app:rake` command and when an automatic backup is performed.
 
 ## Shell Access
 

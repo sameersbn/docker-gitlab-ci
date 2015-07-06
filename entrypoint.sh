@@ -15,6 +15,12 @@ GITLAB_CI_BACKUPS=${GITLAB_CI_BACKUPS:-disable}
 GITLAB_CI_BACKUP_TIME=${GITLAB_CI_BACKUP_TIME:-04:00}
 GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-}
 
+AWS_BACKUPS=${AWS_BACKUPS:-false}
+AWS_BACKUP_REGION=${AWS_BACKUP_REGION}
+AWS_BACKUP_ACCESS_KEY_ID=${AWS_BACKUP_ACCESS_KEY_ID}
+AWS_BACKUP_SECRET_ACCESS_KEY=${AWS_BACKUP_SECRET_ACCESS_KEY}
+AWS_BACKUP_BUCKET=${AWS_BACKUP_BUCKET}
+
 SSL_CERTIFICATE_PATH=${SSL_CERTIFICATE_PATH:-$GITLAB_CI_DATA_DIR/certs/gitlab_ci.crt}
 SSL_KEY_PATH=${SSL_KEY_PATH:-$GITLAB_CI_DATA_DIR/certs/gitlab_ci.key}
 SSL_DHPARAM_PATH=${SSL_DHPARAM_PATH:-$GITLAB_CI_DATA_DIR/certs/dhparam.pem}
@@ -278,6 +284,24 @@ sudo -HEu ${GITLAB_CI_USER} sed 's/{{GITLAB_CI_NOTIFY_PUSHER}}/'"${GITLAB_CI_NOT
 # configure backups
 sudo -HEu ${GITLAB_CI_USER} sed 's,{{GITLAB_CI_BACKUP_DIR}},'"${GITLAB_CI_BACKUP_DIR}"',g' -i config/application.yml
 sudo -HEu ${GITLAB_CI_USER} sed 's,{{GITLAB_CI_BACKUP_EXPIRY}},'"${GITLAB_CI_BACKUP_EXPIRY}"',g' -i config/application.yml
+
+# apply aws s3 backup configuration
+case ${AWS_BACKUPS} in
+  true)
+    if [[ -z ${AWS_BACKUP_REGION} || -z ${AWS_BACKUP_ACCESS_KEY_ID} || -z ${AWS_BACKUP_SECRET_ACCESS_KEY} || -z ${AWS_BACKUP_BUCKET} ]]; then
+      printf "\nMissing AWS options. Aborting...\n"
+      exit 1
+    fi
+    sudo -HEu ${GITLAB_CI_USER} sed 's/{{AWS_BACKUP_REGION}}/'"${AWS_BACKUP_REGION}"'/' -i config/application.yml
+    sudo -HEu ${GITLAB_CI_USER} sed 's/{{AWS_BACKUP_ACCESS_KEY_ID}}/'"${AWS_BACKUP_ACCESS_KEY_ID}"'/' -i config/application.yml
+    sudo -HEu ${GITLAB_CI_USER} sed 's,{{AWS_BACKUP_SECRET_ACCESS_KEY}},'"${AWS_BACKUP_SECRET_ACCESS_KEY}"',' -i config/application.yml
+    sudo -HEu ${GITLAB_CI_USER} sed 's/{{AWS_BACKUP_BUCKET}}/'"${AWS_BACKUP_BUCKET}"'/' -i config/application.yml
+    ;;
+  *)
+    # remove backup configuration lines
+    sudo -HEu ${GITLAB_CI_USER} sed /upload:/,/remote_directory:/d -i config/application.yml
+    ;;
+esac
 
 # configure timezone
 sudo -HEu ${GITLAB_CI_USER} sed "s/# config.time_zone.*/config.time_zone = '${GITLAB_CI_TIMEZONE}'/" -i config/application.rb
