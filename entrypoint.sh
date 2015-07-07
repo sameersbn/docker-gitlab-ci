@@ -73,6 +73,9 @@ GITLAB_APP_SECRET=${GITLAB_APP_SECRET:-}
 
 GITLAB_URL=$(sed 's/\//\\\//g' <<< $GITLAB_URL)
 
+GITLAB_CI_ROBOTS_OVERRIDE=${GITLAB_CI_ROBOTS_OVERRIDE:-false}
+GITLAB_CI_ROBOTS_PATH=${GITLAB_CI_ROBOTS_PATH:-$SETUP_DIR/config/gitlab-ci/robots.txt}
+
 # is a mysql or postgresql database linked?
 # requires that the mysql or postgresql containers have exposed
 # port 3306 and 5432 respectively.
@@ -200,6 +203,10 @@ sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/database.yml config
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/unicorn.rb config/unicorn.rb
 [[ ${SMTP_ENABLED} == true ]] && \
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/smtp_settings.rb config/initializers/smtp_settings.rb
+
+# allow to override robots.txt to block bots
+[[ ${GITLAB_CI_ROBOTS_OVERRIDE} == true ]] && \
+sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_ROBOTS_PATH} public/robots.txt
 
 # override default configuration templates with user templates
 case ${GITLAB_CI_HTTPS} in
