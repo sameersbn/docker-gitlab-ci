@@ -483,20 +483,18 @@ appRake () {
     return 1
   fi
 
-  echo "Running gitlab ci rake task..."
-
   if [[ ${1} == backup:restore ]]; then
-    # check if the BACKUP argument is specified
-    for a in $@
+    interactive=true
+    for arg in $@
     do
-      if [[ $a == BACKUP=* ]]; then
-        timestamp=${a:7}
+      if [[ $arg == BACKUP=* ]]; then
+        interactive=false
         break
       fi
     done
 
-    if [[ -z ${timestamp} ]]; then
-      # user needs to select the backup to restore
+    # user needs to select the backup to restore
+    if [[ $interactive == true ]]; then
       nBackups=$(ls ${GITLAB_CI_BACKUP_DIR}/*_gitlab_ci_backup.tar.gz | wc -l)
       if [[ $nBackups -eq 0 ]]; then
         echo "No backup present. Cannot continue restore process.".
@@ -513,12 +511,12 @@ appRake () {
         echo "Specified backup does not exist. Aborting..."
         return 1
       fi
-      timestamp=$(echo $file | cut -d'_' -f1)
+      BACKUP=$(echo $file | cut -d'_' -f1)
     fi
-    sudo -HEu ${GITLAB_CI_USER} bundle exec rake backup:restore BACKUP=$timestamp
-  else
-    sudo -HEu ${GITLAB_CI_USER} bundle exec rake $@
   fi
+
+  echo "Running \"${1}\" rake task ..."
+  sudo -HEu ${GITLAB_CI_USER} bundle exec rake $@ ${BACKUP:+BACKUP=$BACKUP}
 }
 
 appHelp () {
