@@ -422,7 +422,7 @@ appInit () {
   esac
   if [[ -z ${COUNT} || ${COUNT} -eq 0 ]]; then
     echo "Setting up GitLab CI for firstrun. Please be patient, this could take a while..."
-    sudo -HEu ${GITLAB_CI_USER} bundle exec rake db:setup RAILS_ENV=production >/dev/null
+    sudo -HEu ${GITLAB_CI_USER} bundle exec rake db:setup >/dev/null
   fi
 
   # migrate database if the gitlab-ci version has changed.
@@ -430,7 +430,7 @@ appInit () {
   [[ -f ${GITLAB_CI_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${GITLAB_CI_DATA_DIR}/VERSION)
   if [[ ${GITLAB_CI_VERSION} != ${CURRENT_VERSION} ]]; then
     echo "Migrating database..."
-    sudo -HEu ${GITLAB_CI_USER} bundle exec rake db:migrate RAILS_ENV=production >/dev/null
+    sudo -HEu ${GITLAB_CI_USER} bundle exec rake db:migrate >/dev/null
     sudo -HEu ${GITLAB_CI_USER} echo "${GITLAB_CI_VERSION}" > ${GITLAB_CI_DATA_DIR}/VERSION
   fi
 
@@ -443,19 +443,19 @@ appInit () {
         daily)
           sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
 # Automatic Backups: daily
-$min $hour * * * /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
+$min $hour * * * /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=${RAILS_ENV}'
 EOF
           ;;
         weekly)
           sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
 # Automatic Backups: weekly
-$min $hour * * 0 /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
+$min $hour * * 0 /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=${RAILS_ENV}'
 EOF
           ;;
         monthly)
           sudo -HEu ${GITLAB_CI_USER} cat >> /tmp/cron.${GITLAB_CI_USER} <<EOF
 # Automatic Backups: monthly
-$min $hour 01 * * /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=production'
+$min $hour 01 * * /bin/bash -l -c 'cd ${GITLAB_CI_INSTALL_DIR} && bundle exec rake backup:create RAILS_ENV=${RAILS_ENV}'
 EOF
           ;;
     esac
@@ -515,9 +515,9 @@ appRake () {
       fi
       timestamp=$(echo $file | cut -d'_' -f1)
     fi
-    sudo -HEu ${GITLAB_CI_USER} bundle exec rake backup:restore BACKUP=$timestamp RAILS_ENV=production
+    sudo -HEu ${GITLAB_CI_USER} bundle exec rake backup:restore BACKUP=$timestamp
   else
-    sudo -HEu ${GITLAB_CI_USER} bundle exec rake $@ RAILS_ENV=production
+    sudo -HEu ${GITLAB_CI_USER} bundle exec rake $@
   fi
 }
 

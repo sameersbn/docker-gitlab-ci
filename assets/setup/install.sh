@@ -53,7 +53,7 @@ fi
 sudo -HEu ${GITLAB_CI_USER} bundle install -j$(nproc) --deployment --without development test
 
 # install cronjob
-bundle exec whenever -w -u ${GITLAB_CI_USER} RAILS_ENV=production
+bundle exec whenever -w -u ${GITLAB_CI_USER}
 
 # make sure everything in ${GITLAB_CI_HOME} is owned by the ${GITLAB_CI_USER} user
 chown -R ${GITLAB_CI_USER}:${GITLAB_CI_USER} ${GITLAB_CI_HOME}/
@@ -119,7 +119,7 @@ cat > /etc/supervisor/conf.d/unicorn.conf <<EOF
 priority=10
 directory=${GITLAB_CI_INSTALL_DIR}
 environment=HOME=${GITLAB_CI_HOME}
-command=bundle exec unicorn_rails -c ${GITLAB_CI_INSTALL_DIR}/config/unicorn.rb -E production
+command=bundle exec unicorn_rails -c ${GITLAB_CI_INSTALL_DIR}/config/unicorn.rb -E ${RAILS_ENV}
 user=${GITLAB_CI_USER}
 autostart=true
 autorestart=true
@@ -138,7 +138,7 @@ command=bundle exec sidekiq -c {{SIDEKIQ_CONCURRENCY}}
   -q runner
   -q common
   -q default
-  -e production
+  -e ${RAILS_ENV}
   -P ${GITLAB_CI_INSTALL_DIR}/tmp/pids/sidekiq.pid
   -L ${GITLAB_CI_INSTALL_DIR}/log/sidekiq.log
 user=${GITLAB_CI_USER}
