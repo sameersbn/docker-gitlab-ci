@@ -3,8 +3,8 @@
 - [Introduction](#introduction)
   - [Version](#version)
   - [Changelog](Changelog.md)
-- [Supported Web Browsers](#supported-web-browsers)
 - [Contributing](#contributing)
+- [Supported Web Browsers](#supported-web-browsers)
 - [Issue](#issues)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -55,6 +55,14 @@ Current Version: **7.12.2**
 
 *The gitlab-ci version should match the gitlab version to avoid any compatibility issues*
 
+# Contributing
+
+If you find this image useful here's how you can help:
+
+- Send a Pull Request with your awesome new features and bug fixes
+- Help new users with [Issues](https://github.com/sameersbn/docker-gitlab-ci/issues) they may encounter
+- Support the development of this image with a [donation](http://www.damagehead.com/donate/)
+
 # Supported Web Browsers
 
 - Chrome (Latest stable version)
@@ -62,14 +70,6 @@ Current Version: **7.12.2**
 - Safari 7+ (Know problem: required fields in html5 do not work)
 - Opera (Latest released version)
 - IE 10+
-
-# Contributing
-
-If you find this image useful here's how you can help:
-
-- Send a Pull Request with your awesome new features and bug fixes
-- Help new users with [Issues](https://github.com/sameersbn/docker-gitlab-ci/issues) they may encounter
-- Send me a tip via [Bitcoin](https://www.coinbase.com/sameersbn) or using [Gratipay](https://gratipay.com/sameersbn/)
 
 # Issue
 
