@@ -1,46 +1,46 @@
 # Table of Contents
 
 - [Introduction](#introduction)
-  - [Version](#version)
-  - [Changelog](Changelog.md)
+    - [Version](#version)
+    - [Changelog](Changelog.md)
 - [Contributing](#contributing)
 - [Issues](#issues)
 - [Announcements](https://github.com/sameersbn/docker-gitlab-ci/issues/1)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
-  - [Persistence](#persistence)
-  - [Database](#database)
-    - [PostgreSQL (Recommended)](#postgresql)
-      - [External PostgreSQL Server](#external-postgresql-server)
-      - [Linking to PostgreSQL Container](#linking-to-postgresql-container)
-    - [MySQL](#mysql)
-      - [Internal MySQL Server](#internal-mysql-server)
-      - [External MySQL Server](#external-mysql-server)
-      - [Linking to MySQL Container](#linking-to-mysql-container)
-  - [Redis](#redis)
-    - [Internal Redis Server](#internal-redis-server)
-    - [External Redis Server](#external-redis-server)
-    - [Linking to Redis Container](#linking-to-redis-container)
-  - [Mail](#mail)
-  - [SSL](#ssl)
-    - [Generation of Self Signed Certificates](#generation-of-self-signed-certificates)
-    - [Strengthening the server security](#strengthening-the-server-security)
-    - [Installation of the Certificates](#installation-of-the-certificates)
-    - [Enabling HTTPS support](#enabling-https-support)
-    - [Configuring HSTS](#configuring-hsts)
-    - [Using HTTPS with a load balancer](#using-https-with-a-load-balancer)
-    - [Establishing trust with your server](#establishing-trust-with-your-server)
-    - [Installing Trusted SSL Server Certificates](#installing-trusted-ssl-server-certificates)
-  - [Deploy to a subdirectory (relative url root)](#deploy-to-a-subdirectory-relative-url-root)
-  - [Putting it all together](#putting-it-all-together)
-  - [Available Configuration Parameters](#available-configuration-parameters)
+    - [Persistence](#persistence)
+    - [Database](#database)
+        - [PostgreSQL (Recommended)](#postgresql)
+            - [External PostgreSQL Server](#external-postgresql-server)
+            - [Linking to PostgreSQL Container](#linking-to-postgresql-container)
+        - [MySQL](#mysql)
+            - [Internal MySQL Server](#internal-mysql-server)
+            - [External MySQL Server](#external-mysql-server)
+            - [Linking to MySQL Container](#linking-to-mysql-container)
+    - [Redis](#redis)
+        - [Internal Redis Server](#internal-redis-server)
+        - [External Redis Server](#external-redis-server)
+        - [Linking to Redis Container](#linking-to-redis-container)
+    - [Mail](#mail)
+    - [SSL](#ssl)
+        - [Generation of Self Signed Certificates](#generation-of-self-signed-certificates)
+        - [Strengthening the server security](#strengthening-the-server-security)
+        - [Installation of the Certificates](#installation-of-the-certificates)
+        - [Enabling HTTPS support](#enabling-https-support)
+        - [Configuring HSTS](#configuring-hsts)
+        - [Using HTTPS with a load balancer](#using-https-with-a-load-balancer)
+        - [Establishing trust with your server](#establishing-trust-with-your-server)
+        - [Installing Trusted SSL Server Certificates](#installing-trusted-ssl-server-certificates)
+    - [Deploy to a subdirectory (relative url root)](#deploy-to-a-subdirectory-relative-url-root)
+    - [Putting it all together](#putting-it-all-together)
+    - [Available Configuration Parameters](#available-configuration-parameters)
 - [Maintenance](#maintenance)
-  - [Creating Backups](#creating-backups)
-  - [Restoring Backups](#restoring-backups)
-  - [Automated Backups](#automated-backups)
-    + [Amazon Web Services (AWS) Remote Backups](#amazon-web-services-aws-remote-backups)
-  - [Shell Access](#shell-access)
+    - [Creating Backups](#creating-backups)
+    - [Restoring Backups](#restoring-backups)
+    - [Automated Backups](#automated-backups)
+        - [Amazon Web Services (AWS) Remote Backups](#amazon-web-services-aws-remote-backups)
+    - [Shell Access](#shell-access)
 - [Upgrading](#upgrading)
 - [References](#references)
 
@@ -131,30 +131,30 @@ Step 1. Launch a postgresql container
 
 ```bash
 docker run --name=postgresql-gitlab-ci -d \
-  --env='DB_NAME=gitlab_ci_production' \
-  --env='DB_USER=gitlab' --env='DB_PASS=password' \
-  --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
-  sameersbn/postgresql:9.4
+    --env='DB_NAME=gitlab_ci_production' \
+    --env='DB_USER=gitlab' --env='DB_PASS=password' \
+    --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
+    sameersbn/postgresql:9.4
 ```
 
 Step 2. Launch a redis container
 
 ```bash
 docker run --name=redis-gitlab-ci -d \
-  --volume=/srv/docker/gitlab-ci/redis:/var/lib/redis \
-  sameersbn/redis:latest
+    --volume=/srv/docker/gitlab-ci/redis:/var/lib/redis \
+    sameersbn/redis:latest
 ```
 
 Step 3. Launch the gitlab-ci container
 
 ```bash
 docker run --name=gitlab-ci -d \
-  --link=postgresql-gitlab-ci:postgresql --link=redis-gitlab-ci:redisio \
-  --publish=10081:80 \
-  --env='GITLAB_CI_PORT=10081' --env='GITLAB_URL=http://localhost:10080' \
-  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:7.12.2
+    --link=postgresql-gitlab-ci:postgresql --link=redis-gitlab-ci:redisio \
+    --publish=10081:80 \
+    --env='GITLAB_CI_PORT=10081' --env='GITLAB_URL=http://localhost:10080' \
+    --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+    --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 Point your browser to `http://localhost:10081` and login using your GitLab credentials.
@@ -184,8 +184,8 @@ Volumes can be mounted in docker by specifying the **'-v'** option in the docker
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:7.12.2
+    --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 ## Database
@@ -210,12 +210,12 @@ We are now ready to start the container.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --env='GITLAB_URL=http://172.17.0.2' \
-  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  --env='DB_TYPE=postgres' --env='DB_HOST=192.168.1.100' \
-  --env='DB_NAME=gitlab_ci_production' \
-  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
-  sameersbn/gitlab-ci:7.12.2
+    --env='GITLAB_URL=http://172.17.0.2' \
+    --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+    --env='DB_TYPE=postgres' --env='DB_HOST=192.168.1.100' \
+    --env='DB_NAME=gitlab_ci_production' \
+    --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 #### Linking to PostgreSQL Container
@@ -245,10 +245,10 @@ The run command looks like this.
 
 ```bash
 docker run --name=postgresql-gitlab-ci -d \
-  --env='DB_NAME=gitlab_ci_production' \
-  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
-  --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
-  sameersbn/postgresql:9.4
+    --env='DB_NAME=gitlab_ci_production' \
+    --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
+    --volume=/srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
+    sameersbn/postgresql:9.4
 ```
 
 The above command will create a database named `gitlab_ci_production` and also create a user named `gitlab_ci` with the password `password` with access to the `gitlab_ci_production` database.
@@ -257,9 +257,9 @@ We are now ready to start the GitLab CI application.
 
 ```bash
 docker run --name=gitlab-ci -it --rm --link=postgresql-gitlab-ci:postgresql \
-  --env='GITLAB_URL=http://172.17.0.2' \
-  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  sameersbn/gitlab-ci:7.12.2
+    --env='GITLAB_URL=http://172.17.0.2' \
+    --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the postgresql container as they are specified in the `docker run` command for the postgresql container. This is made possible using the magic of docker links and works with the following images:
@@ -281,8 +281,8 @@ Assuming that your mysql data is available at `/srv/docker/gitlab-ci/mysql`
 
 ```bash
 docker run --name=mysql-gitlab-ci -d \
-  --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
-  sameersbn/mysql:latest
+    --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
+    sameersbn/mysql:latest
 ```
 
 This will start a mysql container with your existing mysql data. Now login to the mysql container and create a user for the existing `gitlab_ci_production` database.
@@ -309,11 +309,11 @@ We are now ready to start the container.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --env='GITLAB_URL=http://172.17.0.2' \
-  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  --env='DB_HOST=192.168.1.100' --env='DB_NAME=gitlab_ci_production' \
-  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
-  sameersbn/gitlab-ci:7.12.2
+    --env='GITLAB_URL=http://172.17.0.2' \
+    --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+    --env='DB_HOST=192.168.1.100' --env='DB_NAME=gitlab_ci_production' \
+    --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 #### Linking to MySQL Container
@@ -343,10 +343,10 @@ The run command looks like this.
 
 ```bash
 docker run --name=mysql-gitlab-ci -d \
-  --env='DB_NAME=gitlab_ci_production' \
-  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
-  --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
-  sameersbn/mysql:latest
+    --env='DB_NAME=gitlab_ci_production' \
+    --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
+    --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
+    sameersbn/mysql:latest
 ```
 
 The above command will create a database named `gitlab_ci_production` and also create a user named `gitlab_ci` with the password `password` with full/remote access to the `gitlab_ci_production` database.
@@ -355,9 +355,9 @@ We are now ready to start the GitLab CI application.
 
 ```bash
 docker run --name=gitlab-ci -it --rm --link=mysql-gitlab-ci:mysql \
-  --env='GITLAB_URL=http://172.17.0.2' \
-  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  sameersbn/gitlab-ci:7.12.2
+    --env='GITLAB_URL=http://172.17.0.2' \
+    --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the mysql container as they are specified in the `docker run` command for the mysql container. This is made possible using the magic of docker links and works with the following images:
@@ -383,8 +383,8 @@ The image can be configured to use an external redis server instead of starting 
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --env='REDIS_HOST=192.168.1.100' --env='REDIS_PORT=6379' \
-  sameersbn/gitlab-ci:7.12.2
+    --env='REDIS_HOST=192.168.1.100' --env='REDIS_PORT=6379' \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 ### Linking to Redis Container
@@ -409,7 +409,7 @@ We are now ready to start the GitLab CI application.
 
 ```bash
 docker run --name=gitlab-ci -it --rm --link=redis-gitlab-ci:redisio \
-  sameersbn/gitlab:latest
+    sameersbn/gitlab:latest
 ```
 
 ### Mail
@@ -420,8 +420,8 @@ Please refer the [Available Configuration Parameters](#available-configuration-p
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
-  sameersbn/gitlab-ci:7.12.2
+    --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 Please look up the [Available Configuration Parameters](#available-configuration-parameters) section for all available SMTP configuration options.
@@ -494,9 +494,9 @@ HTTPS support can be enabled by setting the `GITLAB_CI_HTTPS` option to `true`.
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --env='GITLAB_CI_HTTPS=true' \
-  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:7.12.2
+    --env='GITLAB_CI_HTTPS=true' \
+    --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 In this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. However, this is not optimal when using a load balancer.
@@ -509,10 +509,10 @@ With `GITLAB_CI_HTTPS_HSTS_MAXAGE` you can configure that value. The default val
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --env='GITLAB_CI_HTTPS=true' \
-  --env='GITLAB_CI_HTTPS_HSTS_MAXAGE=2592000'
-  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:7.12.2
+    --env='GITLAB_CI_HTTPS=true' \
+    --env='GITLAB_CI_HTTPS_HSTS_MAXAGE=2592000'
+    --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 If you want to completely disable HSTS set `GITLAB_CI_HTTPS_HSTS_ENABLED` to `false`.
@@ -529,9 +529,9 @@ In summation, when using a load balancer, the docker command would look for the 
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --env='GITLAB_CI_HTTPS=true' \
-  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:7.12.2
+    --env='GITLAB_CI_HTTPS=true' \
+    --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 #### Establishing trust with your server
@@ -566,9 +566,9 @@ Let's assume we want to deploy our application to '/ci'. GitLab CI needs to know
 
 ```bash
 docker run --name=gitlab-ci -it --rm \
-  --env='GITLAB_CI_RELATIVE_URL_ROOT=/ci' \
-  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  sameersbn/gitlab-ci:7.12.2
+    --env='GITLAB_CI_RELATIVE_URL_ROOT=/ci' \
+    --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 GitLab CI will now be accessible at the `/ci` path, e.g. `http://www.example.com/ci`.
@@ -579,31 +579,31 @@ GitLab CI will now be accessible at the `/ci` path, e.g. `http://www.example.com
 
 ```bash
 docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
-  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
-  --env='GITLAB_URL=http://172.17.0.2' \
-  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  --env='GITLAB_CI_HOST=gitlab-ci.local.host' \
-  --env='GITLAB_CI_EMAIL=gitlab@local.host' \
-  --env='GITLAB_CI_SUPPORT=support@local.host' \
-  --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
-  sameersbn/gitlab-ci:7.12.2
+    --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+    --volume=/srv/docker/gitlab-ci/mysql:/var/lib/mysql \
+    --env='GITLAB_URL=http://172.17.0.2' \
+    --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+    --env='GITLAB_CI_HOST=gitlab-ci.local.host' \
+    --env='GITLAB_CI_EMAIL=gitlab@local.host' \
+    --env='GITLAB_CI_SUPPORT=support@local.host' \
+    --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 If you are using an external mysql database
 
 ```bash
 docker run --name=gitlab-ci -d -h gitlab-ci.local.host \
-  --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-  --env='DB_HOST=192.168.1.100' --env='DB_NAME=gitlab_ci_production' \
-  --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
-  --env='GITLAB_URL=http://172.17.0.2' \
-  --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-  --env='GITLAB_CI_HOST=gitlab-ci.local.host' \
-  --env='GITLAB_CI_EMAIL=gitlab@local.host' \
-  --env='GITLAB_CI_SUPPORT=support@local.host' \
-  --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
-  sameersbn/gitlab-ci:7.12.2
+    --volume=/srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
+    --env='DB_HOST=192.168.1.100' --env='DB_NAME=gitlab_ci_production' \
+    --env='DB_USER=gitlab_ci' --env='DB_PASS=password' \
+    --env='GITLAB_URL=http://172.17.0.2' \
+    --env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
+    --env='GITLAB_CI_HOST=gitlab-ci.local.host' \
+    --env='GITLAB_CI_EMAIL=gitlab@local.host' \
+    --env='GITLAB_CI_SUPPORT=support@local.host' \
+    --env='SMTP_USER=USER@gmail.com' --env='SMTP_PASS=PASSWORD' \
+    sameersbn/gitlab-ci:7.12.2
 ```
 
 ### Available Configuration Parameters
@@ -683,7 +683,7 @@ Execute the rake task to create a backup.
 
 ```bash
 docker run --name=gitlab-ci -it --rm [OPTIONS] \
-  sameersbn/gitlab-ci:7.12.2 app:rake backup:create
+    sameersbn/gitlab-ci:7.12.2 app:rake backup:create
 ```
 
 A backup will be created in the backups folder of the [Persistence](#persistence). You can change the location of the backups using the `GITLAB_CI_BACKUP_DIR` configuration parameter.
@@ -704,7 +704,7 @@ Execute the rake task to restore a backup. Make sure you run the container in in
 
 ```bash
 docker run --name=gitlab-ci -it --rm [OPTIONS] \
-  sameersbn/gitlab-ci:7.12.2 app:rake backup:restore
+    sameersbn/gitlab-ci:7.12.2 app:rake backup:restore
 ```
 
 The list of all available backups will be displayed in reverse chronological order. Select the backup you want to restore and continue.
@@ -713,7 +713,7 @@ To avoid user interaction in the restore operation, specify the timestamp of the
 
 ```bash
 docker run --name=gitlab-ci -it --rm [OPTIONS] \
-  sameersbn/gitlab-ci:7.12.2 app:rake backup:restore BACKUP=1417624827
+    sameersbn/gitlab-ci:7.12.2 app:rake backup:restore BACKUP=1417624827
 ```
 
 ## Automated Backups
@@ -783,5 +783,5 @@ docker run --name=gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:7.12.2
 ```
 
 # References
-  * https://www.gitlab.com/gitlab-ci/
-  * https://gitlab.com/gitlab-org/gitlab-ci/blob/master/README.md
+    * https://www.gitlab.com/gitlab-ci/
+    * https://gitlab.com/gitlab-org/gitlab-ci/blob/master/README.md
