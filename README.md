@@ -9,7 +9,7 @@
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
-  - [Data Store](#data-store)
+  - [Persistence](#persistence)
   - [Database](#database)
     - [PostgreSQL (Recommended)](#postgresql)
       - [External PostgreSQL Server](#external-postgresql-server)
@@ -167,7 +167,7 @@ You should now have the GitLab CI ready for testing. If you want to use this ima
 
 # Configuration
 
-## Data Store
+## Persistence
 
 For storage of the application data, you should mount a volume at
 
@@ -476,7 +476,7 @@ Out of the four files generated above, we need to install the `gitlab_ci.key`, `
 
 The default path that the gitlab ci application is configured to look for the SSL certificates is at `/home/gitlab_ci/data/certs`, this can however be changed using the `SSL_KEY_PATH`, `SSL_CERTIFICATE_PATH` and `SSL_DHPARAM_PATH` configuration options.
 
-If you remember from above, the `/home/gitlab_ci/data` path is the path of the [data store](#data-store), which means that we have to create a folder named `certs` inside `/srv/docker/gitlab-ci/gitlab-ci` and copy the files into it and as a measure of security we will update the permission on the `gitlab_ci.key` file to only be readable by the owner.
+If you remember from above, the `/home/gitlab_ci/data` path is the path of the persistent volume, which means that we have to create a folder named `certs` inside `/srv/docker/gitlab-ci/gitlab-ci` and copy the files into it and as a measure of security we will update the permission on the `gitlab_ci.key` file to only be readable by the owner.
 
 ```bash
 mkdir -p /srv/docker/gitlab-ci/gitlab-ci/certs
@@ -554,7 +554,7 @@ If your GitLab server is using self-signed SSL certificates then you should make
 
 The default path image is configured to look for the trusted SSL certificates is at `/home/gitlab_ci/data/certs/ca.crt`, this can however be changed using the `CA_CERTIFICATES_PATH` configuration option.
 
-Copy the `ca.crt` file into the certs directory on the [datastore](#data-store). The `ca.crt` file should contain the root certificates of all the servers you want to trust. With respect to GitLab, this will be the contents of the `gitlab.crt` file as described in the [README](https://github.com/sameersbn/docker-gitlab/blob/master/README.md#ssl) of the [docker-gitlab](https://github.com/sameersbn/docker-gitlab) container.
+Copy the `ca.crt` file into a `certs` directory in the [persistent](#persistence). The `ca.crt` file should contain the root certificates of all the servers you want to trust. With respect to GitLab, this will be the contents of the `gitlab.crt` file as described in the [README](https://github.com/sameersbn/docker-gitlab/blob/master/README.md#ssl) of the [docker-gitlab](https://github.com/sameersbn/docker-gitlab) container.
 
 By default, our own server certificate [gitlab_ci.crt](#generation-of-self-signed-certificates) is added to the trusted certificates list.
 
@@ -686,7 +686,7 @@ docker run --name=gitlab-ci -it --rm [OPTIONS] \
   sameersbn/gitlab-ci:7.12.2 app:rake backup:create
 ```
 
-A backup will be created in the backups folder of the [Data Store](#data-store). You can change the location of the backups using the `GITLAB_CI_BACKUP_DIR` configuration parameter.
+A backup will be created in the backups folder of the [Persistence](#persistence). You can change the location of the backups using the `GITLAB_CI_BACKUP_DIR` configuration parameter.
 
 *P.S. Backups can also be generated on a running instance using `docker exec` as described in the [Rake Tasks](#rake-tasks) section. However, to avoid undesired side-effects, I advice against running backup and restore operations on a running instance.*
 
