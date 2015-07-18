@@ -39,7 +39,7 @@
     - [Creating Backups](#creating-backups)
     - [Restoring Backups](#restoring-backups)
     - [Automated Backups](#automated-backups)
-        - [Amazon Web Services (AWS) Remote Backups](#amazon-web-services-aws-remote-backups)
+        - [Remote Backups (AWS)](#remote-backups-aws)
     - [Shell Access](#shell-access)
 - [Upgrading](#upgrading)
 - [References](#references)
@@ -724,7 +724,7 @@ Daily backups are created at `GITLAB_CI_BACKUP_TIME` which defaults to `04:00` e
 
 By default, when automated backups are enabled, backups are held for a period of 7 days. While when automated backups are disabled, the backups are held for an infinite period of time. This can behavior can be configured via the `GITLAB_CI_BACKUP_EXPIRY` option.
 
-### Amazon Web Services (AWS) Remote Backups
+### Remote Backups (AWS)
 
 The image can be configured to automatically upload the backups to an AWS S3 bucket. To enable automatic AWS backups first add `--env='AWS_BACKUPS=true'` to the docker run command. In addition `AWS_BACKUP_REGION` and `AWS_BACKUP_BUCKET` must be properly configured to point to the desired AWS location. Finally an IAM user must be configured with appropriate access permission and their AWS keys exposed through `AWS_BACKUP_ACCESS_KEY_ID` and `AWS_BACKUP_SECRET_ACCESS_KEY`.
 
