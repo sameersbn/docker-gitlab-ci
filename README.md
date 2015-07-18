@@ -50,7 +50,7 @@ Dockerfile to build a [GitLab CI](https://about.gitlab.com/gitlab-ci/) container
 
 ## Version
 
-Current Version: **7.12.2**
+Current Version: `7.12.2`
 
 *The gitlab-ci version should match the gitlab version to avoid any compatibility issues*
 
