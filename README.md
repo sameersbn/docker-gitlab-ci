@@ -457,7 +457,9 @@ openssl req -new -key gitlab_ci.key -out gitlab_ci.csr
 **STEP 3**: Sign the certificate using the private key and CSR
 
 ```bash
-openssl x509 -req -days 3650 -in gitlab_ci.csr -signkey gitlab_ci.key -out gitlab_ci.crt
+openssl x509 -req -days 3650 \
+    -in gitlab_ci.csr -signkey gitlab_ci.key \
+    -out gitlab_ci.crt
 ```
 
 Congratulations! you have now generated an SSL certificate thats valid for 365 days.
