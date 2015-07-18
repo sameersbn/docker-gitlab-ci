@@ -4,7 +4,7 @@
   - [Version](#version)
   - [Changelog](Changelog.md)
 - [Contributing](#contributing)
-- [Issue](#issues)
+- [Issues](#issues)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
@@ -62,7 +62,7 @@ If you find this image useful here's how you can help:
 - Help new users with [Issues](https://github.com/sameersbn/docker-gitlab-ci/issues) they may encounter
 - Support the development of this image with a [donation](http://www.damagehead.com/donate/)
 
-# Issue
+# Issues
 
 Docker is a relatively new project and is active being developed and tested by a thriving community of developers and testers and every release of docker features many enhancements and bugfixes.
 
