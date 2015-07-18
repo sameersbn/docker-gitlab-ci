@@ -5,6 +5,7 @@
   - [Changelog](Changelog.md)
 - [Contributing](#contributing)
 - [Issues](#issues)
+- [Announcements](https://github.com/sameersbn/docker-gitlab-ci/issues/1)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
@@ -41,7 +42,6 @@
     + [Amazon Web Services (AWS) Remote Backups](#amazon-web-services-aws-remote-backups)
   - [Shell Access](#shell-access)
 - [Upgrading](#upgrading)
-- [Announcements](https://github.com/sameersbn/docker-gitlab-ci/issues/1)
 - [References](#references)
 
 # Introduction
