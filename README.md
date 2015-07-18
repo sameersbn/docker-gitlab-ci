@@ -39,8 +39,8 @@
     - [Restoring Backups](#restoring-backups)
     - [Automated Backups](#automated-backups)
         - [Remote Backups (AWS)](#remote-backups-aws)
+    - [Upgrading](#upgrading)
     - [Shell Access](#shell-access)
-- [Upgrading](#upgrading)
 - [References](#references)
 
 # Introduction
@@ -702,15 +702,7 @@ More details about the appropriate IAM user properties can found on [gitlab.com]
 
 AWS uploads are performed alongside normal backups, both through the appropriate `app:rake` command and when an automatic backup is performed.
 
-## Shell Access
-
-For debugging and maintenance purposes you may want access the containers shell. If you are using docker version `1.3.0` or higher you can access a running containers shell using `docker exec` command.
-
-```bash
-docker exec -it gitlab-ci bash
-```
-
-# Upgrading
+## Upgrading
 
 To upgrade to newer GitLab CI releases, simply follow this 3 step upgrade procedure.
 
@@ -731,6 +723,14 @@ docker rm gitlab-ci
 
 ```bash
 docker run --name gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:7.12.2
+```
+
+## Shell Access
+
+For debugging and maintenance purposes you may want access the containers shell. If you are using docker version `1.3.0` or higher you can access a running containers shell using `docker exec` command.
+
+```bash
+docker exec -it gitlab-ci bash
 ```
 
 # References
