@@ -4,7 +4,6 @@
   - [Version](#version)
   - [Changelog](Changelog.md)
 - [Contributing](#contributing)
-- [Supported Web Browsers](#supported-web-browsers)
 - [Issue](#issues)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
@@ -62,14 +61,6 @@ If you find this image useful here's how you can help:
 - Send a Pull Request with your awesome new features and bug fixes
 - Help new users with [Issues](https://github.com/sameersbn/docker-gitlab-ci/issues) they may encounter
 - Support the development of this image with a [donation](http://www.damagehead.com/donate/)
-
-# Supported Web Browsers
-
-- Chrome (Latest stable version)
-- Firefox (Latest released version)
-- Safari 7+ (Know problem: required fields in html5 do not work)
-- Opera (Latest released version)
-- IE 10+
 
 # Issue
 
