@@ -279,14 +279,14 @@ If you have been using the internal mysql server follow these instructions to mi
 Assuming that your mysql data is available at `/srv/docker/gitlab-ci/mysql`
 
 ```bash
-docker run --name mysql-gitlab-ci -d \
+docker run --name gitlab-ci-mysql -d \
     --volume /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
     sameersbn/mysql:latest
 ```
 
 This will start a mysql container with your existing mysql data. Now login to the mysql container and create a user for the existing `gitlab_ci_production` database.
 
-All you need to do now is link this mysql container to the gitlab ci container using the `--link mysql-gitlab-ci:mysql` option and provide the `DB_NAME`, `DB_USER` and `DB_PASS` parameters.
+All you need to do now is link this mysql container to the gitlab ci container using the `--link gitlab-ci-mysql:mysql` option and provide the `DB_NAME`, `DB_USER` and `DB_PASS` parameters.
 
 Refer to [Linking to MySQL Container](#linking-to-mysql-container) for more information.
 
@@ -341,7 +341,7 @@ sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab-ci/mysql
 The run command looks like this.
 
 ```bash
-docker run --name mysql-gitlab-ci -d \
+docker run --name gitlab-ci-mysql -d \
     --env 'DB_NAME=gitlab_ci_production' \
     --env 'DB_USER=gitlab_ci' --env 'DB_PASS=password' \
     --volume /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
@@ -353,7 +353,7 @@ The above command will create a database named `gitlab_ci_production` and also c
 We are now ready to start the GitLab CI application.
 
 ```bash
-docker run --name gitlab-ci -it --rm --link mysql-gitlab-ci:mysql \
+docker run --name gitlab-ci -it --rm --link gitlab-ci-mysql:mysql \
     --env 'GITLAB_URL=http://172.17.0.2' \
     --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
     sameersbn/gitlab-ci:7.12.2
