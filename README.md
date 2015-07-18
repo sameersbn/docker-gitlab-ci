@@ -130,7 +130,7 @@ Alternately, you can manually launch the `gitlab-ci` container and the supportin
 Step 1. Launch a postgresql container
 
 ```bash
-docker run --name postgresql-gitlab-ci -d \
+docker run --name gitlab-ci-postgresql -d \
     --env 'DB_NAME=gitlab_ci_production' \
     --env 'DB_USER=gitlab' --env 'DB_PASS=password' \
     --volume /srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
@@ -140,7 +140,7 @@ docker run --name postgresql-gitlab-ci -d \
 Step 2. Launch a redis container
 
 ```bash
-docker run --name redis-gitlab-ci -d \
+docker run --name gitlab-ci-redis -d \
     --volume /srv/docker/gitlab-ci/redis:/var/lib/redis \
     sameersbn/redis:latest
 ```
@@ -149,7 +149,7 @@ Step 3. Launch the gitlab-ci container
 
 ```bash
 docker run --name gitlab-ci -d \
-    --link postgresql-gitlab-ci:postgresql --link redis-gitlab-ci:redisio \
+    --link gitlab-ci-postgresql:postgresql --link gitlab-ci-redis:redisio \
     --publish 10081:80 \
     --env 'GITLAB_CI_PORT=10081' --env 'GITLAB_URL=http://localhost:10080' \
     --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
@@ -244,7 +244,7 @@ sudo chcon -Rt svirt_sandbox_file_t /srv/docker/gitlab-ci/postgresql
 The run command looks like this.
 
 ```bash
-docker run --name postgresql-gitlab-ci -d \
+docker run --name gitlab-ci-postgresql -d \
     --env 'DB_NAME=gitlab_ci_production' \
     --env 'DB_USER=gitlab_ci' --env 'DB_PASS=password' \
     --volume /srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
@@ -256,7 +256,7 @@ The above command will create a database named `gitlab_ci_production` and also c
 We are now ready to start the GitLab CI application.
 
 ```bash
-docker run --name gitlab-ci -it --rm --link postgresql-gitlab-ci:postgresql \
+docker run --name gitlab-ci -it --rm --link gitlab-ci-postgresql:postgresql \
     --env 'GITLAB_URL=http://172.17.0.2' \
     --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
     sameersbn/gitlab-ci:7.12.2
@@ -402,13 +402,13 @@ docker pull sameersbn/redis:latest
 Lets start the redis container
 
 ```bash
-docker run --name redis-gitlab-ci -d sameersbn/redis:latest
+docker run --name gitlab-ci-redis -d sameersbn/redis:latest
 ```
 
 We are now ready to start the GitLab CI application.
 
 ```bash
-docker run --name gitlab-ci -it --rm --link redis-gitlab-ci:redisio \
+docker run --name gitlab-ci -it --rm --link gitlab-ci-redis:redisio \
     sameersbn/gitlab:latest
 ```
 
