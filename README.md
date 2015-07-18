@@ -33,7 +33,6 @@
         - [Establishing trust with your server](#establishing-trust-with-your-server)
         - [Installing Trusted SSL Server Certificates](#installing-trusted-ssl-server-certificates)
     - [Deploy to a subdirectory (relative url root)](#deploy-to-a-subdirectory-relative-url-root)
-    - [Putting it all together](#putting-it-all-together)
     - [Available Configuration Parameters](#available-configuration-parameters)
 - [Maintenance](#maintenance)
     - [Creating Backups](#creating-backups)
@@ -576,37 +575,6 @@ docker run --name gitlab-ci -it --rm \
 GitLab CI will now be accessible at the `/ci` path, e.g. `http://www.example.com/ci`.
 
 **Note**: *The `GITLAB_CI_RELATIVE_URL_ROOT` parameter should always begin with a slash and* **SHOULD NOT** *have any trailing slashes.*
-
-### Putting it all together
-
-```bash
-docker run --name gitlab-ci -d -h gitlab-ci.local.host \
-    --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-    --volume /srv/docker/gitlab-ci/mysql:/var/lib/mysql \
-    --env 'GITLAB_URL=http://172.17.0.2' \
-    --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
-    --env 'GITLAB_CI_HOST=gitlab-ci.local.host' \
-    --env 'GITLAB_CI_EMAIL=gitlab@local.host' \
-    --env 'GITLAB_CI_SUPPORT=support@local.host' \
-    --env 'SMTP_USER=USER@gmail.com' --env 'SMTP_PASS=PASSWORD' \
-    sameersbn/gitlab-ci:7.12.2
-```
-
-If you are using an external mysql database
-
-```bash
-docker run --name gitlab-ci -d -h gitlab-ci.local.host \
-    --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-    --env 'DB_HOST=192.168.1.100' --env 'DB_NAME=gitlab_ci_production' \
-    --env 'DB_USER=gitlab_ci' --env 'DB_PASS=password' \
-    --env 'GITLAB_URL=http://172.17.0.2' \
-    --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
-    --env 'GITLAB_CI_HOST=gitlab-ci.local.host' \
-    --env 'GITLAB_CI_EMAIL=gitlab@local.host' \
-    --env 'GITLAB_CI_SUPPORT=support@local.host' \
-    --env 'SMTP_USER=USER@gmail.com' --env 'SMTP_PASS=PASSWORD' \
-    sameersbn/gitlab-ci:7.12.2
-```
 
 ### Available Configuration Parameters
 
