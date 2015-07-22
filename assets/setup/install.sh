@@ -7,7 +7,7 @@ GEM_CACHE_DIR="${SETUP_DIR}/cache"
 apt-get update
 
 # install build dependencies for gem installation
-apt-get install -y gcc g++ make libc6-dev ruby2.1-dev \
+apt-get install -y gcc g++ make patch libc6-dev ruby2.1-dev \
   libmysqlclient-dev libpq-dev zlib1g-dev libyaml-dev libssl-dev \
   libgdbm-dev libreadline-dev libncurses5-dev libffi-dev \
   libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev
@@ -33,6 +33,7 @@ cd ${GITLAB_CI_INSTALL_DIR}
 # copy default configurations
 cp lib/support/nginx/gitlab_ci /etc/nginx/sites-available/gitlab_ci
 sudo -HEu ${GITLAB_CI_USER} cp config/application.yml.example config/application.yml
+sudo -HEu ${GITLAB_CI_USER} cp config/secrets.yml.example config/secrets.yml
 sudo -HEu ${GITLAB_CI_USER} cp config/resque.yml.example config/resque.yml
 sudo -HEu ${GITLAB_CI_USER} cp config/database.yml.mysql config/database.yml
 sudo -HEu ${GITLAB_CI_USER} cp config/unicorn.rb.example config/unicorn.rb
@@ -50,6 +51,7 @@ if [[ -d ${GEM_CACHE_DIR} ]]; then
   mv ${GEM_CACHE_DIR} vendor/
   chown -R ${GITLAB_CI_USER}:${GITLAB_CI_USER} vendor/cache
 fi
+
 sudo -HEu ${GITLAB_CI_USER} bundle install -j$(nproc) --deployment --without development test
 
 # install cronjob
@@ -175,7 +177,7 @@ stderr_logfile=${GITLAB_CI_LOG_DIR}/supervisor/%(program_name)s.log
 EOF
 
 # purge build dependencies
-apt-get purge -y --auto-remove gcc g++ make libc6-dev ruby-dev \
+apt-get purge -y --auto-remove gcc g++ make patch libc6-dev ruby-dev \
   libmysqlclient-dev libpq-dev zlib1g-dev libyaml-dev libssl-dev \
   libgdbm-dev libreadline-dev libncurses5-dev libffi-dev \
   libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev
