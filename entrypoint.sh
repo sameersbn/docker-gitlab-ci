@@ -124,6 +124,10 @@ elif [[ -n ${POSTGRESQL_PORT_5432_TCP_ADDR} ]]; then
   DB_NAME=${DB_NAME:-${POSTGRESQL_ENV_DB}}
 fi
 
+# set default user and database
+DB_USER=${DB_USER:-root}
+DB_NAME=${DB_NAME:-gitlab_ci_production}
+
 if [[ -z ${DB_HOST} ]]; then
   echo "ERROR: "
   echo "  Please configure the database connection."
@@ -143,10 +147,6 @@ case ${DB_TYPE} in
     exit 1
     ;;
 esac
-
-# set default user and database
-DB_USER=${DB_USER:-root}
-DB_NAME=${DB_NAME:-gitlab_ci_production}
 
 # is a redis container linked?
 if [[ -n ${REDISIO_PORT_6379_TCP_ADDR} ]]; then
