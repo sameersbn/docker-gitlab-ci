@@ -22,6 +22,8 @@ ci:
     - GITLAB_URL=http://localhost:10080
     - GITLAB_APP_ID=
     - GITLAB_APP_SECRET=
+    - GITLAB_CI_SECRETS_SESSION_KEY_BASE=
+    - GITLAB_CI_SECRETS_DB_KEY_BASE=
     - GITLAB_CI_HOST=localhost
     - GITLAB_CI_PORT=10081
     - GITLAB_CI_EMAIL=ci@example.com

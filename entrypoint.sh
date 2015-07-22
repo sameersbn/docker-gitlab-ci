@@ -10,10 +10,14 @@ GITLAB_CI_TIMEZONE=${GITLAB_CI_TIMEZONE:-UTC}
 GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS=${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS:-true}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-$GITLAB_CI_NOTIFY_ADD_COMMITTER}
 GITLAB_CI_NOTIFY_PUSHER=${GITLAB_CI_NOTIFY_PUSHER:-false}
+GITLAB_CI_BUILDS_DIR="${GITLAB_CI_BUILDS_DIR:-$GITLAB_CI_DATA_DIR/builds}"
 GITLAB_CI_BACKUP_DIR="${GITLAB_CI_BACKUP_DIR:-$GITLAB_CI_DATA_DIR/backups}"
 GITLAB_CI_BACKUPS=${GITLAB_CI_BACKUPS:-disable}
 GITLAB_CI_BACKUP_TIME=${GITLAB_CI_BACKUP_TIME:-04:00}
 GITLAB_CI_BACKUP_EXPIRY=${GITLAB_CI_BACKUP_EXPIRY:-}
+
+GITLAB_CI_SECRETS_SESSION_KEY_BASE=${GITLAB_CI_SECRETS_SESSION_KEY_BASE:-}
+GITLAB_CI_SECRETS_DB_KEY_BASE=${GITLAB_CI_SECRETS_DB_KEY_BASE:-}
 
 AWS_BACKUPS=${AWS_BACKUPS:-false}
 AWS_BACKUP_REGION=${AWS_BACKUP_REGION}
@@ -161,6 +165,13 @@ if [[ -z ${REDIS_HOST} ]]; then
   exit 1
 fi
 
+if [[ -z $GITLAB_CI_SECRETS_SESSION_KEY_BASE || -z $GITLAB_CI_SECRETS_DB_KEY_BASE ]]; then
+  echo "ERROR: "
+  echo "  Please configure the GITLAB_CI_SECRETS_SESSION_KEY_BASE and GITLAB_CI_SECRETS_DB_KEY_BASE parameters."
+  echo "  Cannot continue. Aborting..."
+  exit 1
+fi
+
 case ${GITLAB_CI_HTTPS} in
   true)
     GITLAB_CI_PORT=${GITLAB_CI_PORT:-443}
@@ -198,6 +209,7 @@ case ${GITLAB_CI_HTTPS} in
   *) cp ${SETUP_DIR}/config/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
 esac
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/application.yml config/application.yml
+sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/secrets.yml config/secrets.yml
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/resque.yml config/resque.yml
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/database.yml config/database.yml
 sudo -HEu ${GITLAB_CI_USER} cp ${SETUP_DIR}/config/gitlab-ci/unicorn.rb config/unicorn.rb
@@ -220,6 +232,7 @@ case ${GITLAB_CI_HTTPS} in
   *) [[ -f ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci ]] && cp ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
 esac
 [[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml ]]  && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml  config/application.yml
+[[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/secrets.yml ]]      && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/secrets.yml  config/secrets.yml
 [[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml ]]       && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
 [[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml ]]     && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml     config/database.yml
 [[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb ]]       && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb       config/unicorn.rb
@@ -287,6 +300,13 @@ sudo -HEu ${GITLAB_CI_USER} sed 's/{{GITLAB_CI_EMAIL}}/'"${GITLAB_CI_EMAIL}"'/' 
 sudo -HEu ${GITLAB_CI_USER} sed 's/{{GITLAB_CI_SUPPORT}}/'"${GITLAB_CI_SUPPORT}"'/' -i config/application.yml
 sudo -HEu ${GITLAB_CI_USER} sed 's/{{GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}}/'"${GITLAB_CI_NOTIFY_ON_BROKEN_BUILDS}"'/' -i config/application.yml
 sudo -HEu ${GITLAB_CI_USER} sed 's/{{GITLAB_CI_NOTIFY_PUSHER}}/'"${GITLAB_CI_NOTIFY_PUSHER}"'/' -i config/application.yml
+
+# configure secrets
+sudo -HEu ${GITLAB_CI_USER} sed 's/{{GITLAB_CI_SECRETS_SESSION_KEY_BASE}}/'"${GITLAB_CI_SECRETS_SESSION_KEY_BASE}"'/' -i config/secrets.yml
+sudo -HEu ${GITLAB_CI_USER} sed 's/{{GITLAB_CI_SECRETS_DB_KEY_BASE}}/'"${GITLAB_CI_SECRETS_DB_KEY_BASE}"'/' -i config/secrets.yml
+
+# configure build traces path
+sudo -HEu ${GITLAB_CI_USER} sed 's,{{GITLAB_CI_BUILDS_DIR}},'"${GITLAB_CI_BUILDS_DIR}"',g' -i config/application.yml
 
 # configure backups
 sudo -HEu ${GITLAB_CI_USER} sed 's,{{GITLAB_CI_BACKUP_DIR}},'"${GITLAB_CI_BACKUP_DIR}"',g' -i config/application.yml
@@ -378,6 +398,10 @@ fi
 
 # take ownership of ${GITLAB_CI_DATA_DIR}
 chown ${GITLAB_CI_USER}:${GITLAB_CI_USER} ${GITLAB_CI_DATA_DIR}
+
+# create the builds directory
+mkdir -p ${GITLAB_CI_BUILDS_DIR}
+chown ${GITLAB_CI_USER}:${GITLAB_CI_USER} ${GITLAB_CI_BUILDS_DIR}
 
 # create the backups directory
 mkdir -p ${GITLAB_CI_BACKUP_DIR}
