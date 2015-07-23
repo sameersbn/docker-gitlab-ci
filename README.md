@@ -495,7 +495,8 @@ HTTPS support can be enabled by setting the `GITLAB_CI_HTTPS` option to `true`.
 
 ```bash
 docker run --name gitlab-ci -it --rm \
-    --env 'GITLAB_CI_HTTPS=true' \
+    --publish 10081:80 --publish 10444:443 \
+    --env 'GITLAB_CI_PORT=10444' -env 'GITLAB_CI_HTTPS=true' \
     --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
     sameersbn/gitlab-ci:7.13.0
 ```
