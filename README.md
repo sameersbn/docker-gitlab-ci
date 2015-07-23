@@ -583,6 +583,8 @@ GitLab CI will now be accessible at the `/ci` path, e.g. `http://www.example.com
 Below is the complete list of available options that can be used to customize your GitLab CI installation.
 
 - **GITLAB_URL**: Url of the GitLab server to allow connections from. No defaults. Automatically configured when a GitLab server is linked using docker links feature.
+- **GITLAB_CI_SECRETS_SESSION_KEY_BASE**: Used to verify the integrity of signed cookies. You can generated one using `pwgen -Bsv1 64`.
+- **GITLAB_CI_SECRETS_DB_KEY_BASE**: Used to encrypt variables. Ensure that you don't lose it. You can generate one using `pwgen -Bsv1 64`.
 - **GITLAB_APP_ID**: Application ID used to connect to the gitlab server.
 - **GITLAB_APP_SECRET**: Secret key used to connect to the gitlab server.
 - **GITLAB_CI_HOST**: The hostname of the GitLab CI server. Defaults to `localhost`.
