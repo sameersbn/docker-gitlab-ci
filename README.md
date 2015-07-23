@@ -115,7 +115,7 @@ docker build --tag $USER/gitlab-ci .
 
 Before you can start the GitLab CI image you need to make sure you have a [GitLab](https://www.gitlab.com/) server running. Checkout the [docker-gitlab](https://github.com/sameersbn/docker-gitlab) project for getting a GitLab server up and running.
 
-You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. Since version `5.4.0` you need to provide the `GITLAB_APP_ID` and `GITLAB_APP_SECRET`. Since `7.13.0` you also need to provide the `GITLAB_CI_SECRETS_SESSION_KEY_BASE` and `SECRETS_DB_KEY_BASE` parameters.
+You need to provide the URL of the GitLab server while running GitLab CI using the `GITLAB_URL` environment configuration. Since version `5.4.0` you need to provide the `GITLAB_APP_ID` and `GITLAB_APP_SECRET`. Since `7.13.0` you also need to provide the `GITLAB_CI_SECRETS_SESSION_KEY_BASE` and `GITLAB_CI_SECRETS_DB_KEY_BASE` parameters.
 
 The quickest way to get started is using [docker-compose](https://docs.docker.com/compose/).
 
