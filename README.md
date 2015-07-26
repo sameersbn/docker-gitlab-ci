@@ -512,7 +512,7 @@ With `GITLAB_CI_HTTPS_HSTS_MAXAGE` you can configure that value. The default val
 ```bash
 docker run --name gitlab-ci -it --rm \
     --env 'GITLAB_CI_HTTPS=true' \
-    --env 'GITLAB_CI_HTTPS_HSTS_MAXAGE=2592000'
+    --env 'GITLAB_CI_HTTPS_HSTS_MAXAGE=2592000' \
     --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
     sameersbn/gitlab-ci:7.13.1
 ```
