@@ -1,4 +1,4 @@
-# sameersbn/gitlab:7.13.1
+# sameersbn/gitlab-ci:7.13.1
 
 - [Introduction](#introduction)
     - [Version](#version)
@@ -408,7 +408,7 @@ We are now ready to start the GitLab CI application.
 
 ```bash
 docker run --name gitlab-ci -it --rm --link gitlab-ci-redis:redisio \
-    sameersbn/gitlab:latest
+    sameersbn/gitlab-ci:latest
 ```
 
 ### Mail
