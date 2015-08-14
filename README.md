@@ -632,6 +632,9 @@ Below is the complete list of available options that can be used to customize yo
 - **SMTP_STARTTLS**: Enable STARTTLS. Defaults to `true`.
 - **SMTP_TLS**: Enable SSL/TLS. Defaults to `false`.
 - **SMTP_AUTHENTICATION**: Specify the SMTP authentication method. Defaults to `login` if `SMTP_USER` is set.
+- **SMTP_CA_ENABLED**: Enable custom CA certificates for SMTP email configuration. Defaults to `false`.
+- **SMTP_CA_PATH**: Specify the `ca_path` parameter for SMTP email configuration. Defaults to `/home/gitlab_ci/data/certs`.
+- **SMTP_CA_FILE**: Specify the `ca_file` parameter for SMTP email configuration. Defaults to `/home/gitlab_ci/data/certs/ca.crt`.
 - **AWS_BACKUPS**: Enables automatic uploads to an Amazon S3 instance. Defaults to `false`.
 - **AWS_BACKUP_REGION**: AWS region. No defaults.
 - **AWS_BACKUP_ACCESS_KEY_ID**: AWS access key id. No defaults.
