@@ -263,10 +263,10 @@ docker run --name gitlab-ci -it --rm --link gitlab-ci-postgresql:postgresql \
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the postgresql container as they are specified in the `docker run` command for the postgresql container. This is made possible using the magic of docker links and works with the following images:
 
- - [postgres](https://registry.hub.docker.com/_/postgres/)
- - [sameersbn/postgresql](https://registry.hub.docker.com/u/sameersbn/postgresql/)
- - [orchardup/postgresql](https://registry.hub.docker.com/u/orchardup/postgresql/)
- - [paintedfox/postgresql](https://registry.hub.docker.com/u/paintedfox/postgresql/)
+ - [postgres](https://hub.docker.com/_/postgres/)
+ - [sameersbn/postgresql](https://hub.docker.com/r/sameersbn/postgresql/)
+ - [orchardup/postgresql](https://hub.docker.com/r/orchardup/postgresql/)
+ - [paintedfox/postgresql](https://hub.docker.com/r/paintedfox/postgresql/)
 
 ### MySQL
 
@@ -361,10 +361,10 @@ docker run --name gitlab-ci -it --rm --link gitlab-ci-mysql:mysql \
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the mysql container as they are specified in the `docker run` command for the mysql container. This is made possible using the magic of docker links and works with the following images:
 
- - [mysql](https://registry.hub.docker.com/_/mysql/)
- - [sameersbn/mysql](https://registry.hub.docker.com/u/sameersbn/mysql/)
- - [centurylink/mysql](https://registry.hub.docker.com/u/centurylink/mysql/)
- - [orchardup/mysql](https://registry.hub.docker.com/u/orchardup/mysql/)
+ - [mysql](https://hub.docker.com/_/mysql/)
+ - [sameersbn/mysql](https://hub.docker.com/r/sameersbn/mysql/)
+ - [centurylink/mysql](https://hub.docker.com/r/centurylink/mysql/)
+ - [orchardup/mysql](https://hub.docker.com/r/orchardup/mysql/)
 
 ## Redis
 
