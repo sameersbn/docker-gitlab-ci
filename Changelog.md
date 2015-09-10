@@ -4,6 +4,7 @@ This file only reflects the changes that are made in the the docker image. Pleas
 
 **latest**
 - gitlab-ci: upgrade to v.7.14.2
+- Node.js needs to execute arbitrary code at runtime
 
 **7.14.1**
 - gitlab-ci: upgrade to v.7.14.1
