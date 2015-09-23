@@ -423,6 +423,10 @@ chown ${GITLAB_CI_USER}:${GITLAB_CI_USER} ${GITLAB_CI_BUILDS_DIR}
 mkdir -p ${GITLAB_CI_BACKUP_DIR}
 chown ${GITLAB_CI_USER}:${GITLAB_CI_USER} ${GITLAB_CI_BACKUP_DIR}
 
+# symlink builds/ -> ${GITLAB_CI_BUILDS_DIR}
+rm -rf builds
+ln -sf ${GITLAB_CI_BUILDS_DIR} builds
+
 appInit () {
   # due to the nature of docker and its use cases, we allow some time
   # for the database server to come online.
