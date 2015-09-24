@@ -235,7 +235,7 @@ case ${GITLAB_CI_HTTPS} in
   *) [[ -f ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci ]] && cp ${GITLAB_CI_DATA_DIR}/nginx/gitlab_ci /etc/nginx/sites-enabled/gitlab_ci ;;
 esac
 [[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml ]]  && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/application.yml  config/application.yml
-[[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/secrets.yml ]]      && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/secrets.yml  config/secrets.yml
+[[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/secrets.yml ]]      && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/secrets.yml      config/secrets.yml
 [[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml ]]       && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/resque.yml       config/resque.yml
 [[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml ]]     && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/database.yml     config/database.yml
 [[ -f ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb ]]       && sudo -HEu ${GITLAB_CI_USER} cp ${GITLAB_CI_DATA_DIR}/config/gitlab-ci/unicorn.rb       config/unicorn.rb
