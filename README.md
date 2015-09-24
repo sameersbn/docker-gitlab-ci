@@ -8,6 +8,8 @@ Also note that you can only migrate the CI server to GitLab CE `8.0` from versio
 
 **PLEASE BACKUP YOUR DATA BEFORE PERFORMING ANY MIGRATIONS**
 
+Please refer to https://github.com/sameersbn/docker-gitlab/blob/master/CI_MIGRATION.md for migration instructions
+
 If you are interested in older versions of GitLab CI then please refer to the README of the tagged versions.
 
 The rest of this document is only for your reference.
