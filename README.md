@@ -1,4 +1,16 @@
-# sameersbn/gitlab-ci:7.14.3-1
+# sameersbn/gitlab-ci:8.0.0
+
+`sameersbn/gitlab-ci:8.x.x` image is meant for migration purposes only.
+
+Since version `8.0` GitLab CI has been merged into GitLab CE and you no longer need to setup a separate GitLab CI instance.
+
+Also note that you can only migrate the CI server to GitLab CE `8.0` from version `7.14.3`. So if you intend to migrate your CI server you need to first upgrade to the `sameersbn/gitlab-ci:7.14.3-1` release.
+
+**PLEASE BACKUP YOUR DATA BEFORE PERFORMING ANY MIGRATIONS**
+
+If you are interested in older versions of GitLab CI then please refer to the README of the tagged versions.
+
+The rest of this document is only for your reference.
 
 - [Introduction](#introduction)
     - [Version](#version)
