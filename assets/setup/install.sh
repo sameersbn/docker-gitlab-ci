@@ -7,7 +7,7 @@ GEM_CACHE_DIR="${SETUP_DIR}/cache"
 apt-get update
 
 # install build dependencies for gem installation
-apt-get install -y gcc g++ make patch paxctl libc6-dev ruby2.1-dev \
+DEBIAN_FRONTEND=noninteractive apt-get install -y gcc g++ make patch paxctl libc6-dev ruby2.1-dev \
   libmysqlclient-dev libpq-dev zlib1g-dev libyaml-dev libssl-dev \
   libgdbm-dev libreadline-dev libncurses5-dev libffi-dev \
   libxml2-dev libxslt-dev libcurl4-openssl-dev libicu-dev
