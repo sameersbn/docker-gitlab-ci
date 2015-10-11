@@ -147,7 +147,7 @@ docker run --name gitlab-ci-postgresql -d \
     --env 'DB_NAME=gitlab_ci_production' \
     --env 'DB_USER=gitlab' --env 'DB_PASS=password' \
     --volume /srv/docker/gitlab-ci/postgresql:/var/lib/postgresql \
-    quay.io/sameersbn/postgresql:9.4-3
+    quay.io/sameersbn/postgresql:9.4-5
 ```
 
 Step 2. Launch a redis container
