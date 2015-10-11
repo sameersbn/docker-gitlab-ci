@@ -21,10 +21,10 @@ quickstart:
 	@docker run --name=gitlab-ci-postgresql -d \
 		--env='DB_NAME=gitlab_ci_production' \
 		--env='DB_USER=gitlab' --env='DB_PASS=password' \
-		sameersbn/postgresql:latest >/dev/null
+		quay.io/sameersbn/postgresql:latest >/dev/null
 	@echo "Starting redis..."
 	@docker run --name=gitlab-ci-redis -d \
-		sameersbn/redis:latest >/dev/null
+		quay.io/sameersbn/redis:latest >/dev/null
 	@echo "Starting gitlab-ci..."
 	@docker run --name=gitlab-ci-demo -d \
 		--link=gitlab-ci-postgresql:postgresql --link=gitlab-ci-redis:redisio \
