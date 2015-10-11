@@ -1,4 +1,4 @@
-# sameersbn/gitlab-ci:8.0.4
+# sameersbn/gitlab-ci:8.0.4-1
 
 `sameersbn/gitlab-ci:8.x.x` image is meant for migration purposes only.
 
@@ -63,7 +63,7 @@ Dockerfile to build a [GitLab CI](https://about.gitlab.com/gitlab-ci/) container
 
 ## Version
 
-Current Version: `8.0.4`
+Current Version: `8.0.4-1`
 
 *The gitlab-ci version should match the gitlab version to avoid any compatibility issues*
 
@@ -114,7 +114,7 @@ docker pull sameersbn/gitlab-ci:latest
 Starting from GitLab CI version `5.1.0`, You can pull a particular version of GitLab CI by specifying the version number. For example,
 
 ```bash
-docker pull sameersbn/gitlab-ci:8.0.4
+docker pull sameersbn/gitlab-ci:8.0.4-1
 ```
 
 Alternately you can build the image yourself.
@@ -167,7 +167,7 @@ docker run --name gitlab-ci -d \
     --env 'GITLAB_CI_PORT=10081' --env 'GITLAB_URL=http://localhost:10080' \
     --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
     --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 Point your browser to `http://localhost:10081` and login using your GitLab credentials.
@@ -198,7 +198,7 @@ Volumes can be mounted in docker by specifying the **'-v'** option in the docker
 ```bash
 docker run --name gitlab-ci -it --rm \
     --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 ## Database
@@ -228,7 +228,7 @@ docker run --name gitlab-ci -it --rm \
     --env 'DB_TYPE=postgres' --env 'DB_HOST=192.168.1.100' \
     --env 'DB_NAME=gitlab_ci_production' \
     --env 'DB_USER=gitlab_ci' --env 'DB_PASS=password' \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 #### Linking to PostgreSQL Container
@@ -272,7 +272,7 @@ We are now ready to start the GitLab CI application.
 docker run --name gitlab-ci -it --rm --link gitlab-ci-postgresql:postgresql \
     --env 'GITLAB_URL=http://172.17.0.2' \
     --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the postgresql container as they are specified in the `docker run` command for the postgresql container. This is made possible using the magic of docker links and works with the following images:
@@ -326,7 +326,7 @@ docker run --name gitlab-ci -it --rm \
     --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
     --env 'DB_HOST=192.168.1.100' --env 'DB_NAME=gitlab_ci_production' \
     --env 'DB_USER=gitlab_ci' --env 'DB_PASS=password' \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 #### Linking to MySQL Container
@@ -370,7 +370,7 @@ We are now ready to start the GitLab CI application.
 docker run --name gitlab-ci -it --rm --link gitlab-ci-mysql:mysql \
     --env 'GITLAB_URL=http://172.17.0.2' \
     --env 'GITLAB_APP_ID=xxx' --env 'GITLAB_APP_SECRET=yyy' \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 Here the image will also automatically fetch the `DB_NAME`, `DB_USER` and `DB_PASS` variables from the mysql container as they are specified in the `docker run` command for the mysql container. This is made possible using the magic of docker links and works with the following images:
@@ -397,7 +397,7 @@ The image can be configured to use an external redis server instead of starting 
 ```bash
 docker run --name gitlab-ci -it --rm \
     --env 'REDIS_HOST=192.168.1.100' --env 'REDIS_PORT=6379' \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 ### Linking to Redis Container
@@ -434,7 +434,7 @@ Please refer the [Available Configuration Parameters](#available-configuration-p
 ```bash
 docker run --name gitlab-ci -it --rm \
     --env 'SMTP_USER=USER@gmail.com' --env 'SMTP_PASS=PASSWORD' \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 Please look up the [Available Configuration Parameters](#available-configuration-parameters) section for all available SMTP configuration options.
@@ -512,7 +512,7 @@ docker run --name gitlab-ci -it --rm \
     --publish 10081:80 --publish 10444:443 \
     --env 'GITLAB_CI_PORT=10444' -env 'GITLAB_CI_HTTPS=true' \
     --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 In this configuration, any requests made over the plain http protocol will automatically be redirected to use the https protocol. However, this is not optimal when using a load balancer.
@@ -528,7 +528,7 @@ docker run --name gitlab-ci -it --rm \
     --env 'GITLAB_CI_HTTPS=true' \
     --env 'GITLAB_CI_HTTPS_HSTS_MAXAGE=2592000' \
     --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 If you want to completely disable HSTS set `GITLAB_CI_HTTPS_HSTS_ENABLED` to `false`.
@@ -547,7 +547,7 @@ In summation, when using a load balancer, the docker command would look for the 
 docker run --name gitlab-ci -it --rm \
     --env 'GITLAB_CI_HTTPS=true' \
     --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 #### Establishing trust with your server
@@ -584,7 +584,7 @@ Let's assume we want to deploy our application to '/ci'. GitLab CI needs to know
 docker run --name gitlab-ci -it --rm \
     --env 'GITLAB_CI_RELATIVE_URL_ROOT=/ci' \
     --volume /srv/docker/gitlab-ci/gitlab-ci:/home/gitlab_ci/data \
-    sameersbn/gitlab-ci:8.0.4
+    sameersbn/gitlab-ci:8.0.4-1
 ```
 
 GitLab CI will now be accessible at the `/ci` path, e.g. `http://www.example.com/ci`.
@@ -673,7 +673,7 @@ Execute the rake task to create a backup.
 
 ```bash
 docker run --name gitlab-ci -it --rm [OPTIONS] \
-    sameersbn/gitlab-ci:8.0.4 app:rake backup:create
+    sameersbn/gitlab-ci:8.0.4-1 app:rake backup:create
 ```
 
 A backup will be created in the backups folder of the [Persistence](#persistence). You can change the location of the backups using the `GITLAB_CI_BACKUP_DIR` configuration parameter.
@@ -694,7 +694,7 @@ Execute the rake task to restore a backup. Make sure you run the container in in
 
 ```bash
 docker run --name gitlab-ci -it --rm [OPTIONS] \
-    sameersbn/gitlab-ci:8.0.4 app:rake backup:restore
+    sameersbn/gitlab-ci:8.0.4-1 app:rake backup:restore
 ```
 
 The list of all available backups will be displayed in reverse chronological order. Select the backup you want to restore and continue.
@@ -703,7 +703,7 @@ To avoid user interaction in the restore operation, specify the timestamp of the
 
 ```bash
 docker run --name gitlab-ci -it --rm [OPTIONS] \
-    sameersbn/gitlab-ci:8.0.4 app:rake backup:restore BACKUP=1417624827
+    sameersbn/gitlab-ci:8.0.4-1 app:rake backup:restore BACKUP=1417624827
 ```
 
 ## Automated Backups
@@ -729,7 +729,7 @@ To upgrade to newer GitLab CI releases, simply follow this 3 step upgrade proced
 - **Step 1**: Update the docker image.
 
 ```bash
-docker pull sameersbn/gitlab-ci:8.0.4
+docker pull sameersbn/gitlab-ci:8.0.4-1
 ```
 
 - **Step 2**: Stop and remove the currently running image
@@ -742,7 +742,7 @@ docker rm gitlab-ci
 - **Step 3**: Start the image
 
 ```bash
-docker run --name gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:8.0.4
+docker run --name gitlab-ci -d [OPTIONS] sameersbn/gitlab-ci:8.0.4-1
 ```
 
 ## Shell Access
