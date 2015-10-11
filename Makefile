@@ -11,10 +11,10 @@ help:
 	@echo "   5. make purge        - stop and remove the container"
 
 build:
-	@docker build --tag=${USER}/gitlab-ci .
+	@docker build --tag=quay.io/sameersbn/gitlab-ci .
 
 release: build
-	@docker build --tag=${USER}/gitlab-ci:$(shell cat VERSION) .
+	@docker build --tag=quay.io/sameersbn/gitlab-ci:$(shell cat VERSION) .
 
 quickstart:
 	@echo "Starting postgresql..."
@@ -31,7 +31,7 @@ quickstart:
 		--publish=10081:80 \
 		--env='GITLAB_CI_PORT=10081' --env='GITLAB_URL=http://localhost:10080' \
 		--env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-		${USER}/gitlab-ci:latest >/dev/null
+		quay.io/sameersbn/gitlab-ci:latest >/dev/null
 	@echo "Please be patient. This could take a while..."
 	@echo "GitLab CI will be available at http://localhost:10080"
 	@echo "Type 'make logs' for the logs"
