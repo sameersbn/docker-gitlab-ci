@@ -1,3 +1,5 @@
+[![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/gitlab-ci/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/gitlab-ci)
+
 # quay.io/sameersbn/gitlab-ci:8.0.4-1
 
 `quay.io/sameersbn/gitlab-ci:8.x.x` image is meant for migration purposes only.
