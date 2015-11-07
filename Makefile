@@ -11,27 +11,27 @@ help:
 	@echo "   5. make purge        - stop and remove the container"
 
 build:
-	@docker build --tag=quay.io/sameersbn/gitlab-ci .
+	@docker build --tag=sameersbn/gitlab-ci .
 
 release: build
-	@docker build --tag=quay.io/sameersbn/gitlab-ci:$(shell cat VERSION) .
+	@docker build --tag=sameersbn/gitlab-ci:$(shell cat VERSION) .
 
 quickstart:
 	@echo "Starting postgresql..."
 	@docker run --name=gitlab-ci-postgresql -d \
 		--env='DB_NAME=gitlab_ci_production' \
 		--env='DB_USER=gitlab' --env='DB_PASS=password' \
-		quay.io/sameersbn/postgresql:latest >/dev/null
+		sameersbn/postgresql:latest >/dev/null
 	@echo "Starting redis..."
 	@docker run --name=gitlab-ci-redis -d \
-		quay.io/sameersbn/redis:latest >/dev/null
+		sameersbn/redis:latest >/dev/null
 	@echo "Starting gitlab-ci..."
 	@docker run --name=gitlab-ci-demo -d \
 		--link=gitlab-ci-postgresql:postgresql --link=gitlab-ci-redis:redisio \
 		--publish=10081:80 \
 		--env='GITLAB_CI_PORT=10081' --env='GITLAB_URL=http://localhost:10080' \
 		--env='GITLAB_APP_ID=xxx' --env='GITLAB_APP_SECRET=yyy' \
-		quay.io/sameersbn/gitlab-ci:latest >/dev/null
+		sameersbn/gitlab-ci:latest >/dev/null
 	@echo "Please be patient. This could take a while..."
 	@echo "GitLab CI will be available at http://localhost:10080"
 	@echo "Type 'make logs' for the logs"
