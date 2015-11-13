@@ -1,20 +1,16 @@
+# END OF LIFE
+
+> Since version `8.0` GitLab CI has been merged into GitLab CE and you no longer need to setup a separate GitLab CI instance.
+>
+> You can only migrate the CI server to GitLab CE `8.0.x` from version `7.14.3`. As a result you need to first upgrade to the `sameersbn/gitlab-ci:7.14.3-1` release. Refer to https://github.com/sameersbn/docker-gitlab/blob/master/CI_MIGRATION.md for the migration instructions.
+>
+> **PSA:** *BACKUP YOUR DATA BEFORE MIGRATING*
+>
+>If you are interested in older versions of GitLab CI then please refer to the README of the tagged versions.
+
 [![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/gitlab-ci/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/gitlab-ci)
 
 # sameersbn/gitlab-ci:8.0.5
-
-`sameersbn/gitlab-ci:8.x.x` image is meant for migration purposes only.
-
-Since version `8.0` GitLab CI has been merged into GitLab CE and you no longer need to setup a separate GitLab CI instance.
-
-Also note that you can only migrate the CI server to GitLab CE `8.0` from version `7.14.3`. So if you intend to migrate your CI server you need to first upgrade to the `sameersbn/gitlab-ci:7.14.3-1` release.
-
-**PLEASE BACKUP YOUR DATA BEFORE PERFORMING ANY MIGRATIONS**
-
-Please refer to https://github.com/sameersbn/docker-gitlab/blob/master/CI_MIGRATION.md for migration instructions
-
-If you are interested in older versions of GitLab CI then please refer to the README of the tagged versions.
-
-The rest of this document is only for your reference.
 
 - [Introduction](#introduction)
     - [Version](#version)
