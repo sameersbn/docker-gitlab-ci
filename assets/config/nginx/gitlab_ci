@@ -8,7 +8,7 @@ upstream gitlab_ci {
 
 ## Normal HTTP host
 server {
-  listen *:80 default_server;
+  listen *:{{GITLAB_CI_PORT}} default_server;
   server_name {{YOUR_SERVER_FQDN}};
   server_tokens off;
   root {{GITLAB_CI_INSTALL_DIR}}/public;
